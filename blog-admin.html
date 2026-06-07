@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理后台</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="lib/mdl/material-themes-indigo-pink.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+    <script src="lib/mdl/material.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+    <style>
+        /*
+         * 博客管理后台 - Material Design 1 规范样式
+         * 遵循 MD1 设计规范：
+         *   - 8dp 网格系统
+         *   - 卡片阴影 2dp / 3dp / 6dp / 9dp / 12dp
+         *   - 色彩：Indigo 500 主色, Pink A200 强调色
+         *   - 字体：Roboto, 14sp 正文, 20sp 标题
+         *   - 触控目标最小 48dp
+         *   - 圆角 2dp
+         */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #e0e0e0;
+            color: rgba(0,0,0,0.87);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        /* ---- MD1 App Bar ---- */
+        .app-bar {
+            background: #3f51b5;
+            color: #fff;
+            padding: 0 16px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,.26);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .app-bar-title {
+            font-size: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .app-bar-title i { font-size: 24px; }
+        .app-bar a {
+            color: rgba(255,255,255,0.87);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 48px;
+            padding: 0 8px;
+            border-radius: 2px;
+        }
+        .app-bar a:hover { background: rgba(255,255,255,0.12); }
+
+        /* ---- 主容器 ---- */
+        .main-container {
+            max-width: 1600px;
+            margin: 24px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 3fr 5fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 960px) {
+            .main-container { grid-template-columns: 1fr; }
+        }
+
+        /* ---- MD1 Card ---- */
+        .md-card {
+            background: #fff;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            /* 不用 overflow:hidden — 避免裁切 EasyMDE focus 边框和 tooltip
+               圆角裁切由子元素自身 border-radius 配合 */
+        }
+        .md-card-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.87);
+            padding: 24px 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .md-card-supporting {
+            padding: 0 16px 16px;
+        }
+        /* 卡片支撑文本区标题 — MD1 Supporting text: 14sp medium, 87% black */
+        .md-card-supporting-title {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.87);
+            line-height: 20px;
+            padding-top: 16px;
+            margin-bottom: 4px;
+        }
+        .md-card-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0 16px;
+        }
+
+        /* ---- MD1 Expansion Panel 卡片扩展 ---- */
+        /* 规范:
+         * Label: Roboto Regular 15sp, 87% black
+         * Padding: 上下 16dp, 左右 24dp
+         * Expand icon: 24x24dp, 38% black (hover 54%)
+         * 副文本: 12sp 54% black
+         * 分割线: 1dp 12% black
+         */
+        .md-card.expandable {
+            transition: box-shadow .2s;
+        }
+        .md-card.expandable .md-card-title {
+            cursor: pointer;
+            padding: 16px 24px;
+            font-size: 15px;
+            font-weight: 400;
+            user-select: none;
+            position: relative;
+        }
+        .md-card.expandable .md-card-title:hover {
+            background: #EEEEEE; /* Grey 200 — MD1 Focus state */
+        }
+        .md-card.expandable .md-card-title .md-expand-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0,0,0,0.38);
+            transition: transform .2s, color .15s;
+            flex-shrink: 0;
+        }
+        .md-card.expandable .md-card-title:hover .md-expand-icon {
+            color: rgba(0,0,0,0.54);
+        }
+        .md-card.expandable.md-card--expanded .md-expand-icon {
+            transform: rotate(180deg);
+        }
+        .md-card.expandable .md-card-summary {
+            font-size: 12px;
+            color: rgba(0,0,0,0.54);
+            margin-right: 24px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .md-card.expandable.md-card--expanded .md-card-summary {
+            display: none;
+        }
+        .md-card.expandable .md-card-divider {
+            margin: 0 24px;
+        }
+        .md-card.expandable .md-card-body {
+            overflow: hidden;
+            transition: max-height .25s ease, opacity .2s ease;
+            max-height: 0;
+            opacity: 0;
+        }
+        .md-card.expandable.md-card--expanded .md-card-body {
+            max-height: 2000px;
+            opacity: 1;
+        }
+        .md-card.expandable .md-card-body-inner {
+            padding: 0 24px 16px;
+        }
+
+        /* ---- 拖拽排序 ---- */
+        .md-card.dragging {
+            opacity: 0.5;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .md-card.drag-over-top {
+            border-top: 3px solid #3f51b5;
+            margin-top: -3px;
+        }
+        .md-card.drag-over-bottom {
+            border-bottom: 3px solid #3f51b5;
+            margin-bottom: -3px;
+        }
+        .md-card .md-drag-handle {
+            cursor: grab;
+            color: rgba(0,0,0,0.26);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            flex-shrink: 0;
+            transition: color .15s;
+        }
+        .md-card .md-drag-handle:hover {
+            color: rgba(0,0,0,0.54);
+        }
+        .md-card .md-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* ---- MD1 FAB (Floating Action Button) ---- */
+        .md-fab {
+            background: #ff4081;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,.26);
+            transition: box-shadow .2s, background .2s;
+        }
+        .md-fab:hover {
+            box-shadow: 0 3px 6px rgba(0,0,0,.32);
+            background: #f50057;
+        }
+        .md-fab i { font-size: 20px; }
+
+        /* ---- MD1 List ---- */
+        .md-list { list-style: none; }
+        .md-list-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            min-height: 48px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background .15s;
+        }
+        .md-list-item:last-child { border-bottom: none; }
+        .md-list-item:hover { background: #f5f5f5; }
+        .md-list-item-content { flex: 1; min-width: 0; }
+        .md-list-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.87);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .md-list-item-sub {
+            font-size: 12px;
+            color: rgba(0,0,0,0.54);
+            margin-top: 4px;
+        }
+        .md-list-item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .md-list-item-actions-spacer {
+            width: 40px;
+            flex-shrink: 0;
+        }
+
+        /* ---- Pin Badge ---- */
+        .pin-badge {
+            display: inline-block;
+            background: #ff9800;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 1px 8px;
+            border-radius: 2px;
+            margin-left: 8px;
+            vertical-align: middle;
+            line-height: 18px;
+        }
+
+        /* ---- MD1 Button ---- */
+        .md-btn {
+            border: none;
+            cursor: pointer;
+            padding: 0 8px;
+            min-height: 36px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            transition: background .2s, box-shadow .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        .md-btn i { font-size: 18px; }
+        .md-btn-primary {
+            background: #3f51b5;
+            color: #fff;
+        }
+        .md-btn-primary:hover { background: #303f9f; }
+        .md-btn-raised {
+            background: #fff;
+            color: rgba(0,0,0,0.87);
+            box-shadow: 0 2px 5px rgba(0,0,0,.26);
+            cursor: pointer;
+        }
+        .md-btn-raised:hover { background: #e8e8e8; }
+        .md-btn-raised:active { box-shadow: 0 5px 12px rgba(0,0,0,.32); }
+        .md-btn-accent {
+            background: #ff4081;
+            color: #fff;
+        }
+        .md-btn-accent:hover { background: #f50057; }
+        .md-btn-flat {
+            background: transparent;
+            color: rgba(0,0,0,0.54);
+        }
+        .md-btn-flat:hover { background: rgba(0,0,0,0.06); }
+        .md-btn-icon {
+            background: transparent;
+            color: rgba(0,0,0,0.54);
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            justify-content: center;
+        }
+        .md-btn-icon:hover { background: rgba(0,0,0,0.08); }
+        .md-btn-icon.pinned {
+            color: #ff9800;
+        }
+        .md-btn-danger {
+            color: #f44336;
+        }
+        .md-btn-danger:hover { background: rgba(244,67,54,0.08); }
+
+        /* ---- MD1 Form (Text Field spec) ---- */
+        /* MD1 规范:
+         *   - Single-line: 底线 1dp idle → 2dp focus (主色), 浮动标签 16sp resting → 12sp on focus
+         *   - Text area: 可见边框同底线颜色/粗细, 垂直可滚动
+         *   - Helper text: 12sp, 54% black, 8dp top padding
+         *   - Input text: 16sp, 87% black
+         *   - Placeholder: 16sp, 42% black
+         */
+        .md-form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        /* ---- Single-line text field (底线式) ---- */
+        .md-textfield {
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .md-textfield__input {
+            width: 100%;
+            padding: 20px 0 6px 0;
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0,0,0,0.87);
+            outline: none;
+            background: transparent;
+            transition: border-color .15s;
+        }
+        .md-textfield__input:focus {
+            border-bottom: 2px solid #3f51b5;
+            /* 补偿底线从1px→2px的偏移 — 减少padding-bottom 1px 而非使用 margin */
+            padding-bottom: 5px;
+        }
+        /* 修复 date 输入框底线 — 容器 inline-block 贴合 input 宽度 */
+        .md-textfield--date {
+            position: relative;
+            display: inline-block;
+            max-width: 220px;
+            width: 100%;
+        }
+        .md-textfield--date::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.12);
+        }
+        .md-textfield--date .md-textfield__input {
+            border-bottom: none;
+            max-width: none; /* 由容器控制宽度 */
+        }
+        .md-textfield--date .md-textfield__input:focus {
+            border-bottom: none;
+            padding-bottom: 6px;
+            margin-bottom: 0;
+        }
+        .md-textfield--date::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3f51b5;
+            transition: width .2s ease;
+        }
+        .md-textfield--date:focus-within::after {
+            width: 100%;
+        }
+        /* 隐藏 date 输入框清空后的 "年/月/日" placeholder — 避免与浮动 label 重叠 */
+        .md-textfield__input[type="date"]::-webkit-datetime-edit {
+            color: transparent;
+        }
+        .md-textfield__input[type="date"]:focus::-webkit-datetime-edit,
+        .md-textfield__input[type="date"].has-value::-webkit-datetime-edit {
+            color: rgba(0,0,0,0.87);
+        }
+        /* 确保 date 类型日历图标始终可见 */
+        .md-textfield__input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.54;
+            cursor: pointer;
+            color: rgba(0,0,0,0.54);
+        }
+        .md-textfield__input[type="date"]:focus::-webkit-calendar-picker-indicator {
+            opacity: 0.87;
+        }
+        /* Floating label — resting state (16sp, 54% black) */
+        .md-textfield__label {
+            position: absolute;
+            top: 24px;
+            left: 0;
+            font-size: 16px;
+            color: rgba(0,0,0,0.54);
+            pointer-events: none;
+            transition: top .15s, font-size .15s, color .15s;
+            transform-origin: left top;
+        }
+        /* Floating label — float state (12sp, primary color) */
+        .md-textfield__input:focus + .md-textfield__label,
+        .md-textfield__input.has-value + .md-textfield__label {
+            top: 4px;
+            font-size: 12px;
+            color: #3f51b5;
+        }
+        /* Placeholder shown only when focused or has no value */
+        .md-textfield__input::placeholder {
+            color: rgba(0,0,0,0.42);
+            font-size: 16px;
+        }
+        /* Focus underline ripple effect */
+        .md-textfield::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #3f51b5;
+            transition: width .15s, left .15s;
+        }
+        .md-textfield__input:focus ~ .md-textfield::after,
+        .md-textfield:focus-within::after {
+            left: 0;
+            width: 100%;
+        }
+
+        /* ---- MD1 Dropdown button (替代 select) ---- */
+        /* 规范: 显示当前状态 + 下拉箭头, 按下展开菜单
+         * 视觉: 类似 raised button 样式, 2dp 圆角, 2dp 阴影
+         */
+        .md-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .md-dropdown__trigger {
+            display: inline-flex;
+            align-items: center;
+            height: 36px;
+            padding: 0 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.87);
+            background: #fff;
+            border: none;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            cursor: pointer;
+            transition: box-shadow .2s ease, background .15s ease;
+            gap: 8px;
+            min-width: 120px;
+        }
+        .md-dropdown__trigger:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
+            background: #fafafa;
+        }
+        .md-dropdown__trigger:active,
+        .md-dropdown--open .md-dropdown__trigger {
+            box-shadow: 0 3px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
+            background: #f5f5f5;
+        }
+        .md-dropdown__arrow {
+            font-size: 18px;
+            color: rgba(0,0,0,0.54);
+            margin-left: auto;
+            transition: transform .2s ease;
+        }
+        .md-dropdown--open .md-dropdown__arrow {
+            transform: rotate(180deg);
+        }
+        .md-dropdown__menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            min-width: 100%;
+            background: #fff;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
+            z-index: 50;
+            overflow: hidden;
+            animation: md-dropdown-in .15s ease-out;
+            padding: 8px 0;
+        }
+        .md-dropdown--open .md-dropdown__menu {
+            display: block;
+        }
+        @keyframes md-dropdown-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .md-dropdown__option {
+            display: flex;
+            align-items: center;
+            height: 48px;
+            padding: 0 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            color: rgba(0,0,0,0.87);
+            cursor: pointer;
+            transition: background .1s;
+            white-space: nowrap;
+        }
+        .md-dropdown__option:hover {
+            background: rgba(0,0,0,0.04);
+        }
+        .md-dropdown__option--selected {
+            color: #3f51b5;
+            font-weight: 500;
+        }
+        .md-dropdown__option-icon {
+            margin-right: 16px;
+            font-size: 20px;
+            color: rgba(0,0,0,0.54);
+        }
+        .md-dropdown__option--selected .md-dropdown__option-icon {
+            color: #3f51b5;
+        }
+
+        /* ---- Text area (边框式) ---- */
+        .md-textarea-field {
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .md-textarea-field__textarea {
+            width: 100%;
+            padding: 24px 12px 8px 12px;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 2px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0,0,0,0.87);
+            line-height: 1.5;
+            outline: none;
+            resize: vertical;
+            min-height: 60px;
+            background: transparent;
+            transition: border-color .15s;
+        }
+        .md-textarea-field__textarea:focus {
+            border-color: #3f51b5;
+            border-width: 2px;
+            padding-top: 23px;
+            padding-left: 11px;
+        }
+        .md-textarea-field__label {
+            position: absolute;
+            top: 22px;
+            left: 12px;
+            font-size: 16px;
+            color: rgba(0,0,0,0.54);
+            pointer-events: none;
+            transition: top .15s, font-size .15s, color .15s, left .15s;
+        }
+        .md-textarea-field__textarea:focus + .md-textarea-field__label,
+        .md-textarea-field__textarea.has-value + .md-textarea-field__label {
+            top: 4px;
+            left: 12px;
+            font-size: 12px;
+            color: #3f51b5;
+        }
+        .md-textarea-field__textarea:focus + .md-textarea-field__label {
+            left: 11px;
+        }
+        .md-textarea-field__textarea::placeholder {
+            color: rgba(0,0,0,0.42);
+            font-size: 16px;
+        }
+
+        /* ---- Helper text ---- */
+        .md-form-hint {
+            font-size: 12px;
+            color: rgba(0,0,0,0.54);
+            margin-top: 8px;
+            padding-left: 0;
+        }
+        /* Helper text 附于字段前（无 subheader 时） — MD1: 12sp, 8dp 上下间距 */
+        .md-form-hint--inline {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        /* ---- MD1 Subheader ---- */
+        /* 规范: Roboto Medium 14sp, 48dp tile height, 16dp left padding
+         * 颜色: secondary grey (54% black) 或 primary color
+         */
+        .md-subheader {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3f51b5;
+            height: 48px;
+            line-height: 48px;
+            padding-left: 0;
+            margin: 0;
+        }
+        /* 紧凑型字段标签 — 仅用于 dropdown 等无浮动标签的组件
+         * MD1 规范: 12sp primary color, 8dp 间距到下方组件 */
+        .md-field-label {
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: #3f51b5;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* ---- 编辑模式提示 ---- */
+        .edit-notice {
+            background: #e8eaf6;
+            border-left: 4px solid #3f51b5;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #1a237e;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 0 2px 2px 0;
+        }
+        .edit-notice span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            flex: 1;
+        }
+        .edit-notice .md-btn {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ---- 编辑器 footer ---- */
+        .editor-footer {
+            display: flex;
+            gap: 8px;
+            padding-top: 16px;
+        }
+
+        /* ---- EasyMDE 编辑器覆盖样式 + MD1 Toggle Toolbar + MD1 Tooltip ---- */
+        .EasyMDEContainer {
+            max-width: 100%;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 2px;
+            transition: border-color .15s;
+        }
+        .EasyMDEContainer.easy-mde-focused {
+            border-color: #3f51b5;
+            border-width: 2px;
+            margin: -1px;
+        }
+        .EasyMDEContainer .editor-toolbar {
+            border-radius: 2px 2px 0 0;
+            background: #fafafa;
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 4px 2px;
+            align-items: center;
+        }
+        /* MD1 Toggle buttons — 紧凑单行
+         * 规范: 分组互斥按钮, 36dp 高, 2dp 圆角
+         */
+        .EasyMDEContainer .editor-toolbar button,
+        .EasyMDEContainer .editor-toolbar a {
+            color: rgba(0,0,0,0.54);
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 2px;
+            margin: 0 1px;
+            transition: background .15s ease, color .15s ease;
+            position: relative;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .EasyMDEContainer .editor-toolbar button .material-icons,
+        .EasyMDEContainer .editor-toolbar a .material-icons {
+            font-size: 18px;
+            line-height: 28px;
+            vertical-align: middle;
+        }
+        .EasyMDEContainer .editor-toolbar button:hover,
+        .EasyMDEContainer .editor-toolbar a:hover {
+            background: rgba(0,0,0,0.08);
+            color: rgba(0,0,0,0.87);
+        }
+        /* Active toggle state — primary color fill */
+        .EasyMDEContainer .editor-toolbar button.active,
+        .EasyMDEContainer .editor-toolbar a.active {
+            background: rgba(63,81,181,0.12);
+            color: #3f51b5;
+        }
+        /* 禁用 EasyMDE 默认 FA 图标 — 用 ::before 隐藏 */
+        .EasyMDEContainer .editor-toolbar button:before,
+        .EasyMDEContainer .editor-toolbar a:before {
+            display: none !important;
+        }
+        /* 显示注入的 Material Icons */
+        .EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
+        .EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
+            font-size: 18px;
+            line-height: 28px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        /* 隐藏 EasyMDE 原始按钮内的文字内容 (FA 文字) */
+        .EasyMDEContainer .editor-toolbar button,
+        .EasyMDEContainer .editor-toolbar a {
+            font-size: 0 !important; /* 隐藏原有 FA 文字 */
+        }
+        .EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
+        .EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
+            font-size: 18px !important; /* Material Icons 不受影响 */
+            font-family: 'Material Icons' !important;
+        }
+        /* MD1 Toggle group divider — 替代 EasyMDE separator */
+        .EasyMDEContainer .editor-toolbar .separator {
+            border-left: 1px solid rgba(0,0,0,0.12);
+            margin: 4px 4px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        /* MD1 Tooltip — body 级定位，避免 overflow 裁切
+         * 规范: Roboto Medium 10sp, Grey 700, 90% opacity, tile 22dp, padding 8dp, 150ms
+         */
+        .md-toolbar-tooltip {
+            position: fixed;
+            font-family: 'Roboto', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            color: #fff;
+            background: rgba(97, 97, 97, 0.9);
+            padding: 0 8px;
+            height: 22px;
+            line-height: 22px;
+            border-radius: 2px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 99999;
+            display: none;
+        }
+        .md-toolbar-tooltip.is-visible {
+            display: block;
+            animation: md-tooltip-in .15s ease-out;
+        }
+        @keyframes md-tooltip-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .EasyMDEContainer .CodeMirror { 
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 280px;
+            border: none !important;
+            border-radius: 0 0 2px 2px;
+        }
+        /* MDE 编辑器 focus 时 — 整体边框由 .easy-mde-filled 管理 */
+        .editor-preview-side {
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            font-size: 14px;
+            line-height: 28px;
+            padding: 16px 24px;
+        }
+        .editor-preview-side h4 { margin-top: 0; margin-bottom: 12px; }
+        .editor-preview-side p { max-width: 512px; margin: 16px auto; }
+        .editor-preview-side pre {
+            background: #eee; padding: 15px; border-radius: 3px;
+            margin-bottom: 36px; font-size: 13px; overflow-x: auto;
+        }
+        .editor-preview-side code {
+            font-family: Consolas, Monaco, monospace;
+            background: rgba(0,0,0,0.07); padding: 1px 6px; border-radius: 2px; font-size: 13px;
+        }
+        .editor-preview-side pre code { background: transparent; padding: 15px; display: block; }
+
+        /* ---- 站点设置：头像/图标上传紧凑布局 ---- */
+        .settings-upload-group {
+            display: flex;
+            align-items: stretch; /* 左右等高 */
+            gap: 24px;
+        }
+        .settings-upload-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .settings-upload-right {
+            flex-shrink: 0;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 垂直居中 */
+        }
+        .settings-icon-preview {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f5f5f5;
+            border: 1px solid rgba(0,0,0,0.08);
+            position: relative;
+        }
+        .settings-icon-preview--avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+        .settings-icon-preview--favicon {
+            width: 48px;
+            height: 48px;
+            border-radius: 2px;
+            background-size: contain;
+        }
+        .settings-icon-preview-label {
+            font-size: 11px;
+            color: rgba(0,0,0,0.38);
+            text-align: center;
+            margin-top: 4px;
+        }
+        .settings-icon-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: rgba(0,0,0,0.54);
+            color: #fff;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .settings-icon-remove:hover { background: rgba(0,0,0,0.78); }
+
+        /* ---- MD1 Data Table ---- */
+        /* 规范:
+         * 列间距: 最小 56dp
+         * 标题: Roboto Medium 12sp, 54% black
+         * 行高: 48dp
+         * 内容: 13sp Roboto Regular, 87% black
+         * 分割线: 1dp rgba(0,0,0,0.12)
+         * 悬停: Grey 200 (#EEEEEE)
+         */
+        .md-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Roboto', sans-serif;
+            table-layout: fixed;
+        }
+        .md-data-table thead th {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.54);
+            text-align: left;
+            padding: 16px 28px 16px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            white-space: nowrap;
+        }
+        .md-data-table thead th:first-child {
+            padding-left: 0;
+        }
+        .md-data-table thead th.col-switch {
+            width: 56px;
+            text-align: center;
+            padding-right: 0;
+        }
+        .md-data-table thead th.col-delete {
+            width: 40px;
+            padding-right: 0;
+        }
+        .md-data-table tbody tr {
+            height: 48px;
+            transition: background-color .15s;
+        }
+        .md-data-table tbody tr:hover {
+            background-color: #EEEEEE; /* Grey 200 */
+        }
+        .md-data-table tbody td {
+            font-size: 13px;
+            color: rgba(0,0,0,0.87);
+            padding: 4px 28px 4px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            vertical-align: middle;
+        }
+        .md-data-table tbody td:first-child {
+            padding-left: 0;
+        }
+        .md-data-table tbody td.col-switch,
+        .md-data-table tbody td.col-delete {
+            width: 48px;
+            padding-right: 0;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* ---- MD1 Switch (Selection controls) ---- */
+        /* 规范:
+         * Light theme:
+         * Thumb On: Swatch 500, 100%; Track On: Swatch 500, 50%
+         * Thumb Off: #FAFAFA border 2dp; Track Off: #000000 38%
+         * Touch target: 48x48dp; Visual: 36x20dp (居中于 touch target)
+         */
+        .md-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+        .md-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        .md-switch-track {
+            position: absolute;
+            top: 3px;
+            left: 0;
+            right: 0;
+            height: 14px;
+            border-radius: 7px;
+            background: rgba(0,0,0,0.38);
+            transition: background .2s;
+        }
+        .md-switch-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fafafa;
+            border: 2px solid rgba(0,0,0,0.38);
+            transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .md-switch input:checked + .md-switch-track {
+            background: rgba(63,81,181,0.5);
+        }
+        .md-switch input:checked + .md-switch-track + .md-switch-thumb {
+            transform: translateX(16px);
+            background: #3f51b5;
+            border-color: #3f51b5;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        }
+
+        /* ---- 菜单项表格行内编辑 ---- */
+        .menu-item-name,
+        .menu-item-url {
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            padding: 4px 0;
+            font-size: 13px;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0,0,0,0.87);
+            outline: none;
+            background: transparent;
+            width: 100%;
+            transition: border-color .15s;
+        }
+        .menu-item-name:focus,
+        .menu-item-url:focus {
+            border-bottom: 2px solid #3f51b5;
+            padding-bottom: 3px;
+        }
+        .menu-item-name { width: 100%; }
+        .menu-item-url { width: 100%; }
+        .menu-item-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(0,0,0,0.38);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            transition: color .15s, background .15s;
+        }
+        .menu-item-delete:hover {
+            color: #f44336;
+            background: rgba(244,67,54,0.08);
+        }
+
+        /* ---- 封面图预览 ---- */
+        .cover-preview {
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 2px;
+            border: 1px solid rgba(0,0,0,0.08);
+            margin-top: 8px;
+            position: relative;
+            background-color: #f5f5f5;
+        }
+        .cover-preview-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(0,0,0,0.26);
+            font-size: 12px;
+        }
+        .cover-remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.54);
+            color: #fff;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cover-remove-btn:hover { background: rgba(0,0,0,0.78); }
+        .cover-upload-area {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .cover-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cover-file-hidden {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .cover-file-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .cover-file-name {
+            font-size: 13px;
+            color: rgba(0,0,0,0.54);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 20px;
+        }
+        /* MD1 Linear Progress — Determinate */
+        .md-progress {
+            position: absolute;
+            top: 22px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(63,81,181,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .md-progress-bar {
+            height: 100%;
+            background: #3f51b5;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* ---- MD1 Snackbar (Center-aligned tablet/desktop) ---- */
+        .md-snackbar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #323232;
+            color: #fff;
+            height: 48px;
+            min-width: 288px;
+            max-width: 568px;
+            padding: 0 24px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+            transition: opacity .3s, transform .3s;
+            pointer-events: none;
+            box-shadow: 0 3px 5px rgba(0,0,0,.26);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .md-snackbar.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+        .md-snackbar-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 48px;
+        }
+        .md-snackbar-action {
+            background: none;
+            border: none;
+            color: #ffab00;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            padding: 0 8px;
+            margin-left: 40px;
+            height: 36px;
+            line-height: 36px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            border-radius: 2px;
+        }
+        .md-snackbar-action:hover { background: rgba(255,255,255,0.08); }
+        .md-snackbar-action:focus { outline: none; }
+
+        /* ---- Empty state ---- */
+        .empty-state {
+            text-align: center;
+            color: rgba(0,0,0,0.38);
+            padding: 40px 16px;
+            font-size: 14px;
+        }
+        .empty-state i { font-size: 48px; display: block; margin-bottom: 12px; }
+
+        /* ---- MD1 Dialog (Alert with title bar) ---- */
+        .md-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .md-dialog-overlay.show { display: flex; }
+        .md-dialog {
+            background: #fff;
+            border-radius: 2px;
+            min-width: 280px;
+            max-width: 560px;
+            box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
+            font-family: 'Roboto', sans-serif;
+        }
+        .md-dialog-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.87);
+            padding: 24px 24px 20px;
+            line-height: 28px;
+        }
+        .md-dialog-content {
+            font-size: 14px;
+            color: rgba(0,0,0,0.54);
+            padding: 0 24px 24px;
+            line-height: 20px;
+        }
+        .md-dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 8px 8px 8px 24px;
+        }
+        .md-dialog-actions .md-btn {
+            min-height: 36px;
+            min-width: 64px;
+            border-radius: 2px;
+            padding: 0 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: normal;
+            justify-content: center;
+        }
+        .md-dialog-cancel {
+            color: rgba(0,0,0,0.54);
+        }
+        .md-dialog-cancel:hover { background: rgba(0,0,0,0.06); }
+        .md-dialog-confirm {
+            color: #f44336;
+        }
+        .md-dialog-confirm:hover { background: rgba(244,67,54,0.08); }
+    </style>
+</head>
+<body>
+    <!-- MD1 App Bar -->
+    <div class="app-bar">
+        <div class="app-bar-title">
+            <i class="material-icons">edit_note</i>
+            博客管理后台
+        </div>
+        <a href="/" target="_blank">
+            <i class="material-icons" style="font-size:18px;">open_in_new</i>
+            查看博客
+        </a>
+    </div>
+
+    <div class="main-container">
+        <div id="left-panel">
+            <!-- 文章列表 -->
+            <div class="md-card expandable md-card--expanded" data-card-id="post-list" style="margin-bottom:8px;">
+                <div class="md-card-title" onclick="toggleCard(this)">
+                    <div class="md-drag-handle" title="拖拽排序"><i class="material-icons" style="font-size:20px;">drag_indicator</i></div>
+                    <span style="flex:1;">文章列表</span>
+                    <span class="md-card-summary"></span>
+                    <button class="md-fab" onclick="event.stopPropagation();newPost()" title="新建文章">
+                        <i class="material-icons">add</i>
+                    </button>
+                    <div class="md-expand-icon"><i class="material-icons" style="font-size:24px;">expand_more</i></div>
+                </div>
+                <div class="md-card-body">
+                    <div class="md-card-divider"></div>
+                    <div class="md-card-body-inner" style="padding:0;">
+                        <div id="post-list-container">
+                            <div class="empty-state">
+                                <i class="material-icons">article</i>
+                                加载中...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 站点设置 -->
+            <div class="md-card expandable md-card--expanded" data-card-id="site-settings" style="margin-bottom:8px;">
+                <div class="md-card-title" onclick="toggleCard(this)">
+                    <div class="md-drag-handle" title="拖拽排序"><i class="material-icons" style="font-size:20px;">drag_indicator</i></div>
+                    <span style="flex:1;">站点设置</span>
+                    <span class="md-card-summary"></span>
+                    <div class="md-expand-icon"><i class="material-icons" style="font-size:24px;">expand_more</i></div>
+                </div>
+                <div class="md-card-body">
+                    <div class="md-card-divider"></div>
+                    <div class="md-card-body-inner">
+                        <div class="md-textfield">
+                            <input type="text" id="setting-author" class="md-textfield__input" placeholder=" " autocomplete="off">
+                            <label class="md-textfield__label" for="setting-author">作者昵称</label>
+                        </div>
+                        <div class="md-textfield">
+                            <input type="text" id="setting-subtitle" class="md-textfield__input" placeholder=" " autocomplete="off">
+                            <label class="md-textfield__label" for="setting-subtitle">个性签名</label>
+                        </div>
+                        <div class="settings-upload-group">
+                            <div class="settings-upload-left">
+                                <div class="md-subheader">用户头像</div>
+                                <div class="md-form-hint md-form-hint--inline">显示在侧栏和文章卡片中</div>
+                                <div class="cover-upload-area">
+                                    <input type="file" id="avatar-file" accept="image/*" class="cover-file-hidden" onchange="onAvatarFileSelected(this)">
+                                    <div class="cover-upload-row">
+                                        <label for="avatar-file" class="md-btn md-btn-raised" style="display:inline-flex;align-items:center;justify-content:center;">
+                                            <i class="material-icons">folder_open</i>
+                                            选择文件
+                                        </label>
+                                        <div class="cover-file-info">
+                                            <span class="cover-file-name" id="avatar-file-name">未选择文件</span>
+                                            <div class="md-progress" id="avatar-progress" style="display:none;">
+                                                <div class="md-progress-bar" id="avatar-progress-bar" style="width:0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-upload-right" id="avatar-preview-area">
+                                <div class="settings-icon-preview settings-icon-preview--avatar"></div>
+                                <div class="settings-icon-preview-label">默认</div>
+                            </div>
+                        </div>
+                        <div class="settings-upload-group" style="margin-top:20px;">
+                            <div class="settings-upload-left">
+                                <div class="md-subheader">博客图标</div>
+                                <div class="md-form-hint md-form-hint--inline">浏览器标签页图标（Favicon），推荐 64x64 或更大</div>
+                                <div class="cover-upload-area">
+                                    <input type="file" id="favicon-file" accept="image/png,image/x-icon,image/jpeg,image/gif,image/webp,image/svg+xml" class="cover-file-hidden" onchange="onFaviconFileSelected(this)">
+                                    <div class="cover-upload-row">
+                                        <label for="favicon-file" class="md-btn md-btn-raised" style="display:inline-flex;align-items:center;justify-content:center;">
+                                            <i class="material-icons">folder_open</i>
+                                            选择文件
+                                        </label>
+                                        <div class="cover-file-info">
+                                            <span class="cover-file-name" id="favicon-file-name">未选择文件</span>
+                                            <div class="md-progress" id="favicon-progress" style="display:none;">
+                                                <div class="md-progress-bar" id="favicon-progress-bar" style="width:0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-upload-right" id="favicon-preview-area">
+                                <div class="settings-icon-preview settings-icon-preview--favicon"></div>
+                                <div class="settings-icon-preview-label">默认</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px;text-align:right;">
+                            <button class="md-btn md-btn-raised md-btn-primary" onclick="saveSettings()">
+                                <i class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:4px;">save</i>保存设置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 功能管理 -->
+            <div class="md-card expandable md-card--expanded" data-card-id="menu-settings" style="margin-bottom:8px;">
+                <div class="md-card-title" onclick="toggleCard(this)">
+                    <div class="md-drag-handle" title="拖拽排序"><i class="material-icons" style="font-size:20px;">drag_indicator</i></div>
+                    <span style="flex:1;">功能管理</span>
+                    <span class="md-card-summary"></span>
+                    <div class="md-expand-icon"><i class="material-icons" style="font-size:24px;">expand_more</i></div>
+                </div>
+                <div class="md-card-body">
+                    <div class="md-card-divider"></div>
+                    <div class="md-card-body-inner">
+                        <div class="md-subheader">导航菜单项</div>
+                        <table class="md-data-table" id="menu-items-table">
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>链接 URL</th>
+                                    <th class="col-delete"></th>
+                                    <th class="col-switch">启用</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menu-items-body">
+                            </tbody>
+                        </table>
+                        <div style="margin-top:12px;">
+                            <button class="md-btn md-btn-raised" onclick="addMenuItem()" style="display:inline-flex;align-items:center;justify-content:center;">
+                                <i class="material-icons" style="font-size:18px;margin-right:4px;">add</i>添加菜单项
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 背景图管理 -->
+            <div class="md-card expandable md-card--expanded" data-card-id="bg-settings" style="margin-bottom:8px;">
+                <div class="md-card-title" onclick="toggleCard(this)">
+                    <div class="md-drag-handle" title="拖拽排序"><i class="material-icons" style="font-size:20px;">drag_indicator</i></div>
+                    <span style="flex:1;">博客背景图</span>
+                    <span class="md-card-summary"></span>
+                    <div class="md-expand-icon"><i class="material-icons" style="font-size:24px;">expand_more</i></div>
+                </div>
+                <div class="md-card-body">
+                    <div class="md-card-divider"></div>
+                    <div class="md-card-body-inner">
+                        <div class="md-card-supporting-title">上传自定义背景图</div>
+                        <div class="md-form-hint md-form-hint--inline">替换默认山景图</div>
+                        <div class="cover-upload-area">
+                            <input type="file" id="bg-file" accept="image/*" class="cover-file-hidden" onchange="onBgFileSelected(this)">
+                            <div class="cover-upload-row">
+                                <label for="bg-file" class="md-btn md-btn-raised" style="display:inline-flex;align-items:center;justify-content:center;">
+                                    <i class="material-icons">folder_open</i>
+                                    选择文件
+                                </label>
+                                <div class="cover-file-info">
+                                    <span class="cover-file-name" id="bg-file-name">未选择文件</span>
+                                    <div class="md-progress" id="bg-progress" style="display:none;">
+                                        <div class="md-progress-bar" id="bg-progress-bar" style="width:0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cover-preview" id="bg-preview">
+                            <div class="cover-preview-placeholder">使用默认背景图</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 草稿箱 -->
+            <div class="md-card expandable md-card--expanded" data-card-id="drafts" style="margin-bottom:8px;">
+                <div class="md-card-title" onclick="toggleCard(this)">
+                    <div class="md-drag-handle" title="拖拽排序"><i class="material-icons" style="font-size:20px;">drag_indicator</i></div>
+                    <span style="flex:1;">草稿箱</span>
+                    <span class="md-card-summary"></span>
+                    <div class="md-expand-icon"><i class="material-icons" style="font-size:24px;">expand_more</i></div>
+                </div>
+                <div class="md-card-body">
+                    <div class="md-card-divider"></div>
+                    <div class="md-card-body-inner" style="padding:0;">
+                        <div id="draft-list-container">
+                            <div class="empty-state" style="padding:16px;font-size:12px;">
+                                <i class="material-icons" style="font-size:32px;margin-bottom:4px;">drafts</i>暂无草稿
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：编辑器 -->
+        <div class="md-card">
+            <div class="md-card-title" id="editor-title">新建文章</div>
+            <div class="md-card-divider"></div>
+            <div class="md-card-supporting">
+                <div id="edit-notice" class="edit-notice" style="display:none;">
+                    <span>正在编辑: <strong id="edit-post-name"></strong></span>
+                    <button class="md-btn md-btn-flat" onclick="cancelEdit()" style="min-height:32px;padding:0 8px;">取消</button>
+                </div>
+
+                <!-- 基本信息 Subheader -->
+                <div class="md-subheader">基本信息</div>
+
+                <div class="md-form-group">
+                    <div class="md-textfield">
+                        <input type="text" class="md-textfield__input" id="f-title">
+                        <label class="md-textfield__label" for="f-title">文章标题</label>
+                    </div>
+                </div>
+                <div class="md-form-group">
+                    <div class="md-textfield md-textfield--date">
+                        <input type="date" class="md-textfield__input" id="f-date" style="max-width:220px;">
+                        <label class="md-textfield__label" for="f-date">发布日期</label>
+                    </div>
+                </div>
+                <div class="md-form-group">
+                    <div class="md-field-label">卡片样式</div>
+                    <div class="md-dropdown" id="f-format-dropdown">
+                        <button class="md-dropdown__trigger" type="button" onclick="toggleDropdown('f-format-dropdown')">
+                            <span id="f-format-label">博客文章</span>
+                            <i class="material-icons md-dropdown__arrow">arrow_drop_down</i>
+                        </button>
+                        <div class="md-dropdown__menu">
+                            <div class="md-dropdown__option md-dropdown__option--selected" data-value="standard" onclick="selectDropdown('f-format-dropdown','standard','博客文章')">
+                                <i class="material-icons md-dropdown__option-icon">article</i>
+                                博客文章
+                            </div>
+                            <div class="md-dropdown__option" data-value="quote" onclick="selectDropdown('f-format-dropdown','quote','名言警句')">
+                                <i class="material-icons md-dropdown__option-icon">format_quote</i>
+                                名言警句
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="f-format" value="standard">
+                </div>
+
+                <!-- 封面图片 Subheader -->
+                <div class="md-subheader">封面图片</div>
+
+                <div class="md-form-group">
+                    <div class="md-form-hint md-form-hint--inline">上传后作为文章封面图，未上传时显示纯色背景</div>
+                        <div class="cover-upload-area">
+                            <input type="file" id="f-cover-file" accept="image/*" class="cover-file-hidden" onchange="onCoverFileSelected(this)">
+                            <div class="cover-upload-row">
+                                <label for="f-cover-file" class="md-btn md-btn-raised" style="display:inline-flex;align-items:center;justify-content:center;">
+                                    <i class="material-icons">folder_open</i>
+                                    选择文件
+                                </label>
+                                <div class="cover-file-info">
+                                    <span class="cover-file-name" id="cover-file-name">未选择文件</span>
+                                    <div class="md-progress" id="cover-progress" style="display:none;">
+                                        <div class="md-progress-bar" id="cover-progress-bar" style="width:0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="cover-preview" id="cover-preview">
+                        <div class="cover-preview-placeholder">未上传封面图</div>
+                    </div>
+                    <input type="hidden" id="f-cover-image" value="">
+                </div>
+                <!-- 摘要 Subheader -->
+                <div class="md-subheader">摘要</div>
+
+                <div class="md-form-group">
+                    <div class="md-textarea-field">
+                        <textarea class="md-textarea-field__textarea" id="f-summary" rows="2" style="min-height:60px;"></textarea>
+                        <label class="md-textarea-field__label" for="f-summary">摘要内容</label>
+                    </div>
+                    <div class="md-form-hint">首页卡片显示的文字</div>
+                </div>
+
+                <!-- 正文 Subheader -->
+                <div class="md-subheader">文章正文</div>
+
+                <div class="md-form-group">
+                    <div class="md-textarea-field" style="min-height:280px;">
+                        <textarea id="f-content"></textarea>
+                    </div>
+                    <div class="md-form-hint">支持 Markdown 语法。代码块用 ```语言 包裹，如 ```python</div>
+                </div>
+                <div class="editor-footer">
+                    <button class="md-btn md-btn-primary" onclick="savePost()" style="padding:0 16px;">
+                        <i class="material-icons" style="font-size:18px;">publish</i>
+                        保存并发布
+                    </button>
+                    <button class="md-btn md-btn-flat" onclick="previewPost()">
+                        <i class="material-icons" style="font-size:18px;">preview</i>
+                        预览
+                    </button>
+                    <button class="md-btn md-btn-flat" onclick="saveDraft()" id="btn-save-draft">
+                        <i class="material-icons" style="font-size:18px;">save</i>
+                        存草稿
+                    </button>
+                    <button class="md-btn md-btn-flat" onclick="cancelEdit()" id="btn-cancel" style="display:none;">
+                        取消编辑
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="md-snackbar" id="toast">
+        <span class="md-snackbar-text" id="toast-text"></span>
+        <button type="button" class="md-snackbar-action" id="toast-action" style="display:none;"></button>
+    </div>
+
+    <div class="md-dialog-overlay" id="dialog-overlay">
+        <div class="md-dialog">
+            <div class="md-dialog-title" id="dialog-title"></div>
+            <div class="md-dialog-content" id="dialog-content"></div>
+            <div class="md-dialog-actions">
+                <button class="md-btn md-btn-flat md-dialog-cancel" id="dialog-cancel">取消</button>
+                <button class="md-btn md-btn-flat md-dialog-confirm" id="dialog-confirm">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    var editingId = null;
+    var currentCoverImage = '';
+    var easyMDE = null;
+
+    // ---- MD1 Expansion Panel 展开/收纳 ----
+    function toggleCard(titleEl) {
+        var card = titleEl.closest('.md-card.expandable');
+        if (!card) return;
+        card.classList.toggle('md-card--expanded');
+        savePanelState();
+    }
+
+    // ---- 面板状态持久化 (localStorage) ----
+    var PANEL_STATE_KEY = 'blog-panel-state';
+
+    function savePanelState() {
+        var state = {};
+        document.querySelectorAll('#left-panel .md-card.expandable').forEach(function(card) {
+            var id = card.dataset.cardId;
+            if (id) {
+                state[id] = {
+                    expanded: card.classList.contains('md-card--expanded'),
+                    order: Array.from(card.parentNode.children).indexOf(card)
+                };
+            }
+        });
+        try { localStorage.setItem(PANEL_STATE_KEY, JSON.stringify(state)); } catch(e) {}
+    }
+
+    function restorePanelState() {
+        try {
+            var raw = localStorage.getItem(PANEL_STATE_KEY);
+            if (!raw) return;
+            var state = JSON.parse(raw);
+            var panel = document.getElementById('left-panel');
+            if (!panel) return;
+
+            // 恢复折叠状态
+            panel.querySelectorAll('.md-card.expandable').forEach(function(card) {
+                var id = card.dataset.cardId;
+                if (id && state[id]) {
+                    if (state[id].expanded) {
+                        card.classList.add('md-card--expanded');
+                    } else {
+                        card.classList.remove('md-card--expanded');
+                    }
+                }
+            });
+
+            // 恢复排序
+            var cards = Array.from(panel.children);
+            var ordered = cards.slice().sort(function(a, b) {
+                var oa = state[a.dataset.cardId] ? state[a.dataset.cardId].order : 999;
+                var ob = state[b.dataset.cardId] ? state[b.dataset.cardId].order : 999;
+                return oa - ob;
+            });
+            ordered.forEach(function(card) { panel.appendChild(card); });
+        } catch(e) {}
+    }
+
+    // ---- 拖拽排序 ----
+    var dragSrcCard = null;
+
+    function initDragSort() {
+        var panel = document.getElementById('left-panel');
+        if (!panel) return;
+
+        panel.addEventListener('dragstart', function(e) {
+            var handle = e.target.closest('.md-drag-handle');
+            if (!handle) return;
+            var card = handle.closest('.md-card.expandable');
+            if (!card) return;
+            dragSrcCard = card;
+            card.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', card.dataset.cardId);
+        });
+
+        panel.addEventListener('dragend', function(e) {
+            if (dragSrcCard) {
+                dragSrcCard.classList.remove('dragging');
+                dragSrcCard = null;
+            }
+            // 清除所有 drag-over 样式
+            panel.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(function(el) {
+                el.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            savePanelState();
+        });
+
+        panel.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            var card = e.target.closest('.md-card.expandable');
+            if (!card || card === dragSrcCard) return;
+
+            // 清除所有指示
+            panel.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(function(el) {
+                el.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+
+            // 根据鼠标位置判断上半/下半
+            var rect = card.getBoundingClientRect();
+            var midY = rect.top + rect.height / 2;
+            if (e.clientY < midY) {
+                card.classList.add('drag-over-top');
+            } else {
+                card.classList.add('drag-over-bottom');
+            }
+        });
+
+        panel.addEventListener('dragleave', function(e) {
+            var card = e.target.closest('.md-card.expandable');
+            if (card) {
+                card.classList.remove('drag-over-top', 'drag-over-bottom');
+            }
+        });
+
+        panel.addEventListener('drop', function(e) {
+            e.preventDefault();
+            var targetCard = e.target.closest('.md-card.expandable');
+            if (!targetCard || !dragSrcCard || targetCard === dragSrcCard) return;
+
+            var panel = document.getElementById('left-panel');
+            var rect = targetCard.getBoundingClientRect();
+            var midY = rect.top + rect.height / 2;
+            if (e.clientY < midY) {
+                panel.insertBefore(dragSrcCard, targetCard);
+            } else {
+                panel.insertBefore(dragSrcCard, targetCard.nextSibling);
+            }
+            targetCard.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+    }
+
+    // 让拖拽手柄可拖
+    function enableDragHandles() {
+        document.querySelectorAll('#left-panel .md-drag-handle').forEach(function(handle) {
+            var card = handle.closest('.md-card.expandable');
+            if (card) card.draggable = true;
+        });
+    }
+
+    // ---- MD1 浮动标签状态管理 ----
+    function updateFloatingLabels() {
+        document.querySelectorAll('.md-textfield__input, .md-textarea-field__textarea').forEach(function(el) {
+            if (el.value && el.value.length > 0) {
+                el.classList.add('has-value');
+            } else {
+                el.classList.remove('has-value');
+            }
+        });
+    }
+    // 初始化浮动标签事件
+    function initFloatingLabels() {
+        document.querySelectorAll('.md-textfield__input, .md-textarea-field__textarea').forEach(function(el) {
+            el.addEventListener('input', updateFloatingLabels);
+            el.addEventListener('change', updateFloatingLabels);
+        });
+    }
+
+    // ---- 初始化 EasyMDE (Material Icons + MD1 Toggle Tooltips) ----
+    // 使用默认字符串 toolbar 以保留 EasyMDE 内置按钮功能
+    // 后通过 CSS 隐藏 FA ::before, 用 JS 注入 Material Icons
+    function initEasyMDE() {
+        if (easyMDE) return;
+        easyMDE = new EasyMDE({
+            element: document.getElementById('f-content'),
+            spellChecker: false,
+            autosave: { enabled: false },
+            toolbar: [
+                'bold', 'italic', 'heading', '|',
+                'quote', 'unordered-list', 'ordered-list', '|',
+                'link', 'image', 'code', 'table', '|',
+                'preview', 'side-by-side', 'fullscreen', '|',
+                'guide'
+            ],
+            previewRender: function(plainText) {
+                return marked.parse(plainText);
+            },
+            status: ['lines', 'words'],
+            minHeight: '280px',
+            placeholder: '输入文章正文（Markdown 格式）\n\n代码块示例：\n```python\nprint("hello")\n```\n\n带语言标签的代码：\n```html\n<button>Click</button>\n```'
+        });
+        // 后置：注入 Material Icons 图标 + 设置 MD1 tooltip
+        applyMaterialIconsToToolbar();
+        // 监听 CodeMirror focus/blur 以切换容器边框高亮
+        var cm = easyMDE.codemirror;
+        var container = document.querySelector('.EasyMDEContainer');
+        cm.on('focus', function() { container.classList.add('easy-mde-focused'); });
+        cm.on('blur', function() { container.classList.remove('easy-mde-focused'); });
+    }
+    // 将 Material Icons 图标注入工具栏按钮 — 保留 EasyMDE 功能
+    // 策略: 不修改 innerHTML（保留事件绑定），仅 appendChild 追加 <i> 元素，
+    //        CSS 隐藏 FA ::before 伪元素
+    var mdTooltipMap = {
+        'bold': '粗体', 'italic': '斜体', 'heading': '标题',
+        'quote': '引用', 'unordered-list': '无序列表', 'ordered-list': '有序列表',
+        'link': '链接', 'image': '图片', 'code': '代码', 'table': '表格',
+        'preview': '预览', 'side-by-side': '分屏', 'fullscreen': '全屏',
+        'guide': '帮助'
+    };
+    var mdIconMap = {
+        'bold': 'format_bold', 'italic': 'format_italic', 'heading': 'title',
+        'quote': 'format_quote', 'unordered-list': 'format_list_bulleted', 'ordered-list': 'format_list_numbered',
+        'link': 'link', 'image': 'image', 'code': 'code', 'table': 'table_chart',
+        'preview': 'preview', 'side-by-side': 'vertical_split', 'fullscreen': 'fullscreen',
+        'guide': 'help_outline'
+    };
+    function applyMaterialIconsToToolbar() {
+        var toolbar = document.querySelector('.EasyMDEContainer .editor-toolbar');
+        if (!toolbar) return;
+        var btns = toolbar.querySelectorAll('button, a');
+        btns.forEach(function(btn) {
+            var cls = btn.className || '';
+            var name = '';
+            // 从长到短匹配，避免 'ordered-list' 被误匹配到 'unordered-list' 类名
+            var keys = Object.keys(mdTooltipMap).sort(function(a, b) { return b.length - a.length; });
+            for (var i = 0; i < keys.length; i++) {
+                if (cls.indexOf(keys[i]) !== -1) { name = keys[i]; break; }
+            }
+            if (!name) return;
+            // 追加 Material Icon（不破坏原有 DOM 和事件绑定）
+            var icon = document.createElement('i');
+            icon.className = 'material-icons md-toolbar-icon';
+            icon.textContent = mdIconMap[name] || name;
+            btn.appendChild(icon);
+            // MD1 Tooltip — 使用 body 级定位避免 overflow 裁切
+            btn.setAttribute('data-md-tooltip', mdTooltipMap[name] || name);
+            btn.removeAttribute('title');
+            btn.addEventListener('mouseenter', showMdTooltip);
+            btn.addEventListener('mouseleave', hideMdTooltip);
+        });
+    }
+    // MD1 Tooltip: body 级定位，确保不被任何 overflow 容器裁切
+    var mdTooltipEl = null;
+    function showMdTooltip(e) {
+        var btn = e.currentTarget;
+        var text = btn.getAttribute('data-md-tooltip');
+        if (!text) return;
+        if (!mdTooltipEl) {
+            mdTooltipEl = document.createElement('div');
+            mdTooltipEl.className = 'md-toolbar-tooltip';
+            mdTooltipEl.style.position = 'fixed';
+            mdTooltipEl.style.fontFamily = "'Roboto', sans-serif";
+            mdTooltipEl.style.fontSize = '10px';
+            mdTooltipEl.style.fontWeight = '500';
+            mdTooltipEl.style.letterSpacing = '0.4px';
+            mdTooltipEl.style.color = '#fff';
+            mdTooltipEl.style.background = 'rgba(97,97,97,0.9)';
+            mdTooltipEl.style.padding = '0 8px';
+            mdTooltipEl.style.height = '22px';
+            mdTooltipEl.style.lineHeight = '22px';
+            mdTooltipEl.style.borderRadius = '2px';
+            mdTooltipEl.style.whiteSpace = 'nowrap';
+            mdTooltipEl.style.pointerEvents = 'none';
+            mdTooltipEl.style.zIndex = '99999';
+            mdTooltipEl.style.display = 'none';
+            document.body.appendChild(mdTooltipEl);
+        }
+        mdTooltipEl.textContent = text;
+        var rect = btn.getBoundingClientRect();
+        mdTooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
+        mdTooltipEl.style.top = (rect.bottom + 8) + 'px'; // 按钮下方 8dp 间距
+        mdTooltipEl.style.transform = 'translateX(-50%)';
+        mdTooltipEl.style.display = 'block';
+    }
+    function hideMdTooltip() {
+        if (mdTooltipEl) mdTooltipEl.style.display = 'none';
+    }
+
+    // ---- MD1 Dropdown 功能 ----
+    function toggleDropdown(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var isOpen = el.classList.contains('md-dropdown--open');
+        // 关闭所有其他 dropdown
+        document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
+            d.classList.remove('md-dropdown--open');
+        });
+        if (!isOpen) {
+            el.classList.add('md-dropdown--open');
+        }
+    }
+    function selectDropdown(id, value, label) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        // 更新选中状态
+        el.querySelectorAll('.md-dropdown__option').forEach(function(opt) {
+            opt.classList.toggle('md-dropdown__option--selected', opt.getAttribute('data-value') === value);
+        });
+        // 更新显示文本
+        var labelEl = el.querySelector('.md-dropdown__trigger span');
+        if (labelEl) labelEl.textContent = label;
+        // 更新 hidden input
+        var hiddenId = id.replace('-dropdown', '');
+        var hidden = document.getElementById(hiddenId);
+        if (hidden) hidden.value = value;
+        // 关闭菜单
+        el.classList.remove('md-dropdown--open');
+    }
+    // 点击外部关闭 dropdown
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.md-dropdown')) {
+            document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
+                d.classList.remove('md-dropdown--open');
+            });
+        }
+    });
+
+    // ---- 工具函数 ----
+    var _toastTimer = null;
+    function toast(msg, actionLabel, actionFn) {
+        var el = document.getElementById('toast');
+        var textEl = document.getElementById('toast-text');
+        var actionEl = document.getElementById('toast-action');
+        
+        // Hide any existing snackbar first
+        if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+        el.classList.remove('show');
+        
+        // Small delay for consecutive snackbar animation
+        setTimeout(function() {
+            textEl.textContent = msg;
+            if (actionLabel && actionFn) {
+                actionEl.textContent = actionLabel;
+                actionEl.style.display = 'inline-block';
+                actionEl.onclick = function() {
+                    el.classList.remove('show');
+                    if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+                    actionFn();
+                };
+            } else {
+                actionEl.style.display = 'none';
+                actionEl.onclick = null;
+            }
+            el.classList.add('show');
+            _toastTimer = setTimeout(function() {
+                el.classList.remove('show');
+                _toastTimer = null;
+            }, actionLabel ? 5000 : 2500);
+        }, 150);
+    }
+
+    // ---- MD1 Dialog ----
+    function showDialog(title, content, confirmLabel, onConfirm) {
+        var overlay = document.getElementById('dialog-overlay');
+        document.getElementById('dialog-title').textContent = title;
+        document.getElementById('dialog-content').textContent = content;
+        document.getElementById('dialog-confirm').textContent = confirmLabel || '确认';
+        overlay.classList.add('show');
+
+        // Remove old listeners
+        var confirmBtn = document.getElementById('dialog-confirm');
+        var cancelBtn = document.getElementById('dialog-cancel');
+        var newConfirm = confirmBtn.cloneNode(true);
+        var newCancel = cancelBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+        function closeDialog() {
+            overlay.classList.remove('show');
+        }
+        newCancel.addEventListener('click', closeDialog);
+        newConfirm.addEventListener('click', function() {
+            closeDialog();
+            if (onConfirm) onConfirm();
+        });
+        // Click overlay backdrop to dismiss
+        overlay.addEventListener('click', function handler(e) {
+            if (e.target === overlay) { closeDialog(); overlay.removeEventListener('click', handler); }
+        });
+    }
+
+    function api(method, path, body) {
+        var opts = { method: method, headers: { 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        return fetch('/api' + path, opts).then(function(r) { return r.json(); });
+    }
+
+    // ---- 加载文章列表 ----
+    function loadPosts() {
+        api('GET', '/posts').then(function(data) {
+            renderPostList(data.posts, data.pinnedPostId);
+        });
+    }
+
+    function renderPostList(posts, pinnedId) {
+        var container = document.getElementById('post-list-container');
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="material-icons">article</i>暂无文章，点击右上角新建</div>';
+            return;
+        }
+        var html = '<ul class="md-list">';
+        posts.forEach(function(post) {
+            var isPinned = post.id === pinnedId;
+            var fmtLabel = post.cardFormat === 'quote' ? '引用' : '标准';
+            html += '<li class="md-list-item">'
+                + '<div class="md-list-item-content">'
+                + '<div class="md-list-item-title">' + escHtml(post.title) + (isPinned ? '<span class="pin-badge">置顶</span>' : '') + '</div>'
+                + '<div class="md-list-item-sub">' + post.date + ' &middot; ' + post.id + ' &middot; ' + fmtLabel + '</div>'
+                + '</div>'
+                + '<div class="md-list-item-actions">'
+                + '<button class="md-btn md-btn-icon" onclick="editPost(\'' + post.id + '\')" title="编辑"><i class="material-icons" style="font-size:20px;">edit</i></button>'
+                + '<button class="md-btn md-btn-icon ' + (isPinned ? 'pinned' : '') + '" onclick="togglePin(\'' + post.id + '\')" title="置顶"><i class="material-icons" style="font-size:20px;">push_pin</i></button>'
+                + '<button class="md-btn md-btn-icon md-btn-danger" onclick="deletePost(\'' + post.id + '\')" title="删除"><i class="material-icons" style="font-size:20px;">delete</i></button>'
+                + '</div>'
+                + '</li>';
+        });
+        html += '</ul>';
+        container.innerHTML = html;
+    }
+
+    function escHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // ---- 新建文章 ----
+    function newPost() {
+        editingId = null;
+        currentCoverImage = '';
+        document.getElementById('f-title').value = '';
+        document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('f-format').value = 'standard';
+        selectDropdown('f-format-dropdown', 'standard', '博客文章');
+        document.getElementById('f-summary').value = '';
+        if (easyMDE) {
+            easyMDE.value('');
+        }
+        document.getElementById('f-cover-image').value = '';
+        document.getElementById('f-cover-file').value = '';
+        document.getElementById('cover-file-name').textContent = '未选择文件';
+        updateCoverPreview('');
+        document.getElementById('editor-title').textContent = '新建文章';
+        document.getElementById('edit-notice').style.display = 'none';
+        document.getElementById('btn-cancel').style.display = 'none';
+        document.getElementById('btn-save-draft').style.display = 'inline-flex';
+        updateFloatingLabels();
+    }
+
+    // ---- 编辑文章 ----
+    function editPost(id) {
+        api('GET', '/posts').then(function(data) {
+            var post = data.posts.find(function(p) { return p.id === id; });
+            if (!post) { toast('文章未找到'); return; }
+            editingId = id;
+            currentCoverImage = post.coverImage || '';
+            document.getElementById('f-title').value = post.title;
+            document.getElementById('f-date').value = post.date;
+            document.getElementById('f-format').value = post.cardFormat || 'standard';
+            var fmtLabel = post.cardFormat === 'quote' ? '名言警句' : '博客文章';
+            selectDropdown('f-format-dropdown', post.cardFormat || 'standard', fmtLabel);
+            document.getElementById('f-summary').value = post.summary;
+            if (easyMDE) {
+                easyMDE.value(post.content || '');
+            }
+            document.getElementById('f-cover-image').value = post.coverImage || '';
+            updateCoverPreview(post.coverImage || '');
+            document.getElementById('editor-title').textContent = '编辑文章';
+            document.getElementById('edit-notice').style.display = 'flex';
+            document.getElementById('edit-post-name').textContent = post.title;
+            document.getElementById('btn-cancel').style.display = 'inline-flex';
+            document.getElementById('btn-save-draft').style.display = 'inline-flex';
+            updateFloatingLabels();
+        });
+    }
+
+    // ---- 保存文章 ----
+    function savePost() {
+        var title = document.getElementById('f-title').value.trim();
+        var date = document.getElementById('f-date').value;
+        var format = document.getElementById('f-format').value;
+        var summary = document.getElementById('f-summary').value.trim();
+        var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
+        var coverImage = document.getElementById('f-cover-image').value;
+
+        if (!title) { toast('请输入文章标题'); return; }
+        if (!date) { toast('请选择日期'); return; }
+
+        var body = {
+            title: title,
+            date: date,
+            cardFormat: format,
+            summary: summary,
+            content: content,
+            coverImage: coverImage
+        };
+
+        if (editingId) {
+            api('PUT', '/posts/' + editingId, body).then(function(res) {
+                if (res.ok) {
+                    toast('文章已更新');
+                    loadPosts();
+                    cancelEdit();
+                } else {
+                    toast('更新失败: ' + (res.error || ''));
+                }
+            });
+        } else {
+            api('POST', '/posts', body).then(function(res) {
+                if (res.ok) {
+                    toast('文章已发布');
+                    loadPosts();
+                    newPost();
+                } else {
+                    toast('发布失败: ' + (res.error || ''));
+                }
+            });
+        }
+    }
+
+    // ---- 取消编辑 ----
+    function cancelEdit() { newPost(); }
+
+    // ---- 置顶/取消置顶 ----
+    function togglePin(id) {
+        api('PUT', '/posts/' + id + '/pin', {}).then(function(res) {
+            if (res.ok) {
+                toast(res.pinnedPostId ? '已置顶' : '已取消置顶');
+                loadPosts();
+            }
+        });
+    }
+
+    // ---- 删除文章（Dialog 确认 + Snackbar UNDO） ----
+    var _pendingDeletePosts = {};
+    function deletePost(id) {
+        api('GET', '/posts').then(function(data) {
+            var post = data.posts.find(function(p) { return p.id === id; });
+            if (!post) return;
+            showDialog(
+                '删除文章？',
+                '文章「' + post.title + '」将被删除，此操作可在通知中撤销。',
+                '删除',
+                function() {
+                    _pendingDeletePosts[id] = post;
+                    api('DELETE', '/posts/' + id).then(function(res) {
+                        if (res.ok) {
+                            if (editingId === id) cancelEdit();
+                            loadPosts();
+                            toast('文章已删除', '撤销', function() {
+                                api('POST', '/posts?restore=1', _pendingDeletePosts[id]).then(function(r) {
+                                    if (r.ok) {
+                                        delete _pendingDeletePosts[id];
+                                        loadPosts();
+                                        toast('已撤销删除');
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            );
+        });
+    }
+
+    // ---- 封面文件选择 ----
+    function onCoverFileSelected(input) {
+        var nameEl = document.getElementById('cover-file-name');
+        if (input.files && input.files[0]) {
+            nameEl.textContent = input.files[0].name;
+            nameEl.style.color = 'rgba(0,0,0,0.87)';
+            uploadCover();
+        } else {
+            nameEl.textContent = '未选择文件';
+            nameEl.style.color = 'rgba(0,0,0,0.54)';
+        }
+    }
+
+    // ---- 封面图片上传 ----
+    function uploadCover() {
+        var fileInput = document.getElementById('f-cover-file');
+        if (!fileInput.files || !fileInput.files[0]) {
+            toast('请先选择图片文件');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        // Show progress bar
+        var progress = document.getElementById('cover-progress');
+        var bar = document.getElementById('cover-progress-bar');
+        progress.style.display = 'block';
+        bar.style.width = '0%';
+
+        // Simulate progress (XHR for real progress would be ideal, but fetch doesn't support upload progress)
+        var progressTimer = setInterval(function() {
+            var current = parseInt(bar.style.width) || 0;
+            if (current < 85) bar.style.width = (current + 15) + '%';
+        }, 200);
+
+        fetch('/api/upload-cover', {
+            method: 'POST',
+            body: formData
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            clearInterval(progressTimer);
+            bar.style.width = '100%';
+            setTimeout(function() {
+                progress.style.display = 'none';
+                bar.style.width = '0%';
+            }, 600);
+            if (res.ok) {
+                currentCoverImage = res.path;
+                document.getElementById('f-cover-image').value = res.path;
+                updateCoverPreview(res.path);
+                toast('封面图片已上传');
+            } else {
+                toast('上传失败: ' + (res.error || ''));
+            }
+        }).catch(function(err) {
+            clearInterval(progressTimer);
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            toast('上传出错: ' + err.message);
+        });
+    }
+
+    function updateCoverPreview(imagePath) {
+        var preview = document.getElementById('cover-preview');
+        if (imagePath) {
+            preview.innerHTML = '<div style="width:100%;height:100%;background-image:url(\'' + imagePath + '\');background-size:cover;background-position:center;border-radius:2px;"></div>'
+                + '<button class="cover-remove-btn" onclick="removeCover()" title="移除封面图"><i class="material-icons" style="font-size:16px;">close</i></button>';
+        } else {
+            preview.innerHTML = '<div class="cover-preview-placeholder">未上传封面图（将显示主题色背景）</div>';
+        }
+    }
+
+    function removeCover() {
+        currentCoverImage = '';
+        document.getElementById('f-cover-image').value = '';
+        document.getElementById('f-cover-file').value = '';
+        document.getElementById('cover-file-name').textContent = '未选择文件';
+        document.getElementById('cover-file-name').style.color = 'rgba(0,0,0,0.54)';
+        updateCoverPreview('');
+        toast('封面图片已移除');
+    }
+
+    // ---- 预览文章（服务端渲染，1:1 匹配发布页面）----
+    function previewPost() {
+        var title = document.getElementById('f-title').value.trim() || '预览文章';
+        var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
+        var format = document.getElementById('f-format').value;
+        var date = document.getElementById('f-date').value;
+        var summary = document.getElementById('f-summary').value.trim();
+        var coverImage = document.getElementById('f-cover-image').value;
+
+        // 通过 POST 表单提交到预览 API，在新窗口打开
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/api/preview';
+        form.target = '_blank';
+        
+        var fields = {
+            title: title,
+            date: date,
+            summary: summary,
+            content: content,
+            cardFormat: format,
+            coverImage: coverImage
+        };
+        
+        Object.keys(fields).forEach(function(key) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = fields[key];
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+
+    // ---- 初始化 ----
+    initEasyMDE();
+    initFloatingLabels();
+    restorePanelState();
+    enableDragHandles();
+    initDragSort();
+    newPost();
+    loadPosts();
+    loadSettings();
+    loadMenuItems();
+    loadBackground();
+    loadDrafts();
+
+    // ---- 站点设置管理 ----
+    var _siteData = null;
+
+    function loadSettings() {
+        api('GET', '/posts').then(function(data) {
+            _siteData = data.site || {};
+            var author = _siteData.author || '';
+            document.getElementById('setting-author').value = author;
+            var subtitle = _siteData.subtitle || '';
+            document.getElementById('setting-subtitle').value = subtitle;
+            // 触发浮动标签
+            var evt = new Event('input', { bubbles: true });
+            document.getElementById('setting-author').dispatchEvent(evt);
+            document.getElementById('setting-subtitle').dispatchEvent(evt);
+
+            var avatar = _siteData.avatar || '';
+            updateAvatarPreview(avatar);
+            var favicon = _siteData.favicon || '';
+            updateFaviconPreview(favicon);
+        });
+    }
+
+    function onAvatarFileSelected(input) {
+        var nameEl = document.getElementById('avatar-file-name');
+        if (input.files && input.files[0]) {
+            nameEl.textContent = input.files[0].name;
+            nameEl.style.color = 'rgba(0,0,0,0.87)';
+            uploadAvatar();
+        } else {
+            nameEl.textContent = '未选择文件';
+            nameEl.style.color = 'rgba(0,0,0,0.54)';
+        }
+    }
+
+    function uploadAvatar() {
+        var fileInput = document.getElementById('avatar-file');
+        if (!fileInput.files || !fileInput.files[0]) {
+            toast('请先选择头像图片');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        var progress = document.getElementById('avatar-progress');
+        var bar = document.getElementById('avatar-progress-bar');
+        progress.style.display = 'block';
+        bar.style.width = '0%';
+
+        var progressTimer = setInterval(function() {
+            var current = parseInt(bar.style.width) || 0;
+            if (current < 85) bar.style.width = (current + 15) + '%';
+        }, 200);
+
+        fetch('/api/upload-avatar', {
+            method: 'POST',
+            body: formData
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            clearInterval(progressTimer);
+            bar.style.width = '100%';
+            setTimeout(function() {
+                progress.style.display = 'none';
+                bar.style.width = '0%';
+            }, 600);
+            if (res.ok) {
+                updateAvatarPreview(res.path);
+                toast('头像已更新');
+            } else {
+                toast('上传失败: ' + (res.error || ''));
+            }
+        }).catch(function(err) {
+            clearInterval(progressTimer);
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            toast('上传出错: ' + err.message);
+        });
+    }
+
+    function updateAvatarPreview(imagePath) {
+        var area = document.getElementById('avatar-preview-area');
+        var preview = area.querySelector('.settings-icon-preview--avatar');
+        var label = area.querySelector('.settings-icon-preview-label');
+        if (imagePath) {
+            preview.style.backgroundImage = "url('" + imagePath + "')";
+            preview.style.backgroundColor = 'transparent';
+            preview.innerHTML = '<button class="settings-icon-remove" onclick="removeAvatar()" title="恢复默认头像"><i class="material-icons" style="font-size:12px;">close</i></button>';
+            label.textContent = '已上传';
+        } else {
+            preview.style.backgroundImage = '';
+            preview.style.backgroundColor = '#f5f5f5';
+            preview.innerHTML = '';
+            label.textContent = '默认';
+        }
+    }
+
+    function removeAvatar() {
+        fetch('/api/avatar', { method: 'DELETE' })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.ok) {
+                    updateAvatarPreview('');
+                    document.getElementById('avatar-file').value = '';
+                    document.getElementById('avatar-file-name').textContent = '未选择文件';
+                    toast('已恢复默认头像');
+                }
+            });
+    }
+
+    function onFaviconFileSelected(input) {
+        var nameEl = document.getElementById('favicon-file-name');
+        if (input.files && input.files[0]) {
+            nameEl.textContent = input.files[0].name;
+            nameEl.style.color = 'rgba(0,0,0,0.87)';
+            uploadFavicon();
+        } else {
+            nameEl.textContent = '未选择文件';
+            nameEl.style.color = 'rgba(0,0,0,0.54)';
+        }
+    }
+
+    function uploadFavicon() {
+        var fileInput = document.getElementById('favicon-file');
+        if (!fileInput.files || !fileInput.files[0]) {
+            toast('请先选择图标文件');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        var progress = document.getElementById('favicon-progress');
+        var bar = document.getElementById('favicon-progress-bar');
+        progress.style.display = 'block';
+        bar.style.width = '0%';
+
+        var progressTimer = setInterval(function() {
+            var current = parseInt(bar.style.width) || 0;
+            if (current < 85) bar.style.width = (current + 15) + '%';
+        }, 200);
+
+        fetch('/api/upload-favicon', {
+            method: 'POST',
+            body: formData
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            clearInterval(progressTimer);
+            bar.style.width = '100%';
+            setTimeout(function() {
+                progress.style.display = 'none';
+                bar.style.width = '0%';
+            }, 600);
+            if (res.ok) {
+                updateFaviconPreview(res.path);
+                toast('图标已更新');
+            } else {
+                toast('上传失败: ' + (res.error || ''));
+            }
+        }).catch(function(err) {
+            clearInterval(progressTimer);
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            toast('上传出错: ' + err.message);
+        });
+    }
+
+    function updateFaviconPreview(imagePath) {
+        var area = document.getElementById('favicon-preview-area');
+        var preview = area.querySelector('.settings-icon-preview--favicon');
+        var label = area.querySelector('.settings-icon-preview-label');
+        if (imagePath) {
+            preview.style.backgroundImage = "url('" + imagePath + "')";
+            preview.style.backgroundColor = 'transparent';
+            preview.innerHTML = '<button class="settings-icon-remove" onclick="removeFavicon()" title="恢复默认图标"><i class="material-icons" style="font-size:12px;">close</i></button>';
+            label.textContent = '已上传';
+        } else {
+            preview.style.backgroundImage = '';
+            preview.style.backgroundColor = '#f5f5f5';
+            preview.innerHTML = '';
+            label.textContent = '默认';
+        }
+    }
+
+    function removeFavicon() {
+        fetch('/api/favicon', { method: 'DELETE' })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.ok) {
+                    updateFaviconPreview('');
+                    document.getElementById('favicon-file').value = '';
+                    document.getElementById('favicon-file-name').textContent = '未选择文件';
+                    toast('已恢复默认图标');
+                }
+            });
+    }
+
+    function saveSettings() {
+        var author = document.getElementById('setting-author').value.trim();
+        if (!author) {
+            toast('昵称不能为空');
+            return;
+        }
+        var subtitle = document.getElementById('setting-subtitle').value.trim();
+        api('PUT', '/settings', {
+            author: author,
+            subtitle: subtitle
+        }).then(function(res) {
+            if (res.ok) {
+                toast('设置已保存');
+                loadPosts();
+            } else {
+                toast('保存失败');
+            }
+        });
+    }
+
+    // ---- 菜单项管理 ----
+    var _menuItems = [];
+
+    function loadMenuItems() {
+        api('GET', '/menu-items').then(function(data) {
+            _menuItems = data.menuItems || [];
+            renderMenuItems();
+        });
+    }
+
+    function renderMenuItems() {
+        var tbody = document.getElementById('menu-items-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        _menuItems.forEach(function(item) {
+            var tr = document.createElement('tr');
+            tr.dataset.id = item.id;
+            tr.innerHTML =
+                '<td><input class="menu-item-name" value="' + escapeAttr(item.name) + '" data-id="' + item.id + '" data-field="name" onchange="updateMenuItemField(this)" onblur="updateMenuItemField(this)"></td>' +
+                '<td><input class="menu-item-url" value="' + escapeAttr(item.url || '') + '" placeholder="无链接" data-id="' + item.id + '" data-field="url" onchange="updateMenuItemField(this)" onblur="updateMenuItemField(this)"></td>' +
+                '<td class="col-delete"><button class="menu-item-delete" onclick="deleteMenuItem(\'' + item.id + '\')" title="删除"><i class="material-icons" style="font-size:20px;">delete</i></button></td>' +
+                '<td class="col-switch">' +
+                    '<label class="md-switch">' +
+                        '<input type="checkbox"' + (item.enabled ? ' checked' : '') + ' onchange="toggleMenuItem(\'' + item.id + '\', this.checked)">' +
+                        '<div class="md-switch-track"></div>' +
+                        '<div class="md-switch-thumb"></div>' +
+                    '</label>' +
+                '</td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function escapeAttr(str) {
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function toggleMenuItem(id, enabled) {
+        api('PUT', '/menu-items/' + id, { enabled: enabled }).then(function(res) {
+            if (res.ok) {
+                // 更新本地缓存
+                _menuItems.forEach(function(item) {
+                    if (item.id === id) item.enabled = enabled;
+                });
+                toast(enabled ? '已启用' : '已禁用');
+            }
+        });
+    }
+
+    function updateMenuItemField(input) {
+        var id = input.dataset.id;
+        var field = input.dataset.field;
+        var value = input.value.trim();
+        var payload = {};
+        payload[field] = value;
+        api('PUT', '/menu-items/' + id, payload).then(function(res) {
+            if (res.ok) {
+                // 更新本地缓存
+                _menuItems.forEach(function(item) {
+                    if (item.id === id) item[field] = value;
+                });
+            } else {
+                toast('更新失败');
+            }
+        });
+    }
+
+    function addMenuItem() {
+        api('POST', '/menu-items', { name: '新菜单项', url: '' }).then(function(res) {
+            if (res.ok) {
+                _menuItems.push(res.item);
+                renderMenuItems();
+                toast('已添加菜单项');
+            } else {
+                toast('添加失败');
+            }
+        });
+    }
+
+    function deleteMenuItem(id) {
+        // 找到对应的 item 名称
+        var name = '';
+        _menuItems.forEach(function(item) {
+            if (item.id === id) name = item.name;
+        });
+        showDialog('删除菜单项', '确定要删除"' + (name || '该菜单项') + '"吗？', '删除', function() {
+            api('DELETE', '/menu-items/' + id).then(function(res) {
+                if (res.ok) {
+                    _menuItems = _menuItems.filter(function(item) { return item.id !== id; });
+                    renderMenuItems();
+                    toast('已删除菜单项', 'UNDO', function() {
+                        // UNDO: 重新创建
+                        api('POST', '/menu-items', { name: name, url: '' }).then(function(res2) {
+                            if (res2.ok) {
+                                loadMenuItems();
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    }
+
+    // ---- 背景图管理 ----
+    function loadBackground() {
+        api('GET', '/posts').then(function(data) {
+            var bg = data.site && data.site.backgroundImage ? data.site.backgroundImage : '';
+            updateBgPreview(bg);
+        });
+    }
+
+    function onBgFileSelected(input) {
+        var nameEl = document.getElementById('bg-file-name');
+        if (input.files && input.files[0]) {
+            nameEl.textContent = input.files[0].name;
+            nameEl.style.color = 'rgba(0,0,0,0.87)';
+            uploadBackground();
+        } else {
+            nameEl.textContent = '未选择文件';
+            nameEl.style.color = 'rgba(0,0,0,0.54)';
+        }
+    }
+
+    function uploadBackground() {
+        var fileInput = document.getElementById('bg-file');
+        if (!fileInput.files || !fileInput.files[0]) {
+            toast('请先选择背景图片');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        // Show progress bar
+        var progress = document.getElementById('bg-progress');
+        var bar = document.getElementById('bg-progress-bar');
+        progress.style.display = 'block';
+        bar.style.width = '0%';
+
+        var progressTimer = setInterval(function() {
+            var current = parseInt(bar.style.width) || 0;
+            if (current < 85) bar.style.width = (current + 15) + '%';
+        }, 200);
+
+        fetch('/api/upload-background', {
+            method: 'POST',
+            body: formData
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            clearInterval(progressTimer);
+            bar.style.width = '100%';
+            setTimeout(function() {
+                progress.style.display = 'none';
+                bar.style.width = '0%';
+            }, 600);
+            if (res.ok) {
+                updateBgPreview(res.path);
+                toast('背景图已更新');
+            } else {
+                toast('上传失败: ' + (res.error || ''));
+            }
+        }).catch(function(err) {
+            clearInterval(progressTimer);
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            toast('上传出错: ' + err.message);
+        });
+    }
+
+    function updateBgPreview(imagePath) {
+        var preview = document.getElementById('bg-preview');
+        if (imagePath) {
+            preview.innerHTML = '<div style="width:100%;height:100%;background-image:url(\'' + imagePath + '\');background-size:cover;background-position:center;border-radius:2px;"></div>'
+                + '<button class="cover-remove-btn" onclick="removeBackground()" title="恢复默认背景"><i class="material-icons" style="font-size:16px;">close</i></button>';
+        } else {
+            preview.innerHTML = '<div class="cover-preview-placeholder">使用默认背景图</div>';
+        }
+    }
+
+    function removeBackground() {
+        fetch('/api/background', { method: 'DELETE' })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.ok) {
+                    updateBgPreview('');
+                    document.getElementById('bg-file').value = '';
+                    document.getElementById('bg-file-name').textContent = '未选择文件';
+                    toast('已恢复默认背景');
+                }
+            });
+    }
+
+    // ---- 草稿管理 ----
+    function saveDraft() {
+        var title = document.getElementById('f-title').value.trim() || '未命名草稿';
+        var date = document.getElementById('f-date').value;
+        var format = document.getElementById('f-format').value;
+        var summary = document.getElementById('f-summary').value.trim();
+        var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
+        var coverImage = document.getElementById('f-cover-image').value;
+
+        api('POST', '/drafts', {
+            title: title,
+            date: date,
+            cardFormat: format,
+            summary: summary,
+            content: content,
+            coverImage: coverImage
+        }).then(function(res) {
+            if (res.ok) {
+                toast('草稿已保存');
+            } else {
+                toast('保存失败');
+            }
+        });
+    }
+
+    function loadDrafts() {
+        api('GET', '/drafts').then(function(data) {
+            renderDraftList(data.drafts || []);
+        });
+    }
+
+    function renderDraftList(drafts) {
+        var container = document.getElementById('draft-list-container');
+        if (!container) return;
+        if (!drafts || drafts.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="padding:16px;font-size:12px;"><i class="material-icons" style="font-size:32px;margin-bottom:4px;">drafts</i>暂无草稿</div>';
+            return;
+        }
+        var html = '<ul class="md-list">';
+        drafts.forEach(function(draft) {
+            var savedAt = draft.savedAt ? new Date(draft.savedAt).toLocaleString('zh-CN') : '';
+            html += '<li class="md-list-item">'
+                + '<div class="md-list-item-content">'
+                + '<div class="md-list-item-title">' + escHtml(draft.title) + '</div>'
+                + '<div class="md-list-item-sub">' + savedAt + '</div>'
+                + '</div>'
+                + '<div class="md-list-item-actions">'
+                + '<div class="md-list-item-actions-spacer"></div>'
+                + '<button class="md-btn md-btn-icon" onclick="loadDraft(\'' + draft.id + '\')" title="加载草稿"><i class="material-icons" style="font-size:20px;">edit</i></button>'
+                + '<button class="md-btn md-btn-icon md-btn-danger" onclick="deleteDraft(\'' + draft.id + '\')" title="删除草稿"><i class="material-icons" style="font-size:20px;">delete</i></button>'
+                + '</div>'
+                + '</li>';
+        });
+        html += '</ul>';
+        container.innerHTML = html;
+    }
+
+    function loadDraft(draftId) {
+        api('GET', '/drafts').then(function(data) {
+            var draft = (data.drafts || []).find(function(d) { return d.id === draftId; });
+            if (!draft) { toast('草稿未找到'); return; }
+            editingId = null;
+            document.getElementById('f-title').value = draft.title || '';
+            document.getElementById('f-date').value = draft.date || new Date().toISOString().split('T')[0];
+            document.getElementById('f-format').value = draft.cardFormat || 'standard';
+            var dl = draft.cardFormat === 'quote' ? '名言警句' : '博客文章';
+            selectDropdown('f-format-dropdown', draft.cardFormat || 'standard', dl);
+            document.getElementById('f-summary').value = draft.summary || '';
+            if (easyMDE) {
+                easyMDE.value(draft.content || '');
+            }
+            document.getElementById('f-cover-image').value = draft.coverImage || '';
+            updateCoverPreview(draft.coverImage || '');
+            document.getElementById('editor-title').textContent = '新建文章（从草稿加载）';
+            document.getElementById('edit-notice').style.display = 'none';
+            document.getElementById('btn-cancel').style.display = 'inline-flex';
+            toast('草稿已加载，编辑后点击「保存并发布」即可发布');
+        });
+    }
+
+    // ---- 删除草稿（Dialog 确认 + Snackbar UNDO） ----
+    var _pendingDeleteDrafts = {};
+    function deleteDraft(draftId) {
+        api('GET', '/drafts').then(function(data) {
+            var draft = (data.drafts || []).find(function(d) { return d.id === draftId; });
+            if (!draft) return;
+            showDialog(
+                '删除草稿？',
+                '草稿「' + draft.title + '」将被删除，此操作可在通知中撤销。',
+                '删除',
+                function() {
+                    _pendingDeleteDrafts[draftId] = draft;
+                    api('DELETE', '/drafts/' + draftId).then(function(res) {
+                        if (res.ok) {
+                            loadDrafts();
+                            toast('草稿已删除', '撤销', function() {
+                                api('POST', '/drafts?restore=1', _pendingDeleteDrafts[draftId]).then(function(r) {
+                                    if (r.ok) {
+                                        delete _pendingDeleteDrafts[draftId];
+                                        loadDrafts();
+                                        toast('已撤销删除');
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            );
+        });
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{
+  "site": {
+    "author": "Kernel",
+    "title": "Kernel 的个人博客",
+    "subtitle": "发现生活中的美",
+    "backgroundImage": "blog/backgrounds/8cc59a4cdeb6.jpg",
+    "avatar": "blog/avatars/37bbe62ce366.png",
+    "favicon": "blog/favicons/26d7839df0b8.png",
+    "menuItems": [
+      {
+        "id": "about",
+        "name": "关于",
+        "url": "./file/about.html",
+        "enabled": true
+      },
+      {
+        "id": "message",
+        "name": "私信",
+        "url": "",
+        "enabled": true
+      },
+      {
+        "id": "favorite",
+        "name": "收藏",
+        "url": "",
+        "enabled": true
+      },
+      {
+        "id": "search",
+        "name": "搜索",
+        "url": "",
+        "enabled": true
+      }
+    ]
+  },
+  "pinnedPostId": "v2-changelog",
+  "drafts": [
+    {
+      "id": "784ac8de",
+      "title": "未命名草稿",
+      "date": "2026-06-06",
+      "summary": "",
+      "content": "",
+      "cardFormat": "standard",
+      "coverImage": "",
+      "savedAt": "2026-06-07T13:10:41.240638"
+    }
+  ],
+  "posts": [
+    {
+      "id": "kung-fu-panda-quote",
+      "title": "If you only do what you can do, you will never be more than who you are.",
+      "date": "2024-03-26",
+      "summary": "Master Shifu - 'Kung Fu Panda 3'",
+      "content": "<p>Master Shifu - 'Kung Fu Panda 3'</p>",
+      "cardFormat": "quote",
+      "coverImage": "blog/covers/03b5603bdbf0.jpg"
+    },
+    {
+      "id": "code-demo",
+      "title": "Code",
+      "date": "2024-03-28",
+      "summary": "博客中可以显示的代码示例。",
+      "content": "<h4>代码样式</h4>\n<div class=\"code-with-text\">Just add the following <code>&lt;link&gt;</code> and <code>&lt;script&gt;</code> elements into your HTML pages (27kB gzipped):\n<pre class=\"language-markup\"><code class=\"language-markup\">&lt;link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/icon?family=Material+Icons\"&gt;\n&lt;link rel=\"stylesheet\" href=\"lib/mdl/material-themes-indigo-pink.css\"&gt;\n&lt;script defer src=\"lib/mdl/material.min.js\"&gt;&lt;/script&gt;</code></pre>\n</div>\n\n[code:html|MDL Button 组件]\n<!-- Accent-colored raised button with ripple -->\n<button class=\"mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent\">\n  Button\n</button>\n[/code]",
+      "cardFormat": "standard",
+      "coverImage": "blog/covers/91fbd83ea35e.jpg"
+    },
+    {
+      "id": "v2-changelog",
+      "title": "博客 v2.0 更新说明 - 从 MDL 模板到完整博客系统",
+      "date": "2026-06-07",
+      "summary": "记录博客从基础 MDL 模板重构为完整博客系统的所有改动，包含代码片段和界面截图。",
+      "content": "<h4>版本概述</h4>\n<p>经过多个迭代周期的开发，本博客完成了从基础 MDL 模板到完整博客系统的全面重构。本文记录了所有新增功能与修复的问题，并附带关键代码片段和界面截图。</p>\n\n<h4>1. CDN 迁移到本地资源</h4>\n<p>原博客依赖 code.getmdl.io CDN 加载 MDL 框架资源，但该 CDN 已停止服务，导致页面无法正常渲染。我们将所有 MDL 资源本地化到 <code>lib/mdl/</code> 目录，彻底解决了外部依赖不可控的问题。</p>\n\n<div class=\"code-with-text\">HTML: CDN vs 本地引用对比\n<pre class=\"language-markup\"><code class=\"language-markup\">&lt;!-- 旧：CDN 引用（已失效） --&gt;\n&lt;link rel=\"stylesheet\" href=\"https://code.getmdl.io/1.3.0/material.indigo-pink.min.css\"&gt;\n&lt;script defer src=\"https://code.getmdl.io/1.3.0/material.min.js\"&gt;&lt;/script&gt;\n\n&lt;!-- 新：本地引用（稳定可靠） --&gt;\n&lt;link rel=\"stylesheet\" href=\"lib/mdl/material-themes-grey-orange.css\"&gt;\n&lt;script src=\"lib/mdl/material.min.js\"&gt;&lt;/script&gt;</code></pre>\n</div>\n\n<p>同时将 MDL 默认的 Indigo-Pink 主题替换为 Grey-Orange 主题，视觉上更专业沉稳。</p>\n\n<h4>2. 博客管理后台</h4>\n<p>从零构建了完整的 Flask 后端 + 管理界面，支持文章的增删改查、置顶、封面图片上传、背景图管理等功能。管理后台遵循 Google Material Design 1 规范设计。</p>\n\n<img src=\"../../images/changelog-admin.png\" alt=\"管理后台界面\" style=\"max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);\">\n\n<div class=\"code-with-text\">Python: Flask 文章创建 API\n<pre class=\"language-python\"><code class=\"language-python\">@app.route('/api/posts', methods=['POST'])\ndef api_create_post():\n    data = load_data()\n    body = request.json\n    \n    post_id = body.get('id') or body.get('title', '').lower().strip()\n    post_id = re.sub(r'[^a-z0-9\\u4e00-\\u9fff]+', '-', post_id).strip('-')\n    \n    post = {\n        'id': post_id,\n        'title': body.get('title', 'No Title'),\n        'date': body.get('date', datetime.now().strftime('%Y-%m-%d')),\n        'summary': body.get('summary', ''),\n        'content': body.get('content', ''),\n        'cardFormat': body.get('cardFormat', 'standard'),\n        'coverImage': body.get('coverImage', ''),\n    }\n    data['posts'].append(post)\n    save_data(data)\n    generate_all()\n    return jsonify({'ok': True, 'post': post})</code></pre>\n</div>\n\n<h4>3. 代码高亮系统（Prism + click-to-copy）</h4>\n<p>集成了 Prism.js 代码高亮引擎，支持 17 种编程语言。自定义了 <code>code-with-text</code> 格式：灰色圆角容器 + 语言标签 + 语法高亮 + 点击复制功能。同时支持两种代码块语法：</p>\n\n<ul>\n<li><strong>&#91;code:lang|label&#93;...&#91;/code&#93;</strong> — 旧格式，向后兼容</li>\n<li><strong>```lang ... ```</strong> — Markdown fenced code blocks，新推荐格式</li>\n</ul>\n\n<div class=\"code-with-text\">Python: fenced code block 自定义处理\n<pre class=\"language-python\"><code class=\"language-python\">def markdown_to_html(content):\n    def replace_fenced_code(match):\n        lang = match.group(1) or ''\n        code = match.group(2)\n        code_escaped = (code\n            .replace('&amp;', '&amp;amp;')\n            .replace('&lt;', '&amp;lt;')\n            .replace('&gt;', '&amp;gt;')\n            .replace('\"', '&amp;quot;'))\n        prism_lang = lang_map.get(lang.lower(), lang.lower()) if lang else 'markup'\n        label = lang if lang else 'code'\n        return f'&lt;div class=\"code-with-text\"&gt;{label}\\n' \\\n               f'&lt;pre class=\"language-{prism_lang}\"&gt;' \\\n               f'&lt;code class=\"language-{prism_lang}\"&gt;{code_escaped}&lt;/code&gt;&lt;/pre&gt;\\n' \\\n               f'&lt;/div&gt;'\n    \n    fenced_pattern = r'```(\\w*)\\r?\\n([\\s\\S]*?)\\r?\\n```'\n    content = re.sub(fenced_pattern, replace_fenced_code, content)\n    \n    md = markdown.Markdown(extensions=['tables', 'nl2br'], output_format='html5')\n    return md.convert(content)</code></pre>\n</div>\n\n<img src=\"../../images/changelog-code.png\" alt=\"代码高亮效果\" style=\"max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);\">\n\n<h4>4. 标准卡片 vs 引用卡片</h4>\n<p>区分了<strong>标准文章卡片</strong>和<strong>引用卡片</strong>两种格式。引用卡片用于展示名言警句，不会生成详情页，不参与文章导航，仅在首页展示。</p>\n\n<div class=\"code-with-text\">Python: 生成主页时过滤引用卡片\n<pre class=\"language-python\"><code class=\"language-python\"># 只为标准格式文章生成详情页\nnav_posts = [p for p in sorted_posts if p.get('cardFormat', 'standard') != 'quote']\n\n# 引用卡片不生成链接\nif post.get('cardFormat', 'standard') == 'quote':\n    card_class = 'card-quote'\n    # 不添加 &lt;a&gt; 链接\nelse:\n    card_class = 'card-article'\n    # 添加文章详情页链接</code></pre>\n</div>\n\n<h4>5. 动态文章导航</h4>\n<p>文章详情页底部增加了\"前一篇/后一篇\"导航，自动按照发布日期排序。最新文章左侧显示\"返回首页\"，最旧文章右侧显示\"返回首页\"。鼠标悬停时 tooltip 显示相邻文章标题和日期。</p>\n\n<div class=\"code-with-text\">Python: 导航逻辑\n<pre class=\"language-python\"><code class=\"language-python\"># all_posts sorted by date descending: [newest, ..., current, ..., oldest]\nif post_index == 0:\n    newer_link = '../../index.html'\n    newer_text = '返回首页'\n    newer_title = '返回博客首页'\nelse:\n    newer_post = all_posts[post_index - 1]\n    newer_link = f\"{newer_post['id']}.html\"\n    newer_text = '前一篇'\n    newer_title = f\"{newer_post['title']} ({newer_post['date']})\"</code></pre>\n</div>\n\n<h4>6. Markdown 编辑器 + 草稿系统</h4>\n<p>集成了 EasyMDE Markdown 编辑器，支持侧边实时预览、工具栏快捷操作。新增草稿系统，可以保存未完成的文章，稍后继续编辑。</p>\n\n<div class=\"code-with-text\">Python: 草稿 CRUD API\n<pre class=\"language-python\"><code class=\"language-python\">@app.route('/api/drafts', methods=['POST'])\ndef api_save_draft():\n    data = load_data()\n    body = request.json\n    draft = {\n        'id': body.get('id', str(uuid.uuid4())[:8]),\n        'title': body.get('title', ''),\n        'content': body.get('content', ''),\n        'savedAt': datetime.now().isoformat()\n    }\n    if 'drafts' not in data:\n        data['drafts'] = []\n    data['drafts'].append(draft)\n    save_data(data)\n    return jsonify({'ok': True, 'draft': draft})</code></pre>\n</div>\n\n<h4>7. 服务端预览（1:1 匹配发布页面）</h4>\n<p>预览功能通过服务端渲染，使用与实际发布页面完全相同的模板和 Markdown 处理流程，确保\"所见即所得\"。关键修复：预览页面的 URL 为 <code>/api/preview</code>，所有静态资源路径必须使用绝对路径（以 <code>/</code> 开头），否则浏览器会将相对路径错误解析为 <code>/api/lib/mdl/...</code>。</p>\n\n<img src=\"../../images/changelog-preview.png\" alt=\"预览效果\" style=\"max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);\">\n\n<div class=\"code-with-text\">HTML: 绝对路径 vs 相对路径\n<pre class=\"language-markup\"><code class=\"language-markup\">&lt;!-- Wrong: relative path resolved as /api/styles.css --&gt;\n&lt;link rel=\"stylesheet\" href=\"styles.css\"&gt;\n\n&lt;!-- Correct: absolute path always resolves correctly --&gt;\n&lt;link rel=\"stylesheet\" href=\"/styles.css\"&gt;</code></pre>\n</div>\n\n<h4>8. CSS 类名重构</h4>\n<p>将 MDL 模板原始的 <code>demo-*</code> 类名和随意命名（如 <code>on-the-road-again</code>、<code>amazing</code>、<code>chroma</code>）统一为语义化名称：</p>\n\n<ul>\n<li><code>demo-blog</code> → <code>blog</code></li>\n<li><code>demo-blog--blogpost</code> → <code>blog--article</code></li>\n<li><code>demo-back</code> → <code>back-btn</code></li>\n<li><code>demo-nav</code> / <code>demo-nav__button</code> → <code>article-nav</code> / <code>article-nav__btn</code></li>\n<li>封面类名 → <code>card-article</code> / <code>card-quote</code> / <code>sidebar-card</code></li>\n</ul>\n\n<p>同时从数据模型中移除了 <code>coverClass</code> 字段，简化为 <code>cardFormat</code>（standard/quote）+ <code>coverImage</code> 两个字段。</p>\n\n<h4>9. 其他修复</h4>\n\n<p><strong>返回按钮白色修复</strong>：MDL 的 <code>mdl-button--colored</code> 会应用 accent 色而非白色，改用 <code>mdl-color--white</code> + <code>mdl-color-text--grey-900</code> 组合实现白底灰字的返回按钮。</p>\n\n<p><strong>无封面卡片背景色</strong>：移除默认封面图片（<code>images/road.jpg</code>），未上传封面的卡片显示 <code>#37474f</code>（blue-grey 800）实色背景，而非 MDL 主题的 <code>mdl-color--primary-dark</code>（灰色，不美观）。</p>\n\n<p><strong>文件上传按钮修复</strong>：将 <code>&lt;button onclick=\"document.getElementById().click()\"&gt;</code> 改为 <code>&lt;label for=\"fileInput\"&gt;</code>，解决跨浏览器兼容性问题，同时修复了 flex 容器中 label 按钮文字不居中的 bug。</p>\n\n<p><strong>编辑提示栏优化</strong>：解决长标题文章导致\"取消\"按钮换行的问题，使用 <code>text-overflow: ellipsis</code> 截断标题文本，\"取消\"按钮设置 <code>white-space: nowrap; flex-shrink: 0;</code> 确保始终单行显示。</p>\n\n<div class=\"code-with-text\">CSS: edit-notice layout fix\n<pre class=\"language-css\"><code class=\"language-css\">/* Before: justify-content causes button to wrap */\n.edit-notice {\n    display: flex;\n    justify-content: space-between;\n}\n\n/* After: title truncates, button never shrinks */\n.edit-notice {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n}\n.edit-notice span {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    min-width: 0;\n    flex: 1;\n}\n.edit-notice .md-btn {\n    white-space: nowrap;\n    flex-shrink: 0;\n}</code></pre>\n</div>\n\n<h4>10. 博客背景图管理</h4>\n<p>管理后台新增背景图上传/删除功能，自定义背景图存储在 <code>blog/backgrounds/</code> 目录，通过 CSS <code>body::before</code> 伪元素覆盖默认山景图。</p>\n\n<img src=\"../../images/changelog-homepage.png\" alt=\"博客首页（自定义背景图）\" style=\"max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);\">\n\n<h4>总结</h4>\n<p>本次重构涉及以下核心改动：</p>\n\n<ul>\n<li>CDN → 本地资源迁移 + 主题切换</li>\n<li>Flask 管理后端（文章 CRUD、封面上传、背景图管理、草稿系统）</li>\n<li>Prism 代码高亮 + <code>code-with-text</code> 格式 + click-to-copy</li>\n<li>标准/引用卡片分离（引用不生成详情页）</li>\n<li>动态文章导航（前一篇/后一篇 + tooltip）</li>\n<li>EasyMDE Markdown 编辑器 + 服务端 1:1 预览</li>\n<li>CSS 类名全面语义化重构</li>\n<li>多项 UI bug 修复（按钮居中、换行、路径、颜色）</li>\n</ul>\n\n<p>如果你也在用 MDL 搭建博客，希望这些实践能给你一些参考。有问题欢迎留言讨论！</p>\n",
+      "cardFormat": "standard",
+      "coverImage": ""
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello World!",
+      "date": "2024-03-26",
+      "summary": "今天，我很高兴地宣布，我成功搭建了我的第一个个人博客，并且使用了Material Design Lite（MDL）框架来构建它。作为一个热衷于技术和设计的人，这对我来说是一个里程碑式的成就。在这篇博客中，我想分享一下我的经验，以及为什么我选择了MDL框架以及它给我带来的好处。",
+      "content": "<h4>选择 Material Design Lite</h4>\n<p>在选择搭建个人博客的框架时，我花了一些时间研究了不同的选项。我想要一个现代化的设计，同时也要确保我的博客在不同设备上都有良好的响应性。在这个过程中，我发现了Material Design Lite框架。这个框架基于Google的Material Design原则，具有简洁、清晰的设计风格，而且易于使用。</p>\n<h4>MDL框架的优势</h4>\n<p>MDL 框架具有许多优势，这些优势使它成为我的首选：</p>\n<ol>\n<li><p><strong>现代化设计</strong>：MDL框架提供了一套现代化的UI组件，包括按钮、卡片、导航栏等，使得我的博客看起来非常时尚和专业。</p></li>\n<li><p><strong>响应式布局</strong>：使用MDL框架，我可以轻松地创建响应式布局，确保我的博客在各种设备上都有良好的显示效果，无论是桌面、平板还是手机。</p></li>\n<li><p><strong>易于定制</strong>：虽然MDL框架提供了许多默认的UI组件和样式，但我也可以根据自己的需求进行定制，以满足我的个性化需求。</p></li>\n<li><p><strong>文档丰富</strong>：MDL框架有着清晰而详细的文档，对于初学者来说非常友好。我可以轻松地查阅文档，找到我需要的信息和解决方案。</p></li>\n</ol>\n<h4>我的博客体验</h4>\n<p>搭建我的博客过程非常顺利。我使用了MDL框架提供的各种组件和样式，同时根据我的喜好进行了一些定制。结果是一个漂亮而功能丰富的个人博客，我非常满意。</p>\n<p>通过我的博客，我可以分享我的想法、经验和知识，与其他人建立联系。我相信，这将是我个人成长和技术探索的一个重要平台。</p>\n<h4>结语</h4>\n<p>搭建我的第一个个人博客并不容易，但是通过选择Material Design Lite框架，我能够轻松地创建出一个现代化、响应式的博客。我很高兴我做出了这个选择，我期待着在我的博客上与大家分享更多内容。</p>\n<p>如果你也想搭建自己的个人博客，我强烈推荐你考虑使用Material Design Lite框架。它简单易用，同时提供了丰富的功能和定制选项，可以帮助你打造出一个与众不同的博客。</p>\n<p>谢谢你阅读我的博客！如果你有任何问题或意见，请随时在评论区留言，我会尽快回复。</p>",
+      "cardFormat": "standard",
+      "coverImage": "blog/covers/c554d17c6c16.jpg"
+    },
+    {
+      "id": "announcement",
+      "title": "预告",
+      "date": "2024-03-20",
+      "summary": "即将推出全新博客系统，敬请期待！",
+      "content": "即将推出全新博客系统，敬请期待！",
+      "cardFormat": "standard",
+      "coverImage": ""
+    },
+    {
+      "id": "quick-start",
+      "title": "快速入门",
+      "date": "2026-06-07",
+      "summary": "MDL Blog 是一个基于 Material Design Lite 的轻量级博客框架，支持 Markdown 写作、代码高亮、主题切换，可一键部署到 GitHub Pages。",
+      "content": "## 什么是 MDL Blog？\n\nMDL Blog 是一个轻量级的静态博客框架，基于 Google Material Design Lite (MDL) 构建。它不需要数据库，不需要 Node.js，只需 Python + Flask 即可在本地管理内容，然后一键部署到 GitHub Pages。\n\n### 核心特性\n\n- **Material Design 风格** — 遵循 MD1 设计规范，5 套配色主题可切换\n- **Markdown 写作** — 支持 GFM 语法、代码高亮（17 种语言）、表格、引用块\n- **可视化后台** — 浏览器内文章管理，支持实时预览、草稿保存\n- **零数据库** — 所有数据存储在 blog-data.json，Git 友好\n- **一键部署** — 内置 GitHub Actions 工作流，推送到 main 分支自动发布\n- **轻量可扩展** — 核心代码仅 2 个文件（Python 后端 + HTML 前端），易于定制\n\n## 快速开始\n\n### 环境要求\n\n- Python 3.8+\n- pip\n\n### 安装步骤\n\n```bash\n# 1. 克隆仓库\ngit clone https://github.com/your-username/mdl-blog.git\ncd mdl-blog\n\n# 2. 安装依赖\npip install -r requirements.txt\n\n# 3. 启动本地服务器\npython blog-admin.py\n```\n\n启动后访问：\n\n- 博客首页：http://localhost:5001/\n- 管理后台：http://localhost:5001/admin\n\n### 写第一篇文章\n\n1. 打开管理后台 http://localhost:5001/admin\n2. 在右侧编辑器中填写标题、日期、摘要\n3. 在 Markdown 编辑器中编写正文\n4. 点击预览确认效果\n5. 点击保存并发布即可\n\n## 项目结构\n\n```\nmdl-blog/\n|-- blog-admin.py          # Flask 后端\n|-- blog-admin.html        # 管理后台\n|-- blog-data.json         # 博客数据\n|-- styles.css             # 全局样式\n|-- requirements.txt       # Python 依赖\n|-- README.md              # 项目文档\n|-- images/                # 静态图片\n|-- blog/\n|   |-- covers/            # 封面图\n|   |-- backgrounds/       # 背景图\n|   +-- posts/             # 文章 HTML（自动生成）\n|-- lib/mdl/               # MDL 框架（5 套主题）\n+-- .github/workflows/     # GitHub Pages 部署\n```\n\n## Markdown 支持\n\n编辑器支持 GFM 全语法：\n\n```python\ndef hello(name: str) -> str:\n    return f\"Hello, {name}!\"\n\nprint(hello(\"MDL Blog\"))\n```\n\n> 引用块用于突出重要内容，左侧有 Material Design 风格的蓝色边线标识。\n\n| 功能 | 状态 | 说明 |\n|------|:----:|------|\n| Markdown 编辑 | OK | GFM 全语法 |\n| 代码高亮 | OK | 17 种语言 |\n| 实时预览 | OK | 所见即所得 |\n| 草稿保存 | OK | 本地暂存 |\n| 封面图上传 | OK | 自动存储 |\n| 主题切换 | OK | 5 套配色 |\n| GitHub Pages | OK | 自动部署 |\n\n## 部署到 GitHub Pages\n\n1. 在 GitHub 创建新仓库\n2. 推送代码到 main 分支\n3. Settings -> Pages -> Source 选择 GitHub Actions\n4. 每次推送自动部署\n\n```bash\ngit remote add origin https://github.com/your-username/your-repo.git\ngit push -u origin main\n```\n\n## 自定义扩展\n\n### 修改站点信息\n\n编辑 blog-data.json：\n\n- author — 作者名称\n- title — 博客标题\n- subtitle — 博客副标题\n\n### 切换主题配色\n\n在 styles.css 中修改 MDL 主题引用即可，共 5 套配色可选。\n\n### 添加新页面\n\n1. 在根目录创建 HTML 文件\n2. 参照现有页面引入 MDL 样式\n3. 在导航菜单中添加链接",
+      "cardFormat": "standard",
+      "coverImage": ""
+    }
+  ]
+}

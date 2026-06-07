@@ -1,3 +1,13 @@
+﻿/* -------------------------------------------------------
+   [Clippy 助手基础样式 - 原始文件]
+   本文件定义 Clippy 桌面助手的气泡和角色基础样式
+   
+   【推荐替代】已合并到 clippy-page.css，新页面请直接引用：
+     <link rel="stylesheet" href="./css/clippy-page.css" media="all">
+   
+   【如需单独引用】
+     <link rel="stylesheet" href="./css/clippy.css" media="all">
+   ------------------------------------------------------- */
 .clippy, .clippy-balloon {
     position: fixed;
     z-index: 1000;

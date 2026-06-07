@@ -1,20 +1,4 @@
 <!doctype html>
-<!--
-  Material Design Lite
-  Copyright 2015 Google Inc. All rights reserved.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License
--->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -22,31 +6,18 @@
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>Kernel 的个人博客 - 使用 Material Design Lite 搭建</title>
-
-    <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
-
-    <!-- Add to homescreen for Safari on iOS -->
+    <link rel="icon" sizes="192x192" href="blog/favicons/26d7839df0b8.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Material Design Lite">
-    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
-
-    <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="blog/favicons/26d7839df0b8.png">
+    <meta name="msapplication-TileImage" content="blog/favicons/26d7839df0b8.png">
     <meta name="msapplication-TileColor" content="#3372DF">
-
-    <link rel="shortcut icon" href="images/favicon.png">
-
-    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-    <!--
-    <link rel="canonical" href="http://www.example.com/">
-    -->
-
+    <link rel="shortcut icon" href="blog/favicons/26d7839df0b8.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-orange.min.css">
+    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
     <link rel="stylesheet" href="styles.css">
     <style>
     #view-source {
@@ -58,77 +29,51 @@
       margin-bottom: 40px;
       z-index: 900;
     }
-    /* 让链接填充整个菜单项 */
     .mdl-menu__item a {
       display: block;
       width: 100%;
       height: 100%;
-      text-decoration: none; /* 如果需要取消下划线 */
+      text-decoration: none;
     }
-
-    /* 鼠标悬停时，为链接添加样式 */
     .mdl-menu__item a:hover {
-      background-color: #f0f0f0; /* 根据需要修改颜色 */
+      background-color: #f0f0f0;
     }
-
-    /* 禁用链接时的样式 */
     .mdl-menu__item a[disabled] {
-      color: #aaa; /* 根据需要修改颜色 */
-      pointer-events: none; /* 禁用鼠标事件 */
+      color: #aaa;
+      pointer-events: none;
     }
+    body::before { background-image: url('blog/backgrounds/8cc59a4cdeb6.jpg') !important; }
     </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // 找到菜单按钮元素
-        var menuButton = document.getElementById('menu-button');
-        // 找到主题菜单项元素
         var menuTheme1 = document.getElementById('menu-theme-1');
         var menuTheme2 = document.getElementById('menu-theme-2');
-        // 定义 menuTheme3
         var menuTheme3 = document.getElementById('menu-theme-3');
-
-        // 添加点击事件处理程序
         menuTheme1.addEventListener('click', function() {
-          // 设置新的主题配色（主题1）
-          setThemeColor('https://code.getmdl.io/1.3.0/material.grey-orange.min.css');
+          setThemeColor('lib/mdl/material-themes-grey-orange.css');
         });
-
         menuTheme2.addEventListener('click', function() {
-          // 设置新的主题配色（主题2）
-          setThemeColor('https://code.getmdl.io/1.3.0/material.blue_grey-red.min.css');
+          setThemeColor('lib/mdl/material-themes-blue-grey-red.css');
         });
-
-        // 添加点击事件处理程序
         menuTheme3.addEventListener('click', function() {
-          // 设置新的主题配色（主题3）
-          setThemeColor('https://code.getmdl.io/1.3.0/material.teal-green.min.css');
+          setThemeColor('lib/mdl/material-themes-teal-green.css');
         });
       });
-
-      // 函数：设置主题配色
       function setThemeColor(themeUrl) {
-        // 找到现有的主题样式表链接
-        var themeLink = document.querySelector('link[href^="https://code.getmdl.io/1.3.0/material."]');
-
-        // 如果找到了主题样式表链接
+        var themeLink = document.querySelector('link[href^="lib/mdl/material-themes"]');
         if (themeLink) {
-          // 更新主题样式表链接的 href 属性为新的主题 URL
           themeLink.href = themeUrl;
         }
       }
     </script>
-
   </head>
   <body>
-    <div class="demo-blog mdl-layout mdl-js-layout has-drawer is-upgraded">
+    <div class="blog mdl-layout mdl-js-layout has-drawer is-upgraded">
       <main class="mdl-layout__content">
-        <!-- 在按钮外面包裹一个父元素，用于定位 -->
         <div class="theme">
-          <!-- 将按钮修改为一个按钮图标 -->
           <button id="menu-button" class="mdl-button mdl-js-button mdl-button--icon">
             <i class="material-icons" role="presentation">palette</i>
           </button>
-          <!-- 菜单栏结构 -->
           <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="menu-button">
             <li id="menu-theme-1" class="mdl-menu__item">Grey - Orange</li>
             <li id="menu-theme-2" class="mdl-menu__item">Blue Grey - Red</li>
@@ -138,80 +83,61 @@
             更改主题配色
           </div>
         </div>
-        <!-- Snackbar 容器 -->
         <div id="theme-snackbar-container" class="mdl-js-snackbar mdl-snackbar">
           <div class="mdl-snackbar__text"></div>
           <button class="mdl-snackbar__action" type="button"></button>
         </div>
-
         <script>
           (function() {
             'use strict';
-            // 获取 Snackbar 容器和菜单项
             var snackbarContainer = document.querySelector('#theme-snackbar-container');
             var menuItems = document.querySelectorAll('.mdl-menu__item');
-
-            // Snackbar 撤消操作的处理函数
-            //function handler() {
-              // 这里可以添加处理撤消操作的代码，比如撤销主题更改
-             // console.log('撤销操作已触发。');
-            //}
-
-            // 点击菜单项触发 Snackbar
             menuItems.forEach(function(menuItem) {
               menuItem.addEventListener('click', function() {
-                // 获取点击的菜单项文本
                 var theme = this.innerText;
-
-                // Snackbar 数据
                 var data = {
                   message: '选择了 ' + theme + ' 主题',
                   timeout: 2000,
-                  //actionHandler: handler, // 使用 handler 函数处理撤消操作
-                  //actionText: '撤销'
                 };
-
-                // 显示 Snackbar
                 snackbarContainer.MaterialSnackbar.showSnackbar(data);
               });
             });
           })();
         </script>
-        <div class="demo-blog__posts mdl-grid">
-          <div class="mdl-card coffee-pic mdl-cell mdl-cell--8-col">
+        <div class="blog__posts mdl-grid">
+          <div class="mdl-card card-article mdl-cell mdl-cell--8-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
-              <h3><a href="entry.html">Hello World! </a></h3>
+              <h3><a href="blog/posts/v2-changelog.html">博客 v2.0 更新说明 - 从 MDL 模板到完整博客系统</a></h3>
             </div>
             <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>The Kernel</strong>
-                <span>2024年3月26日</span>
+                <strong>Kernel</strong>
+                <span>2026-06-07</span>
               </div>
             </div>
           </div>
-          <div class="mdl-card something-else mdl-cell mdl-cell--8-col mdl-cell--4-col-desktop">
-            <a href="./file/clippy.html"><!--link-->
+          <div class="mdl-card sidebar-card mdl-cell mdl-cell--8-col mdl-cell--4-col-desktop">
+            <a href="./file/clippy.html">
             <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--fab mdl-color--accent">
                 <i class="material-icons mdl-color-text--white" role="presentation">add</i>
               <span class="visuallyhidden">add</span>
             </button>
             </a>
-
             <div class="mdl-card__media mdl-color--white mdl-color-text--grey-600">
-              <img src="images/logo.png">
+              <img src="blog/avatars/37bbe62ce366.png">
               发现生活中的美
             </div>
-
             <div class="mdl-card__supporting-text meta meta--fill mdl-color-text--grey-600">
               <div>
-                <strong>The Kernel</strong>
+                <strong>Kernel</strong>
               </div>
               <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="menubtn">
                 <li><a href="./file/about.html" class="mdl-menu__item">关于</a></li>
-                <li class="mdl-menu__item">私信</li>
-                <li class="mdl-menu__item">收藏</li>
-                <li class="mdl-menu__item">搜索</li>
+<li class="mdl-menu__item">私信</li>
+<li class="mdl-menu__item">收藏</li>
+<li class="mdl-menu__item">搜索</li>
+
               </ul>
               <button id="menubtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
                 <i class="material-icons" role="presentation">more_vert</i>
@@ -219,79 +145,83 @@
               </button>
             </div>
           </div>
-          <div class="mdl-card on-the-road-again mdl-cell mdl-cell--12-col">
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
-              <h3><a href="entry.html">Hello World! </a></h3>
+              <h3><a href="blog/posts/quick-start.html">快速入门</a></h3>
             </div>
             <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
-              今天，我很高兴地宣布，我成功搭建了我的第一个个人博客，并且使用了Material Design Lite（MDL）框架来构建它。作为一个热衷于技术和设计的人，这对我来说是一个里程碑式的成就。在这篇博客中，我想分享一下我的经验，以及为什么我选择了MDL框架以及它给我带来的好处。
+              MDL Blog 是一个基于 Material Design Lite 的轻量级博客框架，支持 Markdown 写作、代码高亮、主题切换，可一键部署到 GitHub Pages。
             </div>
             <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>The Kernel</strong>
-                <span>2024年3月26日</span>
+                <strong>Kernel</strong>
+                <span>2026-06-07</span>
               </div>
             </div>
           </div>
-          <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50" style="background-image: url('blog/covers/91fbd83ea35e.jpg')">
+              <h3><a href="blog/posts/code-demo.html">Code</a></h3>
+            </div>
+            <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
+              博客中可以显示的代码示例。
+            </div>
+            <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
+              <div>
+                <strong>Kernel</strong>
+                <span>2024-03-28</span>
+              </div>
+            </div>
+          </div>
+          <div class="mdl-card card-quote mdl-cell mdl-cell--12-col">
             <div class="mdl-card__title mdl-color-text--grey-50">
-              <h3 class="quote"><a href="entry.html">If you only do what you can do, you will never be more than who you are.</a></h3>
+              <h3 class="quote">If you only do what you can do, you will never be more than who you are.</h3>
             </div>
             <div class="mdl-card__supporting-text mdl-color-text--grey-600">
               Master Shifu - 'Kung Fu Panda 3'
             </div>
             <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>The Kernel</strong>
-                <span>2024年3月26日</span>
+                <strong>Kernel</strong>
+                <span>2024-03-26</span>
               </div>
             </div>
           </div>
-          <div class="mdl-card preview mdl-cell mdl-cell--12-col">
-            <div class="mdl-card__media mdl-color-text--grey-50">
-              <h3><a href="entry.html">预告</a></h3>
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50" style="background-image: url('blog/covers/c554d17c6c16.jpg')">
+              <h3><a href="blog/posts/hello-world.html">Hello World!</a></h3>
             </div>
-            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-              我将会在这里更新一些新的内容。
+            <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
+              今天，我很高兴地宣布，我成功搭建了我的第一个个人博客，并且使用了Material Design Lite（MDL）框架来构建它。作为一个热衷于技术和设计的人，这对我来说是一个里程碑式的成就。在这篇博客中，我想分享一下我的经验，以及为什么我选择了MDL框架以及它给我带来的好处。
             </div>
             <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>The Kernel</strong>
-                <span>2024年3月26日</span>
+                <strong>Kernel</strong>
+                <span>2024-03-26</span>
               </div>
             </div>
           </div>
-
-          <!--在这里加入新的卡片-->
-          <div class="mdl-card chroma mdl-cell mdl-cell--12-col">
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
-              <h3><a href="./file/code.html">Code</a></h3>
+              <h3><a href="blog/posts/announcement.html">预告</a></h3>
             </div>
-            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-              博客中可以显示的代码示例。
+            <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
+              即将推出全新博客系统，敬请期待！
             </div>
             <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>The Kernel</strong>
-                <span>2024年3月28日</span>
+                <strong>Kernel</strong>
+                <span>2024-03-20</span>
               </div>
             </div>
           </div>
-
-
-
-          <nav class="demo-nav mdl-cell mdl-cell--12-col">
+          <nav class="article-nav mdl-cell mdl-cell--12-col">
             <div class="section-spacer"></div>
-            <a href="entry.html" class="demo-nav__button" title="show more">
-              More
-              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
-                <i class="material-icons" role="presentation">arrow_forward</i>
-              </button>
-            </a>
           </nav>
         </div>
         <footer class="mdl-mini-footer">
@@ -316,7 +246,7 @@
       </main>
       <div class="mdl-layout__obfuscator"></div>
     </div>
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="lib/mdl/material.min.js"></script>
   </body>
   <script>
     Array.prototype.forEach.call(document.querySelectorAll('.mdl-card__media'), function(el) {

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="快速入门">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>My MDL Blog - 快速入门</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="../../images/touch/chrome-touch-icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="../../apple-touch-icon-precomposed.png">
+    <meta name="msapplication-TileImage" content="../../images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../../lib/mdl/material-themes-grey-orange.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../file/css/prism-default.css">
+    <link rel="stylesheet" href="../../file/css/mdl-main.css">
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    
+    </style>
+  </head>
+  <body class="started">
+    <div class="blog blog--article mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="back-btn">
+          <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color-text--white" href="javascript:history.back()" title="go back" role="button">
+            <i class="material-icons" role="presentation">arrow_back</i>
+          </a>
+        </div>
+        <div class="blog__posts mdl-grid">
+          <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3>快速入门</h3>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+              <div class="minilogo"></div>
+              <div>
+                <strong>Your Name</strong>
+                <span>2026-06-07</span>
+              </div>
+              <div class="section-spacer"></div>
+              <div>
+                <i class="material-icons" role="presentation">bookmark</i>
+                <span class="visuallyhidden">bookmark</span>
+              </div>
+              <div>
+                <i class="material-icons" role="presentation">share</i>
+                <span class="visuallyhidden">share</span>
+              </div>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text docs-layout">
+              <h2>什么是 MDL Blog？</h2>
+<p>MDL Blog 是一个轻量级的静态博客框架，基于 Google Material Design Lite (MDL) 构建。它不需要数据库，不需要 Node.js，只需 Python + Flask 即可在本地管理内容，然后一键部署到 GitHub Pages。</p>
+<h3>核心特性</h3>
+<ul>
+<li><strong>Material Design 风格</strong> — 遵循 MD1 设计规范，5 套配色主题可切换</li>
+<li><strong>Markdown 写作</strong> — 支持 GFM 语法、代码高亮（17 种语言）、表格、引用块</li>
+<li><strong>可视化后台</strong> — 浏览器内文章管理，支持实时预览、草稿保存</li>
+<li><strong>零数据库</strong> — 所有数据存储在 blog-data.json，Git 友好</li>
+<li><strong>一键部署</strong> — 内置 GitHub Actions 工作流，推送到 main 分支自动发布</li>
+<li><strong>轻量可扩展</strong> — 核心代码仅 2 个文件（Python 后端 + HTML 前端），易于定制</li>
+</ul>
+<h2>快速开始</h2>
+<h3>环境要求</h3>
+<ul>
+<li>Python 3.8+</li>
+<li>pip</li>
+</ul>
+<h3>安装步骤</h3>
+<div class="code-with-text">bash
+<pre class="language-bash"><code class="language-bash"># 1. 克隆仓库
+git clone https://github.com/your-username/mdl-blog.git
+cd mdl-blog
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 3. 启动本地服务器
+python blog-admin.py</code></pre>
+</div>
+
+<p>启动后访问：</p>
+<ul>
+<li>博客首页：http://localhost:5001/</li>
+<li>管理后台：http://localhost:5001/admin</li>
+</ul>
+<h3>写第一篇文章</h3>
+<ol>
+<li>打开管理后台 http://localhost:5001/admin</li>
+<li>在右侧编辑器中填写标题、日期、摘要</li>
+<li>在 Markdown 编辑器中编写正文</li>
+<li>点击预览确认效果</li>
+<li>点击保存并发布即可</li>
+</ol>
+<h2>项目结构</h2>
+<div class="code-with-text">code
+<pre class="language-markup"><code class="language-markup">mdl-blog/
+|-- blog-admin.py          # Flask 后端
+|-- blog-admin.html        # 管理后台
+|-- blog-data.json         # 博客数据
+|-- styles.css             # 全局样式
+|-- requirements.txt       # Python 依赖
+|-- README.md              # 项目文档
+|-- images/                # 静态图片
+|-- blog/
+|   |-- covers/            # 封面图
+|   |-- backgrounds/       # 背景图
+|   +-- posts/             # 文章 HTML（自动生成）
+|-- lib/mdl/               # MDL 框架（5 套主题）
++-- .github/workflows/     # GitHub Pages 部署</code></pre>
+</div>
+
+<h2>Markdown 支持</h2>
+<p>编辑器支持 GFM 全语法：</p>
+<div class="code-with-text">python
+<pre class="language-python"><code class="language-python">def hello(name: str) -&gt; str:
+    return f&quot;Hello, {name}!&quot;
+
+print(hello(&quot;MDL Blog&quot;))</code></pre>
+</div>
+
+<blockquote>
+<p>引用块用于突出重要内容，左侧有 Material Design 风格的蓝色边线标识。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th style="text-align: center;">状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown 编辑</td>
+<td style="text-align: center;">OK</td>
+<td>GFM 全语法</td>
+</tr>
+<tr>
+<td>代码高亮</td>
+<td style="text-align: center;">OK</td>
+<td>17 种语言</td>
+</tr>
+<tr>
+<td>实时预览</td>
+<td style="text-align: center;">OK</td>
+<td>所见即所得</td>
+</tr>
+<tr>
+<td>草稿保存</td>
+<td style="text-align: center;">OK</td>
+<td>本地暂存</td>
+</tr>
+<tr>
+<td>封面图上传</td>
+<td style="text-align: center;">OK</td>
+<td>自动存储</td>
+</tr>
+<tr>
+<td>主题切换</td>
+<td style="text-align: center;">OK</td>
+<td>5 套配色</td>
+</tr>
+<tr>
+<td>GitHub Pages</td>
+<td style="text-align: center;">OK</td>
+<td>自动部署</td>
+</tr>
+</tbody>
+</table>
+<h2>部署到 GitHub Pages</h2>
+<ol>
+<li>在 GitHub 创建新仓库</li>
+<li>推送代码到 main 分支</li>
+<li>Settings -&gt; Pages -&gt; Source 选择 GitHub Actions</li>
+<li>每次推送自动部署</li>
+</ol>
+<div class="code-with-text">bash
+<pre class="language-bash"><code class="language-bash">git remote add origin https://github.com/your-username/your-repo.git
+git push -u origin main</code></pre>
+</div>
+
+<h2>自定义扩展</h2>
+<h3>修改站点信息</h3>
+<p>编辑 blog-data.json：</p>
+<ul>
+<li>author — 作者名称</li>
+<li>title — 博客标题</li>
+<li>subtitle — 博客副标题</li>
+</ul>
+<h3>切换主题配色</h3>
+<p>在 styles.css 中修改 MDL 主题引用即可，共 5 套配色可选。</p>
+<h3>添加新页面</h3>
+<ol>
+<li>在根目录创建 HTML 文件</li>
+<li>参照现有页面引入 MDL 样式</li>
+<li>在导航菜单中添加链接</li>
+</ol>
+            </div>
+            <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+              <div class="comment mdl-color-text--grey-700"></div>
+            </div>
+          </div>
+          <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="../../index.html" class="article-nav__btn" title="返回博客首页">
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+              </button>
+              返回首页
+            </a>
+            <div class="section-spacer"></div>
+            <a href="hello-world.html" class="article-nav__btn" title="Hello World! (2026-06-07)">
+              后一篇
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </a>          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer--left-section">
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+              <span class="visuallyhidden">Twitter</span>
+            </button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+              <span class="visuallyhidden">Facebook</span>
+            </button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+              <span class="visuallyhidden">Google Plus</span>
+            </button>
+          </div>
+          <div class="mdl-mini-footer--right-section">
+            <button class="mdl-mini-footer--social-btn social-btn__share">
+              <i class="material-icons" role="presentation">share</i>
+              <span class="visuallyhidden">share</span>
+            </button>
+          </div>
+        </footer>
+      </main>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="../../lib/mdl/material.min.js"></script>
+    <script src="../../file/javascript/snippets.js"></script>
+    <!-- Prism 代码高亮（含17种语言） -->
+    <script src="../../file/javascript/prism-bundle.min.js"></script>
+  </body>
+</html>

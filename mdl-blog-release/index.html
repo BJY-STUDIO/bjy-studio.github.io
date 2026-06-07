@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>My MDL Blog - 使用 Material Design Lite 搭建</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    .mdl-menu__item a {
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-decoration: none;
+    }
+    .mdl-menu__item a:hover {
+      background-color: #f0f0f0;
+    }
+    .mdl-menu__item a[disabled] {
+      color: #aaa;
+      pointer-events: none;
+    }
+    
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var menuTheme1 = document.getElementById('menu-theme-1');
+        var menuTheme2 = document.getElementById('menu-theme-2');
+        var menuTheme3 = document.getElementById('menu-theme-3');
+        menuTheme1.addEventListener('click', function() {
+          setThemeColor('lib/mdl/material-themes-grey-orange.css');
+        });
+        menuTheme2.addEventListener('click', function() {
+          setThemeColor('lib/mdl/material-themes-blue-grey-red.css');
+        });
+        menuTheme3.addEventListener('click', function() {
+          setThemeColor('lib/mdl/material-themes-teal-green.css');
+        });
+      });
+      function setThemeColor(themeUrl) {
+        var themeLink = document.querySelector('link[href^="lib/mdl/material-themes"]');
+        if (themeLink) {
+          themeLink.href = themeUrl;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="blog mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="theme">
+          <button id="menu-button" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons" role="presentation">palette</i>
+          </button>
+          <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="menu-button">
+            <li id="menu-theme-1" class="mdl-menu__item">Grey - Orange</li>
+            <li id="menu-theme-2" class="mdl-menu__item">Blue Grey - Red</li>
+            <li id="menu-theme-3" class="mdl-menu__item">Teal - Green</li>
+          </ul>
+          <div class="mdl-tooltip mdl-tooltip--right" for="menu-button">
+            更改主题配色
+          </div>
+        </div>
+        <div id="theme-snackbar-container" class="mdl-js-snackbar mdl-snackbar">
+          <div class="mdl-snackbar__text"></div>
+          <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+        <script>
+          (function() {
+            'use strict';
+            var snackbarContainer = document.querySelector('#theme-snackbar-container');
+            var menuItems = document.querySelectorAll('.mdl-menu__item');
+            menuItems.forEach(function(menuItem) {
+              menuItem.addEventListener('click', function() {
+                var theme = this.innerText;
+                var data = {
+                  message: '选择了 ' + theme + ' 主题',
+                  timeout: 2000,
+                };
+                snackbarContainer.MaterialSnackbar.showSnackbar(data);
+              });
+            });
+          })();
+        </script>
+        <div class="blog__posts mdl-grid">
+
+          <div class="mdl-card sidebar-card mdl-cell mdl-cell--8-col mdl-cell--4-col-desktop">
+            <a href="./file/clippy.html">
+            <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--fab mdl-color--accent">
+                <i class="material-icons mdl-color-text--white" role="presentation">add</i>
+              <span class="visuallyhidden">add</span>
+            </button>
+            </a>
+            <div class="mdl-card__media mdl-color--white mdl-color-text--grey-600">
+              <img src="images/logo.png">
+              A Material Design Blog
+            </div>
+            <div class="mdl-card__supporting-text meta meta--fill mdl-color-text--grey-600">
+              <div>
+                <strong>Your Name</strong>
+              </div>
+              <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="menubtn">
+                <li><a href="./file/about.html" class="mdl-menu__item">关于</a></li>
+                <li class="mdl-menu__item">私信</li>
+                <li class="mdl-menu__item">收藏</li>
+                <li class="mdl-menu__item">搜索</li>
+              </ul>
+              <button id="menubtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+                <i class="material-icons" role="presentation">more_vert</i>
+                <span class="visuallyhidden">show menu</span>
+              </button>
+            </div>
+          </div>
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3><a href="blog/posts/quick-start.html">快速入门</a></h3>
+            </div>
+            <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
+              MDL Blog 是一个基于 Material Design Lite 的轻量级博客框架，支持 Markdown 写作、代码高亮、主题切换，可一键部署到 GitHub Pages。
+            </div>
+            <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+              <div class="minilogo"></div>
+              <div>
+                <strong>Your Name</strong>
+                <span>2026-06-07</span>
+              </div>
+            </div>
+          </div>
+          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3><a href="blog/posts/hello-world.html">Hello World!</a></h3>
+            </div>
+            <div class="mdl-color-text--grey-600 mdl-card__supporting-text">
+              欢迎使用 MDL Blog！这是你的第一篇博客文章，删除它或编辑它，开始你的写作之旅。
+            </div>
+            <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+              <div class="minilogo"></div>
+              <div>
+                <strong>Your Name</strong>
+                <span>2026-06-07</span>
+              </div>
+            </div>
+          </div>
+          <nav class="article-nav mdl-cell mdl-cell--12-col">
+            <div class="section-spacer"></div>
+          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer--left-section">
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+              <span class="visuallyhidden">Twitter</span>
+            </button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+              <span class="visuallyhidden">Facebook</span>
+            </button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+              <span class="visuallyhidden">Google</span>
+            </button>
+          </div>
+          <div class="mdl-mini-footer--right-section">
+            <button class="mdl-mini-footer--social-btn social-btn__share">
+              <i class="material-icons" role="presentation">share</i>
+              <span class="visuallyhidden">share</span>
+            </button>
+          </div>
+        </footer>
+      </main>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="lib/mdl/material.min.js"></script>
+  </body>
+  <script>
+    Array.prototype.forEach.call(document.querySelectorAll('.mdl-card__media'), function(el) {
+      var link = el.querySelector('a');
+      if(!link) {
+        return;
+      }
+      var target = link.getAttribute('href');
+      if(!target) {
+        return;
+      }
+      el.addEventListener('click', function() {
+        location.href = target;
+      });
+    });
+  </script>
+</html>

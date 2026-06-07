@@ -2,7 +2,7 @@ function CodeBlockCodePen() {
     "use strict";
     this.codepenButtons = document.getElementsByClassName("codepen-button"), this.init()
 }
-CodeBlockCodePen.prototype.MDLIBS = ["<!-- Material Design Lite -->", '<script src="https://code.getmdl.io/1.3.0/material.min.js"></script>', '<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">', "<!-- Material Design icon font -->", '<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">'], CodeBlockCodePen.prototype.init = function() {
+CodeBlockCodePen.prototype.MDLIBS = ["<!-- Material Design Lite -->", '<script src="../lib/mdl/material.min.js"></script>', '<link rel="stylesheet" href="../lib/mdl/material-themes-indigo-pink.css">', "<!-- Material Design icon font -->", '<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">'], CodeBlockCodePen.prototype.init = function() {
     "use strict";
     [].slice.call(this.codepenButtons).forEach(function(t) {
         t.addEventListener("click", this.clickHandler(t, t.parentNode))

@@ -45,7 +45,7 @@
     <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-orange.min.css">
+    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
     <link rel="stylesheet" href="styles.css">
 
 
@@ -73,14 +73,14 @@
       });
     });
   </script>
-    <div class="demo-blog demo-blog--blogpost mdl-layout mdl-js-layout has-drawer is-upgraded">
+    <div class="blog blog--article mdl-layout mdl-js-layout has-drawer is-upgraded">
       <main class="mdl-layout__content">
-        <div class="demo-back">
+        <div class="back-btn">
           <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="index.html" title="go back" role="button">
             <i class="material-icons" role="presentation">arrow_back</i>
           </a>
         </div>
-        <div class="demo-blog__posts mdl-grid">
+        <div class="blog__posts mdl-grid">
           <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
               <h3>Hello World! </h3>
@@ -204,15 +204,15 @@
             </div>
           </div>
 
-          <nav class="demo-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
-            <a href="index.html" class="demo-nav__button">
+          <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="index.html" class="article-nav__btn">
               <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
               </button>
               Newer
             </a>
             <div class="section-spacer"></div>
-            <a href="index.html" class="demo-nav__button">
+            <a href="index.html" class="article-nav__btn">
               Older
               <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_forward</i>
@@ -242,6 +242,6 @@
       </main>
       <div class="mdl-layout__obfuscator"></div>
     </div>
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="lib/mdl/material.min.js"></script>
   </body>
 </html>
