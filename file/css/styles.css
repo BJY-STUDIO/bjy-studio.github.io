@@ -1,14 +1,16 @@
 /* ==============================================================
    博客全局样式 - styles.css
    ==============================================================
-   本文件定义博客的全局视觉样式，包括：
+   本文件定义博客前台页面的全局视觉样式，包括：
      - 全屏背景图片（响应式多分辨率）
-      - 博客卡片流布局
-      - 文章详情页样式（blog--article）
+     - 博客卡片流布局
+     - 文章详情页样式（blog--article）
      - 评论区样式
      - 返回按钮（back-btn）和主题切换按钮（theme）
      - 社交按钮和底部栏
-      - 卡片样式（card-article, card-quote, sidebar-card）
+     - 卡片样式（card-article, card-quote, sidebar-card）
+     - 博文排版系统（docs-layout）
+     - 暗黑模式覆盖（MD1 Dark Theme）
 
    【引用方式】
    在所有博客页面的 <head> 中引入（必须在 MDL 主题 CSS 之后）：
@@ -21,7 +23,8 @@
      3. 本文件 (styles.css)
    ============================================================== */
 
-/* 创建一个伪元素来实现全屏背景图片 */
+/* ==== 全屏背景图片 ==== */
+/* 使用 body::before 伪元素实现全屏固定背景，不影响 body 内容层 */
 body::before {
     background-size: cover;
     background-attachment: fixed;
@@ -35,7 +38,8 @@ body::before {
     position: fixed;
 }
 
-/* 根据不同的屏幕尺寸设置不同的背景图片 */
+/* 根据不同的屏幕尺寸和像素密度设置响应式背景图片 */
+/* 小屏 (≤512px 1.5x / ≤1024px 1x) */
 @media (max-width: 512px)  and (-webkit-min-device-pixel-ratio: 1.5),
        (max-width: 512px)  and (min-resolution: 1.5dppx),
        (max-width: 1024px) and (-webkit-max-device-pixel-ratio: 1.5),
@@ -44,6 +48,8 @@ body::before {
     background-image: url('images/mountain.jpg');
   }
 }
+
+/* 中屏 (513-1024px 1.5x / 1025-2048px 1x) */
 @media (min-width: 513px)  and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 1.5),
        (min-width: 513px)  and (max-width: 1024px) and (min-resolution: 1.5dppx),
        (min-width: 1025px) and (max-width: 2048px) and (-webkit-max-device-pixel-ratio: 1.5),
@@ -52,6 +58,8 @@ body::before {
     background-image: url('images/mountain.jpg');
   }
 }
+
+/* 大屏 (≥1025px 1.5x / ≥2049px 1x) */
 @media (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 1.5),
        (min-width: 1025px) and (min-resolution: 1.5dppx),
        (min-width: 2049px) and (-webkit-max-device-pixel-ratio: 1.5),
@@ -60,10 +68,15 @@ body::before {
     background-image: url('images/mountain.jpg');
   }
 }
+
+/* ==== 博客容器基础 ==== */
+
+/* 博客根容器：Roboto 字体族 */
 body .blog {
   font-family: 'Roboto', 'Helvetica', sans-serif;
 }
 
+/* 博客文章流容器：最大 900px 居中、flex 行布局 */
 .blog .blog__posts {
   max-width: 900px;
   padding: 0;
@@ -77,11 +90,16 @@ body .blog {
           flex-shrink: 0;
 }
 
+/* 博客布局内容区：顶部 230px 留白给背景图、相对定位 */
 .blog.mdl-layout .mdl-layout__content {
   padding-top: 230px;
   position: relative;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ==== 卡片通用样式 ==== */
+
+/* MDL 卡片基础：flex 列布局、stretch 对齐、360dp 最小高度 */
 .blog .mdl-card {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -94,12 +112,16 @@ body .blog {
           align-items: stretch;
   min-height: 360px;
 }
+
+/* 卡片标题区：16dp 内边距、flex-grow 填充剩余空间 */
 .blog .mdl-card__title {
   padding: 16px;
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
+
+/* 卡片封面图区：cover 填充、24dp 内边距、flex-grow、从底部对齐、可点击跳转 */
 .blog .mdl-card__media {
   box-sizing: border-box;
   background-size: cover;
@@ -118,10 +140,15 @@ body .blog {
           align-items: flex-end;
   cursor: pointer;
 }
+
+/* 卡片内链接继承父色 */
 .blog .mdl-card__media a,
 .blog .mdl-card__title a {
   color: inherit;
 }
+
+/* 卡片支撑文本区：全宽、16dp 内边距、64dp 最小高度、flex 居中
+   注意：MDL 默认 .mdl-card__supporting-text 有 display:flex; align-items:center */
 .blog .mdl-card__supporting-text {
   width: 100%;
   padding: 16px;
@@ -133,23 +160,37 @@ body .blog {
     -ms-flex-align: center;
     align-items: center;
 }
+
+/* 支撑文本内 strong 降为 400 粗细（视觉弱化） */
 .blog .mdl-card__supporting-text strong {
   font-weight: 400;
 }
+
+/* 封面图下面紧邻的支撑区：64dp 最小高度 */
 .blog .mdl-card__media ~ .mdl-card__supporting-text {
   min-height: 64px;
 }
+
+/* 非末尾支撑区：76dp 最小高度 + border-box */
 .blog .mdl-card__supporting-text:not(:last-child) {
   box-sizing: border-box;
   min-height: 76px;
 }
+
+/* 首页卡片支撑区之间的分割线（不包括文章详情页） */
 .blog:not(.blog--article) .mdl-card__supporting-text ~ .mdl-card__supporting-text {
   border-top: 1px solid rgba(0,0,0,0.1);
 }
 
+/* ==== 卡片操作区 ==== */
+
+/* 操作区首个元素无左 margin */
 .blog .mdl-card__actions:first-child {
   margin-left: 0;
 }
+
+/* ==== Meta 信息行 ==== */
+/* 卡片底部日期/分类等 meta 信息：flex 行、居中、16dp 内边距 */
 .blog .meta {
   box-sizing: border-box;
   padding: 16px;
@@ -167,6 +208,8 @@ body .blog {
           justify-content: flex-start;
   height: auto;
 }
+
+/* 收藏夹按钮：行布局、8dp 左右 margin、13sp medium */
 .blog .meta > .meta__favorites{
   -webkit-flex-direction: row;
       -ms-flex-direction: row;
@@ -175,19 +218,27 @@ body .blog {
   font-size: 13px;
   font-weight: 500;
 }
+
+/* 收藏图标：2em（跟随父元素字号）、可点击、12dp 左间距 */
 .blog .meta > .meta__favorites .material-icons {
   font-size: 2em;
   cursor: pointer;
   margin-left: 12px;
 }
+
+/* Meta 行两端对齐修饰符 */
 .blog .mdl-card .meta.meta--fill {
   -webkit-justify-content: space-between;
       -ms-flex-pack: justify;
           justify-content: space-between;
 }
+
+/* Meta 子元素间距：首元素右侧 16dp */
 .blog .meta > *:first-child {
   margin-right: 16px;
 }
+
+/* Meta 子元素：flex 列布局 */
 .blog .meta > * {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -196,20 +247,34 @@ body .blog {
       -ms-flex-direction: column;
           flex-direction: column;
 }
+
+/* ==== 小屏适配 ==== */
+
+/* 小屏文章卡片排序 =0 */
 .blog.is-small-screen .blog__posts > .mdl-card.card-article {
   -webkit-order: 0;
       -ms-flex-order: 0;
           order: 0;
 }
+
+/* 小屏侧边卡片排序 -1（显示在文章上方） */
 .blog.is-small-screen .blog__posts > .mdl-card.sidebar-card {
   -webkit-order: -1;
       -ms-flex-order: -1;
           order: -1;
 }
+
+/* ==== 文章卡片封面区 ==== */
+
+/* 无封面图时的默认背景色 — blue-grey 800 (#37474f)
+   硬编码而非用 MDL 主题色，因为某些主题的 primary-dark (如 grey) 效果差 */
 .blog .card-article .mdl-card__media {
-  /* 无封面图时的默认背景色 — 在 MDL 主题 CSS 之后加载，可覆盖主题色 */
-  background-color: rgb(55, 71, 79); /* blue-grey 800 */
+  background-color: rgb(55, 71, 79);
 }
+
+/* ==== 侧边栏卡片 ==== */
+
+/* 侧边栏封面区：flex 列居中 */
 .blog .sidebar-card .mdl-card__media {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -224,6 +289,8 @@ body .blog {
       -ms-flex-align: center;
           align-items: center;
 }
+
+/* 侧边栏操作按钮（如分享）：绝对定位右上角、上移 28dp */
 .blog .sidebar-card > button {
   position: absolute;
   top: 0;
@@ -232,31 +299,40 @@ body .blog {
           transform: translate(0px, -28px);
 }
 
+/* 侧边栏链接按钮（同上，a 标签版本） */
 .blog .sidebar-card > a {
     position: absolute;
     top: 0;
     right: 28px;
     -webkit-transform: translate(0px, -28px);
-    transform: translate(0px, -28px);
+            transform: translate(0px, -28px);
 }
 
-
+/* 侧边栏封面区文字：13sp medium、2dp 顶部圆角 */
 .blog .sidebar-card .mdl-card__media {
   font-size: 13px;
   font-weight: 500;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
 }
+
+/* 侧边栏头像：64x64dp、10dp 底部间距 */
 .blog .sidebar-card .mdl-card__media img {
   width: 64px;
   height: 64px;
   margin-bottom: 10px;
 }
+
+/* 侧边栏底部支撑区：浅灰背景、2dp 底部圆角 */
 .blog .sidebar-card .mdl-card__supporting-text {
   background-color: #F5F5F5;
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
 }
+
+/* ==== 文章导航 ==== */
+/* "前一篇/后一篇"导航栏：12+15dp margin、flex 行两端对齐、白色文字 */
+
 .blog .blog__posts > .article-nav {
   margin: 12px 15px;
   display: -webkit-flex;
@@ -274,23 +350,33 @@ body .blog {
   color: white;
   font-weight: 500;
 }
+
+/* 导航链接：白色、无下划线、flex 居中 */
 .blog .blog__posts > .article-nav > .article-nav__btn {
   color: white;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
 }
+
+/* 导航内 MDL 按钮：54% 黑字、白色背景 */
 .blog .blog__posts > .article-nav .mdl-button {
   color: rgba(0,0,0,0.54);
   background-color: white;
 }
+
+/* 前一篇按钮右侧 16dp 间距 */
 .blog .blog__posts > .article-nav > .article-nav__btn:first-child .mdl-button {
   margin-right: 16px;
 }
+
+/* 后一篇按钮左侧 16dp 间距 */
 .blog .blog__posts > .article-nav > .article-nav__btn:last-child .mdl-button {
   margin-left: 16px;
 }
-/* 导航按钮 tooltip 样式 */
+
+/* 导航按钮 hover tooltip — 使用 CSS ::after 伪元素
+   MD1 风格：黑色 87% 背景、白色 12sp 文字、2dp 圆角、上方偏移 8dp */
 .article-nav__btn[title]:hover::after {
   content: attr(title);
   position: absolute;
@@ -308,48 +394,72 @@ body .blog {
   z-index: 100;
   margin-bottom: 8px;
 }
+
+/* 导航按钮容器：relative 定位（tooltip 定位基准） */
 .article-nav__btn {
   position: relative;
 }
+
+/* ==== 卡片内链接和标题 ==== */
+
+/* 卡片内链接：继承颜色和粗细 */
 .blog .mdl-card > a {
   color: inherit;
   text-decoration: none;
   font-weight: inherit;
 }
+
+/* 卡片 h3 标题无外边距 */
 .blog .mdl-card h3 {
   margin: 0;
 }
+
+/* 标题链接无下划线 */
 .blog .mdl-card h3 a {
   text-decoration: none;
 }
+
+/* 引用卡片 h3.quote — 装饰引号
+   大号引号（3em）、上方 0.5em 间距 */
 .blog .mdl-card h3.quote:before, .blog .mdl-card h3.quote:after {
   display: block;
   font-size: 3em;
   margin-top: 0.5em;
 }
 .blog .mdl-card h3.quote:before {
-  content: '“';
+  content: '\201C';   /* 左双引号 " */
 }
 .blog .mdl-card h3.quote:after {
-  content: '”';
+  content: '\201D';   /* 右双引号 " */
 }
+
+/* ==== 文章详情页 (blog--article) ==== */
+
+/* 文章详情页自定义 header 透明背景 */
 .blog--article .custom-header {
   background-color: transparent;
 }
+
+/* 文章封面区：280dp 高、无封面时 blue-grey 800 默认背景 */
 .blog--article .blog__posts > .mdl-card .mdl-card__media {
-  /* 无封面图时的默认背景色 */
-  background-color: rgb(55, 71, 79); /* blue-grey 800 */
+  background-color: rgb(55, 71, 79);
   height: 280px;
 }
 
+/* 评论区容器：灰色背景 */
 .blog--article .comments {
   background-color: #EEE;
 }
+
+/* 文章 meta 子元素行对齐（而非列） */
 .blog--article .meta > * {
   -webkit-align-items: center;
       -ms-flex-align: center;
           align-items: center;
 }
+
+/* 文章正文区容器（meta 下方的 supporting-text）
+   覆盖 MDL 默认 flex 居中为 flex 列布局 */
 .blog--article .meta + .mdl-card__supporting-text {
   border: 0;
   display: -webkit-flex;
@@ -359,6 +469,8 @@ body .blog {
       -ms-flex-direction: column;
           flex-direction: column;
 }
+
+/* 文章正文段落：全宽、16dp 底部间距、15sp / 1.7 行高 */
 .blog--article .meta + .mdl-card__supporting-text p {
   max-width: 100%;
   margin: 0 0 16px 0;
@@ -366,6 +478,9 @@ body .blog {
   line-height: 1.7;
 }
 
+/* ==== 评论区 ==== */
+
+/* 评论区：flex 列布局、stretch 对齐、32dp 内边距 */
 .blog--article .comments {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -382,6 +497,8 @@ body .blog {
   padding: 32px;
   box-sizing: border-box;
 }
+
+/* 评论表单：flex 行、16dp 底部间距 */
 .blog--article .comments > form {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -391,6 +508,8 @@ body .blog {
           flex-direction: row;
   margin-bottom: 16px;
 }
+
+/* 评论输入框：flex-grow 填充、16dp 右间距、灰色文字 */
 .blog--article .comments > form .mdl-textfield {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
@@ -398,21 +517,26 @@ body .blog {
   margin-right: 16px;
   color: rgb(97, 97, 97);
 }
-/* Workaround for Firefox.
- * User agent stylesheet kept overwriting the font in FF only.
- */
+
+/* Firefox 修复：强制评论输入框使用 Roboto 字体 */
 .blog--article .comments > form .mdl-textfield .mdl-textfield__input {
   font-family: 'Roboto', 'Helvetica', sans-serif;
 }
+
+/* 评论输入框禁止拖拽调整大小 */
 .blog--article .comments > form .mdl-textfield input,
 .blog--article .comments > form .mdl-textfield textarea {
   resize: none;
 }
+
+/* 评论提交按钮：24% 黑背景、白色文字、20dp 顶部偏移 */
 .blog--article .comments > form button {
   margin-top: 20px;
   background-color: rgba(0, 0, 0, 0.24);
   color: white;
 }
+
+/* 单条评论：flex 列布局 */
 .blog--article .comments .comment {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -424,6 +548,8 @@ body .blog {
       -ms-flex-align: stretch;
           align-items: stretch;
 }
+
+/* 评论头部：flex 行对齐、16dp 底部间距 */
 .blog--article .comments .comment > .comment__header {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -436,12 +562,16 @@ body .blog {
           align-items: center;
   margin-bottom: 16px;
 }
+
+/* 评论头像：48x48dp、24dp 圆角(圆形)、16dp 右间距 */
 .blog--article .comments .comment > .comment__header > .comment__avatar {
   width: 48px;
   height: 48px;
   border-radius: 24px;
   margin-right: 16px;
 }
+
+/* 评论作者信息：flex-grow + 列布局 */
 .blog--article .comments .comment > .comment__header > .comment__author {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
@@ -453,9 +583,13 @@ body .blog {
       -ms-flex-direction: column;
           flex-direction: column;
 }
+
+/* 评论文本：1.5 行高 */
 .blog--article .comments .comment > .comment__text {
   line-height: 1.5em;
 }
+
+/* 评论操作按钮行：flex 行左对齐、0.8em 字号、16dp 顶部间距 */
 .blog--article .comments .comment > .comment__actions {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -472,15 +606,21 @@ body .blog {
   font-size: 0.8em;
   margin-top: 16px;
 }
+
+/* 评论操作按钮：16dp 右间距、24% 黑颜色 */
 .blog--article .comments .comment > .comment__actions button {
   margin-right: 16px;
   color: rgba(0, 0, 0, 0.24);
 }
+
+/* 评论回复区：32dp 顶部间距、48dp 左缩进 */
 .blog--article .comments .comment > .comment__answers {
   padding-top: 32px;
   padding-left: 48px;
 }
 
+/* ==== 返回按钮 ==== */
+/* 文章详情页左上角返回按钮：绝对定位、白色、最高层级 */
 .blog--article .back-btn {
   position: absolute;
   top: 16px;
@@ -489,6 +629,7 @@ body .blog {
   z-index: 9999;
 }
 
+/* ==== 主题切换按钮 (已移除，保留 CSS 可能被旧页面引用) ==== */
 .blog .theme {
     position: absolute;
     top: 16px;
@@ -497,18 +638,26 @@ body .blog {
     z-index: 9999;
 }
 
+/* 弹性空间填充 */
 .blog .section-spacer {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
+
+/* 侧边栏卡片：overflow visible 允许弹窗/菜单溢出、z-index 10 */
 .blog .sidebar-card {
   overflow: visible;
   z-index: 10;
 }
+
+/* 引用卡片标题区：blue-grey 900 背景 */
 .blog .card-quote .mdl-card__title {
   background-color: #263238;
 }
+
+/* 迷你 logo 头像：44x44dp 圆形、默认 logo.png 背景、浅灰底色
+   内联 style 覆盖 background-image 用于自定义头像 */
 .blog .minilogo {
   width: 44px;
   height: 44px;
@@ -520,13 +669,15 @@ body .blog {
   background-color: #F5F5F5;
 }
 
-/* Fixes for IE 10 */
+/* IE10 修复：强制 flex 布局 */
 .mdl-grid {
   display: -webkit-flex !important;
   display: -ms-flexbox !important;
   display: flex !important;
 }
 
+/* ==== 社交分享按钮 ==== */
+/* 24x24dp 图标按钮、居中裁切、46% 不透明度、2dp 圆角 */
 .social-btn {
   background-position: center;
   background-size: contain;
@@ -539,20 +690,30 @@ body .blog {
   opacity: 0.46;
   border-radius: 2px;
 }
+
+/* Twitter 分享图标 */
 .social-btn__twitter {
   background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_twitter_black_24dp.png');
 }
+
+/* Facebook/Blogger 分享图标 */
 .social-btn__blogger {
   background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_facebook_black_24dp.png');
 }
+
+/* Google+ 分享图标 */
 .social-btn__gplus {
   background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_gplus_black_24dp.png');
 }
+
+/* 通用分享按钮：54% 黑文字、透明背景 */
 .social-btn__share {
   color: rgba(0, 0, 0, 0.54);
   background: transparent;
 }
 
+/* ==== 页脚 ==== */
+/* MDL mini footer：80dp 顶部间距、120dp 高、40dp 内边距、白色背景 */
 .blog .mdl-mini-footer {
   margin-top: 80px;
   height: 120px;
@@ -564,9 +725,8 @@ body .blog {
   box-sizing: border-box;
 }
 
-
-
-/* ---- code-with-text 内 inline code 样式 ---- */
+/* ==== code-with-text 内 inline code 样式 ==== */
+/* 语法高亮容器内的行内 code：等宽字体、7% 黑背景、2dp 圆角、13sp */
 .code-with-text code {
     font-family: Consolas, Monaco, 'Andale Mono', monospace;
     background: rgba(0,0,0,0.07);
@@ -575,7 +735,7 @@ body .blog {
     font-size: 13px;
 }
 
-/* ---- 博文内容区代码块间距优化 ---- */
+/* ==== 博文内容区 h4 间距优化 ==== */
 .docs-layout h4 {
     margin-top: 0;
     margin-bottom: 12px
@@ -586,8 +746,8 @@ body .blog {
    作用于 .docs-layout (文章正文区)，影响所有文章
    ============================================================== */
 
-/* 文章正文内容区 */
-/* 特异性 0-3-0: 必须高于 .blog--article .meta + .mdl-card__supporting-text (0-3-0)
+/* 文章正文内容区
+   特异性 0-3-0: 必须高于 .blog--article .meta + .mdl-card__supporting-text (0-3-0)
    覆盖 MDL .mdl-card__supporting-text 的 display:flex; align-items:center
    以及 .blog--article 的 flex-direction:column — 正文用 block 流式布局
    必须 box-sizing:border-box — 否则 width:100%(继承) + padding 会导致溢出父容器 */
@@ -598,7 +758,7 @@ body .blog {
     box-sizing: border-box;
 }
 
-/* 段落 */
+/* 段落：16dp 底部间距、15sp / 1.75 行高、76% 黑 */
 .blog--article .docs-layout p {
     margin: 0 0 16px 0;
     font-size: 15px;
@@ -606,7 +766,9 @@ body .blog {
     color: rgba(0,0,0,0.76);
 }
 
-/* 标题体系 — 左对齐 + 层级分明 */
+/* ---- 标题体系 — 左对齐 + 层级分明 ---- */
+
+/* h1: 28sp bold、40dp 顶部 / 16dp 底部、2dp 底部分割线 */
 .blog--article .docs-layout h1 {
     font-size: 28px;
     font-weight: 700;
@@ -616,6 +778,7 @@ body .blog {
     color: rgba(0,0,0,0.87);
 }
 
+/* h2: 22sp semibold、32dp 顶部 / 12dp 底部 */
 .blog--article .docs-layout h2 {
     font-size: 22px;
     font-weight: 600;
@@ -623,6 +786,7 @@ body .blog {
     color: rgba(0,0,0,0.87);
 }
 
+/* h3: 18sp semibold、28dp 顶部 / 10dp 底部 */
 .blog--article .docs-layout h3 {
     font-size: 18px;
     font-weight: 600;
@@ -630,6 +794,7 @@ body .blog {
     color: rgba(0,0,0,0.8);
 }
 
+/* h4: 16sp semibold、24dp 顶部 / 8dp 底部、左对齐 */
 .blog--article .docs-layout h4 {
     font-size: 16px;
     font-weight: 600;
@@ -638,6 +803,7 @@ body .blog {
     text-align: left;
 }
 
+/* h5: 15sp semibold、20dp 顶部 / 6dp 底部 */
 .blog--article .docs-layout h5 {
     font-size: 15px;
     font-weight: 600;
@@ -645,6 +811,7 @@ body .blog {
     color: rgba(0,0,0,0.66);
 }
 
+/* h6: 14sp semibold、16dp 顶部 / 6dp 底部、大写 + 字间距 */
 .blog--article .docs-layout h6 {
     font-size: 14px;
     font-weight: 600;
@@ -654,7 +821,9 @@ body .blog {
     letter-spacing: 0.5px;
 }
 
-/* 行内 <code> — 等宽字体 + 紧凑背景（缩小行高避免底框重叠） */
+/* ---- 行内 code — 等宽字体 + 紧凑背景 ---- */
+/* 1px 4dp 内边距、3dp 圆角、6% 黑背景、0.9em 字号
+   line-height:1.6 + box-decoration-break:clone 防止多行 code 底框重叠 */
 .blog--article .docs-layout code {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Monaco, monospace;
     background: rgba(0,0,0,0.06);
@@ -668,7 +837,7 @@ body .blog {
     box-decoration-break: clone;
 }
 
-/* code-with-text 内的 <code> 覆盖上方样式（语法高亮，不需要红色） */
+/* code-with-text 内的 <code> 覆盖 — 语法高亮不需要红色和背景 */
 .blog--article .docs-layout .code-with-text code {
     color: inherit;
     background: none;
@@ -676,18 +845,20 @@ body .blog {
     font-size: 13px;
 }
 
-/* 行内代码在 <strong> 内保持粗体 */
+/* 行内 code 在 <strong> 内保持粗体 */
 .blog--article .docs-layout strong code {
     font-weight: 600;
 }
 
-/* 列表 — 现代博客风格 */
+/* ---- 列表 — 现代博客风格 ---- */
+/* 无序列表：去除默认样式、32dp 左缩进、6dp 上下内边距 */
 .blog--article .docs-layout ul {
     list-style: none;
     margin: 8px 0 20px 32px;
     padding: 6px 0 6px 0;
 }
 
+/* 列表项：20dp 左 padding 给圆点留空间、15sp / 1.75 行高 */
 .blog--article .docs-layout ul > li {
     position: relative;
     padding-left: 20px;
@@ -697,6 +868,7 @@ body .blog {
     color: rgba(0,0,0,0.76);
 }
 
+/* 无序列表圆点：7x7dp 实心圆、绝对定位左侧、40% 黑 */
 .blog--article .docs-layout ul > li::before {
     content: '';
     position: absolute;
@@ -708,6 +880,7 @@ body .blog {
     background: rgba(0,0,0,0.4);
 }
 
+/* 有序列表：CSS counter 自增编号、32dp 左缩进 */
 .blog--article .docs-layout ol {
     list-style: none;
     margin: 8px 0 20px 32px;
@@ -715,6 +888,7 @@ body .blog {
     counter-reset: ol-counter;
 }
 
+/* 有序列表项：26dp 左 padding 给编号留空间、counter 自增 */
 .blog--article .docs-layout ol > li {
     position: relative;
     padding-left: 26px;
@@ -725,6 +899,7 @@ body .blog {
     counter-increment: ol-counter;
 }
 
+/* 有序列表编号：counter + "." 格式、绝对定位、14sp semibold、48% 黑 */
 .blog--article .docs-layout ol > li::before {
     content: counter(ol-counter) '.';
     position: absolute;
@@ -735,19 +910,21 @@ body .blog {
     color: rgba(0,0,0,0.48);
 }
 
+/* 通用 li 样式兜底 */
 .blog--article .docs-layout li {
     font-size: 15px;
     line-height: 1.75;
     color: rgba(0,0,0,0.76);
 }
 
-/* 嵌套列表更紧凑 */
+/* 嵌套列表更紧凑：4dp 顶部 / 2dp 底部、8dp 左缩进 */
 .blog--article .docs-layout li > ul,
 .blog--article .docs-layout li > ol {
     margin: 4px 0 2px 8px;
     padding: 2px 0;
 }
 
+/* 嵌套无序列表圆点更小：5x5dp、24% 黑 */
 .blog--article .docs-layout li > ul > li::before {
     width: 5px;
     height: 5px;
@@ -755,7 +932,8 @@ body .blog {
     background: rgba(0,0,0,0.24);
 }
 
-/* 链接 */
+/* ---- 链接 ---- */
+/* 靛蓝色文字、下划线半透明、hover 下划线变实 */
 .blog--article .docs-layout a {
     color: #3f51b5;
     text-decoration: none;
@@ -767,10 +945,10 @@ body .blog {
     border-bottom-color: #3f51b5;
 }
 
-/* 引用块 */
-/* 覆盖 MDL 全局 blockquote 样式（material.min.css）:
- *   - MDL 默认: 24px/italic + 装饰引号 :before/:after
- *   - 博客正文: 15px/normal + 左边线, 无装饰引号
+/* ---- 引用块 ---- */
+/* 覆盖 MDL 全局 blockquote 样式 (material.min.css):
+ *   MDL 默认: 24px/italic + 装饰引号 :before/:after
+ *   博客正文: 15px/normal + 左边线, 无装饰引号
  */
 .blog--article .docs-layout blockquote {
     margin: 0 0 16px 0;
@@ -792,15 +970,18 @@ body .blog {
     display: none;
 }
 
+/* 引用块内段落：8dp 底部间距 */
 .blog--article .docs-layout blockquote p {
     margin: 0 0 8px 0;
 }
 
+/* 引用块末段无底部间距 */
 .blog--article .docs-layout blockquote p:last-child {
     margin-bottom: 0;
 }
 
-/* 图片 */
+/* ---- 图片 ---- */
+/* 全宽上限、自适应高度、4dp 圆角、8dp 上下间距 */
 .blog--article .docs-layout img {
     max-width: 100%;
     height: auto;
@@ -808,7 +989,8 @@ body .blog {
     margin: 8px 0;
 }
 
-/* 表格 */
+/* ---- 表格 ---- */
+/* 全宽、边框合并、14sp */
 .blog--article .docs-layout table {
     width: 100%;
     border-collapse: collapse;
@@ -816,6 +998,7 @@ body .blog {
     font-size: 14px;
 }
 
+/* 表头/单元格：8+12dp 内边距、1dp 边框、左对齐 */
 .blog--article .docs-layout th,
 .blog--article .docs-layout td {
     padding: 8px 12px;
@@ -823,23 +1006,28 @@ body .blog {
     text-align: left;
 }
 
+/* 表头：3% 黑背景、粗体 */
 .blog--article .docs-layout th {
     background: rgba(0,0,0,0.03);
     font-weight: 600;
 }
 
+/* 偶数行：2% 黑背景斑马纹 */
 .blog--article .docs-layout tr:nth-child(even) {
     background: rgba(0,0,0,0.02);
 }
 
-/* 水平分割线 */
+/* ---- 水平分割线 ---- */
+/* 1dp 灰色顶边框、24dp 上下间距 */
 .blog--article .docs-layout hr {
     border: none;
     border-top: 1px solid rgba(0,0,0,0.08);
     margin: 24px 0;
 }
 
-/* code-with-text 代码块排版优化 — 居中显示 */
+/* ---- code-with-text 代码块排版 ---- */
+/* 居中显示、最大 85% 宽、等宽字体、8dp 上 + 15dp 左右内边距、13sp */
+
 .blog--article .docs-layout .code-with-text {
     margin: 12px auto 20px;
     max-width: 85%;
@@ -848,12 +1036,12 @@ body .blog {
     font-size: 13px;
 }
 
-/* 代码区 <pre> 与标题文字左对齐 */
+/* 代码区 <pre> 与标题文字左对齐 — 负 margin 消除容器 padding */
 .blog--article .docs-layout .code-with-text pre {
     margin: 6px -15px 0;
 }
 
-/* 代码内容内边距 — 与标题文字对齐 */
+/* 代码内容内边距 — 与标题文字对齐（15dp） */
 .blog--article .docs-layout .code-with-text pre[class*=language-] code {
     padding: 12px 15px;
 }
@@ -864,4 +1052,199 @@ body .blog {
 .blog--article .docs-layout > h3:first-child,
 .blog--article .docs-layout > h4:first-child {
     margin-top: 0;
+}
+
+/* ==============================================================
+   暗黑模式 — MD1 Dark Theme 规范
+   ==============================================================
+   触发方式:
+     html[data-mode="dark"] — 手动暗黑模式
+     html[data-mode="auto"] + @media (prefers-color-scheme: dark) — 跟随系统
+
+   MD1 调色板:
+     背景 #303030, 卡片 #424242
+     白文字: primary 100%, secondary 70%, hint 50%, divider 12%
+   ============================================================== */
+
+/* ---- 手动暗黑模式 ---- */
+
+/* 背景变 #303030 */
+html[data-mode="dark"] body::before {
+    background-color: #303030;
+}
+
+/* 卡片变 #424242 */
+html[data-mode="dark"] .mdl-card {
+    background: #424242;
+}
+
+/* 卡片封面灰色文字 → 100% 白 */
+html[data-mode="dark"] .mdl-card__media.mdl-color-text--grey-50 {
+    color: rgba(255,255,255,1);
+}
+
+/* 卡片封面白色背景 → #424242 */
+html[data-mode="dark"] .mdl-card__media.mdl-color--white {
+    background: #424242 !important;
+}
+
+/* 卡片支撑文本/meta → 70% 白 */
+html[data-mode="dark"] .mdl-card__supporting-text,
+html[data-mode="dark"] .mdl-card__supporting-text.meta,
+html[data-mode="dark"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600 {
+    color: rgba(255,255,255,0.70);
+}
+
+/* 文章 meta → 50% 白 */
+html[data-mode="dark"] .blog--article .meta {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 文章正文区 → 100% 白 */
+html[data-mode="dark"] .blog--article .docs-layout {
+    color: rgba(255,255,255,1);
+}
+
+/* 文章标题 h1-h4 → 100% 白 */
+html[data-mode="dark"] .blog--article .docs-layout h1,
+html[data-mode="dark"] .blog--article .docs-layout h2,
+html[data-mode="dark"] .blog--article .docs-layout h3,
+html[data-mode="dark"] .blog--article .docs-layout h4 {
+    color: rgba(255,255,255,1);
+}
+
+/* 文章链接 → MD1 dark 链接蓝色 #82b1ff */
+html[data-mode="dark"] .blog--article .docs-layout a {
+    color: #82b1ff;
+}
+
+/* code-with-text 代码块：#1e1e1e 背景、87% 白文字、12% 白边框 */
+html[data-mode="dark"] .blog--article .code-with-text {
+    background: #1e1e1e;
+    color: rgba(255,255,255,0.87);
+    border-color: rgba(255,255,255,0.12);
+}
+
+/* 代码标签：54% 白、12% 白底部分割线 */
+html[data-mode="dark"] .blog--article .code-with-text .code-label {
+    color: rgba(255,255,255,0.54);
+    border-bottom-color: rgba(255,255,255,0.12);
+}
+
+/* 代码区 pre：#1e1e1e 背景 */
+html[data-mode="dark"] .blog--article .code-with-text pre {
+    background: #1e1e1e;
+}
+
+/* 引用块：30% 白左边框、70% 白文字 */
+html[data-mode="dark"] .blog--article blockquote {
+    border-left-color: rgba(255,255,255,0.30);
+    color: rgba(255,255,255,0.70);
+}
+
+/* 文章导航按钮：70% 白 / hover 95% 白 */
+html[data-mode="dark"] .article-nav__btn {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .article-nav__btn:hover {
+    color: rgba(255,255,255,0.95);
+}
+
+/* 返回按钮：纯白 */
+html[data-mode="dark"] .back-btn {
+    color: #fff;
+}
+
+/* 页脚：#212121 深灰背景 */
+html[data-mode="dark"] .mdl-mini-footer {
+    background: #212121;
+}
+
+/* 侧边栏头像：85% 不透明度 */
+html[data-mode="dark"] .sidebar-card img {
+    opacity: 0.85;
+}
+
+/* 文章卡片封面：保持 #37474f 背景色 */
+html[data-mode="dark"] .card-article .mdl-card__media {
+    background-color: #37474f;
+}
+
+/* 封面标题链接：95% 白 */
+html[data-mode="dark"] .card-article .mdl-card__media h3 a {
+    color: rgba(255,255,255,0.95);
+}
+
+/* ---- 跟随系统自动暗黑模式 ---- */
+/* 与手动暗黑相同的样式，选择器改为 html[data-mode="auto"] */
+@media (prefers-color-scheme: dark) {
+    html[data-mode="auto"] body::before {
+        background-color: #303030;
+    }
+    html[data-mode="auto"] .mdl-card {
+        background: #424242;
+    }
+    html[data-mode="auto"] .mdl-card__media.mdl-color-text--grey-50 {
+        color: rgba(255,255,255,1);
+    }
+    html[data-mode="auto"] .mdl-card__media.mdl-color--white {
+        background: #424242 !important;
+    }
+    html[data-mode="auto"] .mdl-card__supporting-text,
+    html[data-mode="auto"] .mdl-card__supporting-text.meta,
+    html[data-mode="auto"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600 {
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .blog--article .meta {
+        color: rgba(255,255,255,0.50);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout {
+        color: rgba(255,255,255,1);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout h1,
+    html[data-mode="auto"] .blog--article .docs-layout h2,
+    html[data-mode="auto"] .blog--article .docs-layout h3,
+    html[data-mode="auto"] .blog--article .docs-layout h4 {
+        color: rgba(255,255,255,1);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout a {
+        color: #82b1ff;
+    }
+    html[data-mode="auto"] .blog--article .code-with-text {
+        background: #1e1e1e;
+        color: rgba(255,255,255,0.87);
+        border-color: rgba(255,255,255,0.12);
+    }
+    html[data-mode="auto"] .blog--article .code-with-text .code-label {
+        color: rgba(255,255,255,0.54);
+        border-bottom-color: rgba(255,255,255,0.12);
+    }
+    html[data-mode="auto"] .blog--article .code-with-text pre {
+        background: #1e1e1e;
+    }
+    html[data-mode="auto"] .blog--article blockquote {
+        border-left-color: rgba(255,255,255,0.30);
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .article-nav__btn {
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .article-nav__btn:hover {
+        color: rgba(255,255,255,0.95);
+    }
+    html[data-mode="auto"] .back-btn {
+        color: #fff;
+    }
+    html[data-mode="auto"] .mdl-mini-footer {
+        background: #212121;
+    }
+    html[data-mode="auto"] .sidebar-card img {
+        opacity: 0.85;
+    }
+    html[data-mode="auto"] .card-article .mdl-card__media {
+        background-color: #37474f;
+    }
+    html[data-mode="auto"] .card-article .mdl-card__media h3 a {
+        color: rgba(255,255,255,0.95);
+    }
 }

@@ -1,23 +1,4 @@
-/* ==============================================================
-   MDL 文档页面布局样式 - mdl-main.css
-   ==============================================================
-   本文件是 MDL 官方文档站点的布局样式，为 code.html 页面提供：
-     - 文档页面整体布局（docs-layout）
-     - 代码示例容器（snippet-group, snippet-code）
-     - 选项卡样式（.started .mdl-tabs）
-     - 导航栏、章节目录等布局组件
-
-   【引用方式】
-   在 code.html 的 <head> 中引入（在 MDL 主题 CSS 和 styles.css 之后）：
-     <link rel="stylesheet" href="./css/mdl-main.css">
-
-   【注意】
-   - 本文件不含 MDL 框架基础样式，仅是文档页面布局补充
-   - 依赖 MDL 主题 CSS 已加载
-   - 需要 <body class="started"> 才能使部分样式生效
-   ============================================================== */
-
-html>body {
+﻿html>body {
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif !important;
     background-color: #FAFAFA
 }

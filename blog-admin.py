@@ -76,6 +76,7 @@ def api_create_post():
         'id': post_id,
         'title': body.get('title', '无标题'),
         'date': body.get('date', datetime.now().strftime('%Y-%m-%d')),
+        'time': body.get('time', ''),
         'summary': body.get('summary', ''),
         'content': body.get('content', ''),
         'cardFormat': body.get('cardFormat', 'standard'),
@@ -95,6 +96,7 @@ def api_update_post(post_id):
         if post['id'] == post_id:
             post['title'] = body.get('title', post['title'])
             post['date'] = body.get('date', post['date'])
+            post['time'] = body.get('time', post.get('time', ''))
             post['summary'] = body.get('summary', post['summary'])
             post['content'] = body.get('content', post['content'])
             post['cardFormat'] = body.get('cardFormat', post.get('cardFormat', 'standard'))
@@ -329,6 +331,10 @@ def api_update_settings():
         data['site']['title'] = body['title'].strip()
     if 'subtitle' in body:
         data['site']['subtitle'] = body['subtitle'].strip()
+    if 'theme' in body:
+        data['site']['theme'] = body['theme'].strip()
+    if 'darkMode' in body:
+        data['site']['darkMode'] = body['darkMode'].strip()
     save_data(data)
     generate_all()
     return jsonify({'ok': True, 'site': data['site']})
@@ -422,6 +428,7 @@ def api_save_draft():
         'id': body.get('id') or str(uuid.uuid4())[:8],
         'title': body.get('title', ''),
         'date': body.get('date', datetime.now().strftime('%Y-%m-%d')),
+        'time': body.get('time', ''),
         'summary': body.get('summary', ''),
         'content': body.get('content', ''),
         'cardFormat': body.get('cardFormat', 'standard'),
@@ -464,6 +471,7 @@ def api_preview():
     data = load_data()
     site = data['site']
     bg_image = site.get('backgroundImage', '')
+    dm_attr = dark_mode_attr(site)
 
     # 使用与 generate_post_page 相同的模板（不需要导航）
     content = preview_post['content']
@@ -491,7 +499,7 @@ def api_preview():
         favicon_href = f'/{favicon_href}'
 
     html = f'''<!doctype html>
-<html lang="en">
+<html lang="en"{dm_attr}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -507,8 +515,8 @@ def api_preview():
     <link rel="shortcut icon" href="{favicon_href}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/lib/mdl/material-themes-grey-orange.css">
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/{theme_css}">
+    <link rel="stylesheet" href="/file/css/styles.css">
     <link rel="stylesheet" href="/file/css/prism-default.css">
     <link rel="stylesheet" href="/file/css/mdl-main.css">
     <style>
@@ -541,7 +549,7 @@ def api_preview():
               <div class="minilogo"{preview_minilogo_style}></div>
               <div>
                 <strong>{site['author']}</strong>
-                <span>{preview_post['date']}</span>
+                <span>{preview_post.get('date', '')}{' ' + preview_post.get('time', '') if preview_post.get('time') else ''}</span>
               </div>
               <div class="section-spacer"></div>
               <div>
@@ -587,6 +595,23 @@ def api_preview():
   </body>
 </html>'''
     return html
+
+
+def fmt_datetime(post):
+    """格式化日期+时间显示"""
+    d = post.get('date', '')
+    t = post.get('time', '')
+    return f"{d} {t}" if t else d
+
+
+def dark_mode_attr(site):
+    """根据站点设置返回 <html> 标签上的暗黑模式属性字符串"""
+    mode = site.get('darkMode', 'light')
+    if mode == 'dark':
+        return ' data-mode="dark"'
+    elif mode == 'system':
+        return ' data-mode="auto"'
+    return ''
 
 
 # ============================================================
@@ -673,6 +698,11 @@ def generate_index(posts, pinned_id, site, bg_image=''):
     favicon_href = site.get('favicon') or 'images/favicon.png'
     touch_icon_href = favicon_href  # favicon 同时用作 touch icon
 
+    # --- 动态主题 ---
+    theme = site.get('theme', 'indigo-pink')
+    theme_css = f"file/css/material-themes-{theme}.css"
+    dm_attr = dark_mode_attr(site)
+
     # --- 构建置顶卡片 ---
     pinned_card = ''
     if pinned_post:
@@ -685,7 +715,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
               <div class="minilogo"{minilogo_style}></div>
               <div>
                 <strong>{site['author']}</strong>
-                <span>{pinned_post['date']}</span>
+                <span>{fmt_datetime(pinned_post)}</span>
               </div>
             </div>
           </div>'''
@@ -751,11 +781,11 @@ def generate_index(posts, pinned_id, site, bg_image=''):
               <div class="minilogo"{minilogo_style}></div>
               <div>
                 <strong>{site['author']}</strong>
-                <span>{post['date']}</span>
+                <span>{fmt_datetime(post)}</span>
               </div>
             </div>
           </div>
-'''
+ '''
         else:
             # standard 卡片使用 card-article + mdl-card__media
             media_style = build_card_media_style(post)
@@ -770,7 +800,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
               <div class="minilogo"{minilogo_style}></div>
               <div>
                 <strong>{site['author']}</strong>
-                <span>{post['date']}</span>
+                <span>{fmt_datetime(post)}</span>
               </div>
             </div>
           </div>
@@ -778,7 +808,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
 
     # --- 组装完整 index.html ---
     html = f'''<!doctype html>
-<html lang="en">
+<html lang="en"{dm_attr}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -796,8 +826,8 @@ def generate_index(posts, pinned_id, site, bg_image=''):
     <link rel="shortcut icon" href="{favicon_href}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{theme_css}">
+    <link rel="stylesheet" href="file/css/styles.css">
     <style>
     #view-source {{
       position: fixed;
@@ -824,65 +854,13 @@ def generate_index(posts, pinned_id, site, bg_image=''):
     {bg_override}
     </style>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {{
-        var menuTheme1 = document.getElementById('menu-theme-1');
-        var menuTheme2 = document.getElementById('menu-theme-2');
-        var menuTheme3 = document.getElementById('menu-theme-3');
-        menuTheme1.addEventListener('click', function() {{
-          setThemeColor('lib/mdl/material-themes-grey-orange.css');
-        }});
-        menuTheme2.addEventListener('click', function() {{
-          setThemeColor('lib/mdl/material-themes-blue-grey-red.css');
-        }});
-        menuTheme3.addEventListener('click', function() {{
-          setThemeColor('lib/mdl/material-themes-teal-green.css');
-        }});
-      }});
-      function setThemeColor(themeUrl) {{
-        var themeLink = document.querySelector('link[href^="lib/mdl/material-themes"]');
-        if (themeLink) {{
-          themeLink.href = themeUrl;
-        }}
-      }}
     </script>
   </head>
   <body>
     <div class="blog mdl-layout mdl-js-layout has-drawer is-upgraded">
       <main class="mdl-layout__content">
         <div class="theme">
-          <button id="menu-button" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons" role="presentation">palette</i>
-          </button>
-          <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="menu-button">
-            <li id="menu-theme-1" class="mdl-menu__item">Grey - Orange</li>
-            <li id="menu-theme-2" class="mdl-menu__item">Blue Grey - Red</li>
-            <li id="menu-theme-3" class="mdl-menu__item">Teal - Green</li>
-          </ul>
-          <div class="mdl-tooltip mdl-tooltip--right" for="menu-button">
-            更改主题配色
-          </div>
         </div>
-        <div id="theme-snackbar-container" class="mdl-js-snackbar mdl-snackbar">
-          <div class="mdl-snackbar__text"></div>
-          <button class="mdl-snackbar__action" type="button"></button>
-        </div>
-        <script>
-          (function() {{
-            'use strict';
-            var snackbarContainer = document.querySelector('#theme-snackbar-container');
-            var menuItems = document.querySelectorAll('.mdl-menu__item');
-            menuItems.forEach(function(menuItem) {{
-              menuItem.addEventListener('click', function() {{
-                var theme = this.innerText;
-                var data = {{
-                  message: '选择了 ' + theme + ' 主题',
-                  timeout: 2000,
-                }};
-                snackbarContainer.MaterialSnackbar.showSnackbar(data);
-              }});
-            }});
-          }})();
-        </script>
         <div class="blog__posts mdl-grid">
 {pinned_card}
 {sidebar_card}
@@ -970,6 +948,11 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
         post_favicon_href = f"../../{post_favicon_href}"
     post_touch_icon_href = post_favicon_href
 
+    # --- 动态主题 ---
+    theme = site.get('theme', 'indigo-pink')
+    theme_css = f"file/css/material-themes-{theme}.css"
+    dm_attr = dark_mode_attr(site)
+
     # --- 构建底部导航 ---
     # all_posts 按日期倒序: [newest, ..., current, ..., oldest]
     # ← (左/arrow_back) = 较新文章; → (右/arrow_forward) = 较旧文章
@@ -1019,7 +1002,7 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
 {older_html}          </nav>'''
 
     html = f'''<!doctype html>
-<html lang="en">
+<html lang="en"{dm_attr}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -1035,8 +1018,8 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
     <link rel="shortcut icon" href="{post_favicon_href}">
     <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../../lib/mdl/material-themes-grey-orange.css">
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../{theme_css}">
+    <link rel="stylesheet" href="../../file/css/styles.css">
     <link rel="stylesheet" href="../../file/css/prism-default.css">
     <link rel="stylesheet" href="../../file/css/mdl-main.css">
     <style>
@@ -1069,7 +1052,7 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
               <div class="minilogo"{post_minilogo_style}></div>
               <div>
                 <strong>{site['author']}</strong>
-                <span>{post['date']}</span>
+                <span>{fmt_datetime(post)}</span>
               </div>
               <div class="section-spacer"></div>
               <div>

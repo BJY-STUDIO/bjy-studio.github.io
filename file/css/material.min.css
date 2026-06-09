@@ -1,21 +1,4 @@
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   【警告：此文件与 MDL 主题 CSS 冲突】
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   本文件是 MDL v1.3.0 默认主题（indigo-pink）的完整压缩 CSS。
-   它包含了 MDL 所有组件样式 + 默认配色（如 .mdl-button color: #000，
-   .mdl-button--primary color: #3f51b5 等）。
-
-   【冲突说明】
-   如果与 lib/mdl/material-themes-xxx.css 同时加载，此文件的默认配色
-   会覆盖主题配色，导致按钮/图标等显示异常颜色。
-
-   【当前状态】未引用（已从 code.html 移除）
-   【如需使用】仅用于不需要 MDL 主题切换的独立页面，且不要引入 lib/mdl/ 下的任何主题 CSS
-   【推荐替代】使用 lib/mdl/material-themes-indigo-pink.css（等效且带注释）
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-
-/**
- * material-design-lite - Material Design Components in CSS, JS and HTML
+﻿ * material-design-lite - Material Design Components in CSS, JS and HTML
  * @version v1.3.0
  * @license Apache-2.0
  * @copyright 2015 Google, Inc.

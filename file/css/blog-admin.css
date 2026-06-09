@@ -1,0 +1,2652 @@
+﻿/*
+ * 博客管理后台 - Material Design 1 规范样式
+ * 遵循 MD1 设计规范：
+ *   - 8dp 网格系统
+ *   - 卡片阴影 2dp / 3dp / 6dp / 9dp / 12dp
+ *   - 字体：Roboto, 14sp 正文, 20sp 标题
+ *   - 触控目标最小 48dp
+ *   - 圆角 2dp
+ *
+ * 结构:
+ *   1. 全局重置 & body
+ *   2. MD1 App Bar (顶部导航栏)
+ *   3. 主容器 (双栏网格布局)
+ *   4. MD1 Card (卡片基础)
+ *   5. MD1 Expansion Panel (可展开卡片)
+ *   6. 拖拽排序
+ *   7. MD1 FAB (浮动操作按钮)
+ *   8. MD1 List (列表)
+ *   9. Pin Badge (置顶徽章)
+ *  10. MD1 Button (按钮)
+ *  11. MD1 Form / Text Field (表单输入框)
+ *  12. MD1 Dropdown (下拉选择)
+ *  13. Text Area (多行文本框)
+ *  14. Helper text (字段提示)
+ *  15. MD1 Subheader (子标题)
+ *  16. 编辑模式提示条
+ *  17. 编辑器 footer
+ *  18. EasyMDE 编辑器 & MD1 Toggle Toolbar & Tooltip
+ *  19. 站点设置：头像/图标上传
+ *  20. MD1 Data Table (数据表格)
+ *  21. MD1 Switch (开关)
+ *  22. 菜单项表格行内编辑
+ *  23. 封面图预览 & 上传
+ *  24. MD1 Snackbar (消息提示条)
+ *  25. Empty state (空状态)
+ *  26. MD1 Dialog (对话框)
+ *  27. MD1 Date Picker (日期选择器)
+ *  28. MD1 Time Picker (时间选择器)
+ *  29. MD1 Theme Color Picker (主题色选择器)
+ *  30. Dark Mode 暗黑模式覆盖 (MD1 Dark Theme)
+ */
+
+/* ==== 1. 全局重置 & body ==== */
+
+/* 全局盒模型 + 清除默认 margin/padding */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* 页面基础：灰色背景、深色正文、最小全屏高度、14sp 行高 20sp */
+body {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    background: #e0e0e0;
+    color: rgba(0,0,0,0.87);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+/* ==== 2. MD1 App Bar ==== */
+/* 顶部导航栏：主色背景、56dp 高、sticky 吸顶、2dp 阴影 */
+.app-bar {
+    background: var(--md-primary);
+    color: #fff;
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,.26);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* 标题区：20sp medium、图标+文字水平排列、超长截断 */
+.app-bar-title {
+    font-size: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 标题旁 Material Icon 尺寸 */
+.app-bar-title i { font-size: 24px; }
+
+/* 右侧"查看博客"链接：87% 白色、触控 48dp、2dp 圆角 hover */
+.app-bar a {
+    color: rgba(255,255,255,0.87);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 48px;
+    padding: 0 8px;
+    border-radius: 2px;
+}
+.app-bar a:hover { background: rgba(255,255,255,0.12); }
+
+/* ==== 3. 主容器 ==== */
+/* 双栏网格：左 3fr 右 5fr、最大 1600px、24dp 外边距和间距 */
+.main-container {
+    max-width: 1600px;
+    margin: 24px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 3fr 5fr;
+    gap: 24px;
+    align-items: start;
+}
+/* 窄屏单栏 */
+@media (max-width: 960px) {
+    .main-container { grid-template-columns: 1fr; }
+}
+
+/* ==== 4. MD1 Card ==== */
+/* 基础卡片：白色背景、2dp 圆角、1dp 阴影
+   注意：不用 overflow:hidden，避免裁切 EasyMDE focus 边框和 tooltip */
+.md-card {
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+}
+
+/* 卡片标题行：20sp medium、左右两端对齐 */
+.md-card-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    padding: 24px 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 卡片支撑区（内容区）：16dp 内边距 */
+.md-card-supporting {
+    padding: 0 16px 16px;
+}
+
+/* 卡片支撑文本区标题 — MD1 Supporting text: 14sp medium, 87% black */
+.md-card-supporting-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    line-height: 20px;
+    padding-top: 16px;
+    margin-bottom: 4px;
+}
+
+/* 卡片内分割线：1dp 灰色 */
+.md-card-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 0 16px;
+}
+
+/* ==== 5. MD1 Expansion Panel 卡片扩展 ==== */
+/* 规范:
+ * Label: Roboto Regular 15sp, 87% black
+ * Padding: 上下 16dp, 左右 24dp
+ * Expand icon: 24x24dp, 38% black (hover 54%)
+ * 副文本: 12sp 54% black
+ * 分割线: 1dp 12% black
+ */
+
+/* 展开/收起时阴影过渡动画 */
+.md-card.expandable {
+    transition: box-shadow .2s;
+}
+
+/* 可点击标题行：15sp regular、指针、24dp 内边距、不可选中 */
+.md-card.expandable .md-card-title {
+    cursor: pointer;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 400;
+    user-select: none;
+    position: relative;
+}
+
+/* 标题行 hover — MD1 Focus state: Grey 200 背景 */
+.md-card.expandable .md-card-title:hover {
+    background: #EEEEEE;
+}
+
+/* 展开图标：24x24dp、38% 黑、过渡动画、右对齐不收缩 */
+.md-card.expandable .md-card-title .md-expand-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0,0,0,0.38);
+    transition: transform .2s, color .15s;
+    flex-shrink: 0;
+}
+
+/* 展开图标 hover — 54% 黑 */
+.md-card.expandable .md-card-title:hover .md-expand-icon {
+    color: rgba(0,0,0,0.54);
+}
+
+/* 展开状态图标旋转 180° */
+.md-card.expandable.md-card--expanded .md-expand-icon {
+    transform: rotate(180deg);
+}
+
+/* 折叠时副文本：12sp 54% 黑、单行截断、最大 200px */
+.md-card.expandable .md-card-summary {
+    font-size: 12px;
+    color: rgba(0,0,0,0.54);
+    margin-right: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* 展开后隐藏副文本 */
+.md-card.expandable.md-card--expanded .md-card-summary {
+    display: none;
+}
+
+/* 展开面板分割线 — 24dp 左右间距 */
+.md-card.expandable .md-card-divider {
+    margin: 0 24px;
+}
+
+/* 折叠体：overflow:hidden 配合 max-height 动画 */
+.md-card.expandable .md-card-body {
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .2s ease;
+    max-height: 0;
+    opacity: 0;
+}
+
+/* 展开体：动画过渡到可见 */
+.md-card.expandable.md-card--expanded .md-card-body {
+    max-height: 2000px;
+    opacity: 1;
+}
+
+/* 展开内容内边距 */
+.md-card.expandable .md-card-body-inner {
+    padding: 0 24px 16px;
+}
+
+/* ==== 6. 拖拽排序 ==== */
+
+/* 拖拽中：半透明 + 大阴影 */
+.md-card.dragging {
+    opacity: 0.5;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* 放到目标上方指示线：3px 主色上边框 */
+.md-card.drag-over-top {
+    border-top: 3px solid var(--md-primary);
+    margin-top: -3px;
+}
+
+/* 放到目标下方指示线：3px 主色下边框 */
+.md-card.drag-over-bottom {
+    border-bottom: 3px solid var(--md-primary);
+    margin-bottom: -3px;
+}
+
+/* 拖拽手柄：grab 光标、26% 黑、24x24dp、右 8dp 间距 */
+.md-card .md-drag-handle {
+    cursor: grab;
+    color: rgba(0,0,0,0.26);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: color .15s;
+}
+
+/* 拖拽手柄 hover — 54% 黑 */
+.md-card .md-drag-handle:hover {
+    color: rgba(0,0,0,0.54);
+}
+
+/* 拖拽手柄按下 — grabbing 光标 */
+.md-card .md-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* ==== 7. MD1 FAB (Floating Action Button) ==== */
+/* 圆形强调色按钮，用于"新建文章"等主要操作
+   背景 accent 色、白色图标、40x40dp、2dp 阴影 */
+.md-fab {
+    background: var(--md-accent);
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,.26);
+    transition: box-shadow .2s, background .2s;
+}
+
+/* FAB hover — 更深强调色 + 更大阴影 */
+.md-fab:hover {
+    box-shadow: 0 3px 6px rgba(0,0,0,.32);
+    background: var(--md-accent-dark);
+}
+
+/* FAB 内图标尺寸 */
+.md-fab i { font-size: 20px; }
+
+/* ==== 8. MD1 List ==== */
+/* 规范: 行高 48dp, 16dp 左内边距, 分割线 1dp */
+
+/* 去除默认列表样式 */
+.md-list { list-style: none; }
+
+/* 列表行：flex 居中、48dp 最小高度、1dp 底部分割线 */
+.md-list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    min-height: 48px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background .15s;
+}
+
+/* 最后一行无底部分割线 */
+.md-list-item:last-child { border-bottom: none; }
+
+/* 列表行 hover — 浅灰背景 */
+.md-list-item:hover { background: #f5f5f5; }
+
+/* 列表行内容：弹性填充、最小宽度 0 防溢出 */
+.md-list-item-content { flex: 1; min-width: 0; }
+
+/* 列表标题：14sp medium、87% 黑、单行截断 */
+.md-list-item-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 列表副文本：12sp 54% 黑 */
+.md-list-item-sub {
+    font-size: 12px;
+    color: rgba(0,0,0,0.54);
+    margin-top: 4px;
+}
+
+/* 列表行操作按钮组：flex、4dp 间距、左侧 8dp */
+.md-list-item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+/* 列表行占位——与操作按钮等宽，无操作时留空对齐 */
+.md-list-item-actions-spacer {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+/* ==== 9. Pin Badge ==== */
+/* 置顶徽章：橙色背景白字、11sp medium、2dp 圆角 */
+.pin-badge {
+    display: inline-block;
+    background: #ff9800;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 1px 8px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: middle;
+    line-height: 18px;
+}
+
+/* ==== 10. MD1 Button ==== */
+/* 基础按钮：无边框、36dp 最小高度、14sp medium、2dp 圆角 */
+.md-btn {
+    border: none;
+    cursor: pointer;
+    padding: 0 8px;
+    min-height: 36px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    transition: background .2s, box-shadow .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* 按钮内图标尺寸 */
+.md-btn i { font-size: 18px; }
+
+/* 主要按钮：主色背景白字 */
+.md-btn-primary {
+    background: var(--md-primary);
+    color: #fff;
+}
+.md-btn-primary:hover { background: #303f9f; }
+
+/* 凸起按钮：白色背景、87% 黑、2dp 阴影 */
+.md-btn-raised {
+    background: #fff;
+    color: rgba(0,0,0,0.87);
+    box-shadow: 0 2px 5px rgba(0,0,0,.26);
+    cursor: pointer;
+}
+.md-btn-raised:hover { background: #e8e8e8; }
+.md-btn-raised:active { box-shadow: 0 5px 12px rgba(0,0,0,.32); }
+
+/* 强调色按钮：accent 背景白字 */
+.md-btn-accent {
+    background: var(--md-accent);
+    color: #fff;
+}
+.md-btn-accent:hover { background: #f50057; }
+
+/* 扁平按钮：透明背景、54% 黑 */
+.md-btn-flat {
+    background: transparent;
+    color: rgba(0,0,0,0.54);
+}
+.md-btn-flat:hover { background: rgba(0,0,0,0.06); }
+
+/* 图标按钮：36dp 圆形、透明背景、54% 黑 */
+.md-btn-icon {
+    background: transparent;
+    color: rgba(0,0,0,0.54);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+}
+.md-btn-icon:hover { background: rgba(0,0,0,0.08); }
+
+/* 图标按钮置顶状态——橙色 */
+.md-btn-icon.pinned {
+    color: #ff9800;
+}
+
+/* 危险按钮：红色文字 */
+.md-btn-danger {
+    color: #f44336;
+}
+.md-btn-danger:hover { background: rgba(244,67,54,0.08); }
+
+/* ==== 11. MD1 Form / Text Field ==== */
+/* MD1 规范:
+ *   - Single-line: 底线 1dp idle → 2dp focus (主色), 浮动标签 16sp resting → 12sp on focus
+ *   - Text area: 可见边框同底线颜色/粗细, 垂直可滚动
+ *   - Helper text: 12sp, 54% black, 8dp top padding
+ *   - Input text: 16sp, 87% black
+ *   - Placeholder: 16sp, 42% black
+ */
+
+/* 表单组：24dp 下间距、relative 定位（子元素定位基准） */
+.md-form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+/* ---- 单行文本框 (底线式) ---- */
+/* 容器：定位上下文、4dp 下间距给底线留空间 */
+.md-textfield {
+    position: relative;
+    margin-bottom: 4px;
+}
+
+/* 输入框：全宽、底线 1dp 12% 黑、16sp Roboto、87% 黑、透明背景 */
+.md-textfield__input {
+    width: 100%;
+    padding: 20px 0 6px 0;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    outline: none;
+    background: transparent;
+    transition: border-color .15s;
+}
+
+/* 输入框 focus — 底线变 2dp 主色，padding-bottom 减 1px 补偿 */
+.md-textfield__input:focus {
+    border-bottom: 2px solid var(--md-primary);
+    padding-bottom: 5px;
+}
+
+/* [UNUSED] 原 input[type=date] 底线修复 — 已替换为 MD1 Date Picker Dialog */
+/* .md-textfield--date { ... } */
+/* .md-textfield__input[type="date"]::-webkit-datetime-edit { ... } */
+/* .md-textfield__input[type="date"]::-webkit-calendar-picker-indicator { ... } */
+
+/* 浮动标签 — resting 状态 (16sp, 54% 黑，贴输入框起始位置) */
+.md-textfield__label {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    font-size: 16px;
+    color: rgba(0,0,0,0.54);
+    pointer-events: none;
+    transition: top .15s, font-size .15s, color .15s;
+    transform-origin: left top;
+}
+
+/* 浮动标签 — 浮动状态 (12sp, 主色，上移到输入框上方) */
+.md-textfield__input:focus + .md-textfield__label,
+.md-textfield__input.has-value + .md-textfield__label {
+    top: 4px;
+    font-size: 12px;
+    color: var(--md-primary);
+}
+
+/* Placeholder — 仅在 focus 或无值时显示，42% 黑 16sp */
+.md-textfield__input::placeholder {
+    color: rgba(0,0,0,0.42);
+    font-size: 16px;
+}
+
+/* Focus 底线涟漪效果 — 从中心展开到全宽 */
+.md-textfield::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--md-primary);
+    transition: width .15s, left .15s;
+}
+.md-textfield__input:focus ~ .md-textfield::after,
+.md-textfield:focus-within::after {
+    left: 0;
+    width: 100%;
+}
+
+/* ==== 12. MD1 Dropdown 下拉选择 ==== */
+/* 规范: Raised button 样式、显示当前值 + 下拉箭头
+ * 按下展开菜单覆盖按钮，2dp 圆角，2dp 阴影
+ * 统一 BEM 命名: md-dropdown__trigger / md-dropdown__menu / md-dropdown__option
+ * 开启状态: md-dropdown--open
+ */
+
+/* 下拉根容器：相对定位（菜单绝对定位基准） */
+.md-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* 触发按钮：36dp 高、凸起样式、14sp medium、右侧箭头图标、最小 120dp */
+.md-dropdown__trigger {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    background: #fff;
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    cursor: pointer;
+    transition: box-shadow .2s ease, background .15s ease;
+    gap: 8px;
+    min-width: 120px;
+}
+
+/* 触发按钮 hover — 更大阴影 */
+.md-dropdown__trigger:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
+    background: #fafafa;
+}
+
+/* 触发按钮 active / 菜单开启时 — 3dp 阴影 + 灰色背景 */
+.md-dropdown__trigger:active,
+.md-dropdown--open .md-dropdown__trigger {
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
+    background: #f5f5f5;
+}
+
+/* 下拉箭头图标：18sp、54% 黑、右对齐、展开时旋转 180° */
+.md-dropdown__arrow {
+    font-size: 18px;
+    color: rgba(0,0,0,0.54);
+    margin-left: auto;
+    transition: transform .2s ease;
+}
+.md-dropdown--open .md-dropdown__arrow {
+    transform: rotate(180deg);
+}
+
+/* 下拉菜单面板：绝对定位在按钮下方 4dp、白色背景、2dp 圆角、2dp 阴影
+   默认隐藏，开启时 display:block */
+.md-dropdown__menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
+    z-index: 50;
+    overflow: hidden;
+    animation: md-dropdown-in .15s ease-out;
+    padding: 8px 0;
+}
+.md-dropdown--open .md-dropdown__menu {
+    display: block;
+}
+
+/* 下拉菜单出现动画 — 从上方 4dp 淡入 */
+@keyframes md-dropdown-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 菜单选项行：48dp 高、16dp 左内边距、14sp、87% 黑 */
+.md-dropdown__option {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: rgba(0,0,0,0.87);
+    cursor: pointer;
+    transition: background .1s;
+    white-space: nowrap;
+}
+
+/* 菜单选项 hover — 4% 黑背景 */
+.md-dropdown__option:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+/* 选中状态选项 — 主色文字 + medium */
+.md-dropdown__option--selected {
+    color: var(--md-primary);
+    font-weight: 500;
+}
+
+/* 选项图标：右侧 16dp 间距、20sp、54% 黑 */
+.md-dropdown__option-icon {
+    margin-right: 16px;
+    font-size: 20px;
+    color: rgba(0,0,0,0.54);
+}
+
+/* 选中状态选项图标 — 主色 */
+.md-dropdown__option--selected .md-dropdown__option-icon {
+    color: var(--md-primary);
+}
+
+/* ==== 13. Text Area (多行文本框) ==== */
+/* MD1 规范: 可见边框同底线颜色/粗细, 可垂直拉伸 */
+
+/* 容器：相对定位（浮动标签定位基准） */
+.md-textarea-field {
+    position: relative;
+    margin-bottom: 4px;
+}
+
+/* 文本域：1dp 12% 黑边框、2dp 圆角、16sp Roboto、87% 黑、可垂直拉伸 */
+.md-textarea-field__textarea {
+    width: 100%;
+    padding: 24px 12px 8px 12px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 2px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+    min-height: 60px;
+    background: transparent;
+    transition: border-color .15s;
+}
+
+/* 文本域 focus — 2dp 主色边框、补偿 padding */
+.md-textarea-field__textarea:focus {
+    border-color: var(--md-primary);
+    border-width: 2px;
+    padding-top: 23px;
+    padding-left: 11px;
+}
+
+/* 文本域浮动标签 — resting 状态 (16sp, 54% 黑) */
+.md-textarea-field__label {
+    position: absolute;
+    top: 22px;
+    left: 12px;
+    font-size: 16px;
+    color: rgba(0,0,0,0.54);
+    pointer-events: none;
+    transition: top .15s, font-size .15s, color .15s, left .15s;
+}
+
+/* 文本域浮动标签 — 浮动状态 (12sp, 主色) */
+.md-textarea-field__textarea:focus + .md-textarea-field__label,
+.md-textarea-field__textarea.has-value + .md-textarea-field__label {
+    top: 4px;
+    left: 12px;
+    font-size: 12px;
+    color: var(--md-primary);
+}
+
+/* 文本域 focus 时标签左偏移 1px 补偿边框加粗 */
+.md-textarea-field__textarea:focus + .md-textarea-field__label {
+    left: 11px;
+}
+
+/* 文本域 placeholder — 42% 黑 16sp */
+.md-textarea-field__textarea::placeholder {
+    color: rgba(0,0,0,0.42);
+    font-size: 16px;
+}
+
+/* ==== 14. Helper text 字段提示 ==== */
+/* MD1 规范: 12sp, 54% black, 8dp top padding */
+
+.md-form-hint {
+    font-size: 12px;
+    color: rgba(0,0,0,0.54);
+    margin-top: 8px;
+    padding-left: 0;
+}
+
+/* 行内提示 — 无 subheader 时直接附于字段后，16dp 下间距 */
+.md-form-hint--inline {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+/* ==== 15. MD1 Subheader ==== */
+/* 规范: Roboto Medium 14sp, 48dp tile height, 16dp left padding
+ * 颜色: primary color (默认) 或 secondary grey 54% black */
+
+.md-subheader {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-primary);
+    height: 48dp;
+    line-height: 48px;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* 紧凑型字段标签 — 仅用于 dropdown 等无浮动标签的组件
+ * MD1 规范: 12sp primary color, 8dp 间距到下方组件 */
+.md-field-label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--md-primary);
+    margin-bottom: 8dp;
+    display: block;
+}
+
+/* ==== 16. 编辑模式提示条 ==== */
+/* 编辑文章时顶部蓝色提示条——浅靛蓝背景、主色左边框 */
+.edit-notice {
+    background: #e8eaf6;
+    border-left: 4px solid var(--md-primary);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #1a237e;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 0 2px 2px 0;
+}
+
+/* 提示文本：单行截断、弹性填充 */
+.edit-notice span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+}
+
+/* 提示条内按钮不换行 */
+.edit-notice .md-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ==== 17. 编辑器 footer ==== */
+/* 保存/草稿按钮行：flex、8dp 间距、16dp 顶边距 */
+.editor-footer {
+    display: flex;
+    gap: 8px;
+    padding-top: 16px;
+}
+
+/* ==== 18. EasyMDE 编辑器 + MD1 Toggle Toolbar + MD1 Tooltip ==== */
+
+/* EasyMDE 整体容器：1dp 12% 黑边框、2dp 圆角 */
+.EasyMDEContainer {
+    max-width: 100%;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 2px;
+    transition: border-color .15s;
+}
+
+/* EasyMDE focus — 2dp 主色边框，margin:-1px 补偿边框加粗 */
+.EasyMDEContainer.easy-mde-focused {
+    border-color: var(--md-primary);
+    border-width: 2px;
+    margin: -1px;
+}
+
+/* 编辑器工具栏：浅灰背景、无外边框、底边 1dp 分割线、flex 不换行允许水平滚动 */
+.EasyMDEContainer .editor-toolbar {
+    border-radius: 2px 2px 0 0;
+    background: #fafafa;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 4px 2px;
+    align-items: center;
+}
+
+/* MD1 Toggle 按钮覆盖 —— 紧凑 28x28dp、2dp 圆角、54% 黑
+   规范: 分组互斥按钮, 36dp 高 (此处 28dp 适配工具栏), 2dp 圆角 */
+.EasyMDEContainer .editor-toolbar button,
+.EasyMDEContainer .editor-toolbar a {
+    color: rgba(0,0,0,0.54);
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 2px;
+    margin: 0 1px;
+    transition: background .15s ease, color .15s ease;
+    position: relative;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* 工具栏按钮内 Material Icon 尺寸和垂直对齐 */
+.EasyMDEContainer .editor-toolbar button .material-icons,
+.EasyMDEContainer .editor-toolbar a .material-icons {
+    font-size: 18px;
+    line-height: 28px;
+    vertical-align: middle;
+}
+
+/* 工具栏按钮 hover — 8% 黑背景、87% 黑文字 */
+.EasyMDEContainer .editor-toolbar button:hover,
+.EasyMDEContainer .editor-toolbar a:hover {
+    background: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.87);
+}
+
+/* 工具栏按钮激活状态 — 主色文字 + 8% 黑背景 */
+.EasyMDEContainer .editor-toolbar button.active,
+.EasyMDEContainer .editor-toolbar a.active {
+    background: rgba(0,0,0,0.08);
+    color: var(--md-primary);
+}
+
+/* 禁用 EasyMDE 默认 Font Awesome 图标 (::before 伪元素) */
+.EasyMDEContainer .editor-toolbar button:before,
+.EasyMDEContainer .editor-toolbar a:before {
+    display: none !important;
+}
+
+/* 显示 JS 注入的 Material Icon 元素 */
+.EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
+.EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
+    font-size: 18px;
+    line-height: 28px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* 隐藏 EasyMDE 按钮内原有 FA 文字 (font-size:0)
+   同时确保 Material Icon 子元素不受影响 */
+.EasyMDEContainer .editor-toolbar button,
+.EasyMDEContainer .editor-toolbar a {
+    font-size: 0 !important;
+}
+.EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
+.EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
+    font-size: 18px !important;
+    font-family: 'Material Icons' !important;
+}
+
+/* 工具栏分组分割线 — 替代 EasyMDE 默认 separator */
+.EasyMDEContainer .editor-toolbar .separator {
+    border-left: 1px solid rgba(0,0,0,0.12);
+    margin: 4px 4px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* MD1 Tooltip — body 级 fixed 定位，避免 overflow 裁切
+ * 规范: Roboto Medium 10sp, Grey 700 90% opacity, tile 22dp, padding 8dp, 150ms
+ * 向下弹出(tip pops DOWN)，避免被全屏编辑器裁切
+ */
+.md-toolbar-tooltip {
+    position: fixed;
+    font-family: 'Roboto', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    color: #fff;
+    background: rgba(97, 97, 97, 0.9);
+    padding: 0 8px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 2px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 99999;
+    display: none;
+}
+
+/* Tooltip 可见状态 — 淡入动画 */
+.md-toolbar-tooltip.is-visible {
+    display: block;
+    animation: md-tooltip-in .15s ease-out;
+}
+@keyframes md-tooltip-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* CodeMirror 编辑区：等宽字体 14sp、280dp 最小高度、无边框 */
+.EasyMDEContainer .CodeMirror { 
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+    font-size: 14px;
+    min-height: 280px;
+    border: none !important;
+    border-radius: 0 0 2px 2px;
+}
+
+/* 编辑器预览侧栏：Roboto 14sp、16+24dp 内边距 */
+.editor-preview-side {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    line-height: 28px;
+    padding: 16px 24px;
+}
+.editor-preview-side h4 { margin-top: 0; margin-bottom: 12px; }
+.editor-preview-side p { max-width: 512px; margin: 16px auto; }
+
+/* 预览侧栏代码块：灰色背景、3dp 圆角 */
+.editor-preview-side pre {
+    background: #eee; padding: 15px; border-radius: 3px;
+    margin-bottom: 36px; font-size: 13px; overflow-x: auto;
+}
+
+/* 预览侧栏行内 code：等宽字体、7% 黑背景、2dp 圆角 */
+.editor-preview-side code {
+    font-family: Consolas, Monaco, monospace;
+    background: rgba(0,0,0,0.07); padding: 1px 6px; border-radius: 2px; font-size: 13px;
+}
+
+/* 预览侧栏 code 块内 code 覆盖（块级 code 无背景） */
+.editor-preview-side pre code { background: transparent; padding: 15px; display: block; }
+
+/* ==== 19. 站点设置：头像/图标上传紧凑布局 ==== */
+
+/* 上传组：flex 左右等高、24dp 间距 */
+.settings-upload-group {
+    display: flex;
+    align-items: stretch;
+    gap: 24dp;
+}
+
+/* 左侧文本框区：弹性填充 */
+.settings-upload-left {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 右侧预览区：80dp 宽、居中对齐 */
+.settings-upload-right {
+    flex-shrink: 0;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 图标预览框：cover 裁切、浅灰背景 */
+.settings-icon-preview {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f5f5f5;
+    border: 1px solid rgba(0,0,0,0.08);
+    position: relative;
+}
+
+/* 头像预览圆形 */
+.settings-icon-preview--avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* Favicon 预览方形 */
+.settings-icon-preview--favicon {
+    width: 48px;
+    height: 48px;
+    border-radius: 2px;
+    background-size: contain;
+}
+
+/* 预览下方标签文字：11sp 38% 黑 */
+.settings-icon-preview-label {
+    font-size: 11px;
+    color: rgba(0,0,0,0.38);
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* 预览框右上角删除按钮：20dp 圆形、54% 黑背景 */
+.settings-icon-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: rgba(0,0,0,0.54);
+    color: #fff;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.settings-icon-remove:hover { background: rgba(0,0,0,0.78); }
+
+/* ==== 20. MD1 Data Table ==== */
+/* 规范:
+ * 列间距: 最小 56dp
+ * 标题: Roboto Medium 12sp, 54% black
+ * 行高: 48dp
+ * 内容: 13sp Roboto Regular, 87% black
+ * 分割线: 1dp rgba(0,0,0,0.12)
+ * 悬停: Grey 200 (#EEEEEE)
+ */
+
+/* 表格全宽、边框合并、固定列宽 */
+.md-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Roboto', sans-serif;
+    table-layout: fixed;
+}
+
+/* 表头：12sp medium、54% 黑、左对齐、28dp 右内边距、1dp 底部分割线 */
+.md-data-table thead th {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.54);
+    text-align: left;
+    padding: 16px 28px 16px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    white-space: nowrap;
+}
+
+/* 表头首列无左内边距 */
+.md-data-table thead th:first-child {
+    padding-left: 0;
+}
+
+/* 开关列固定 56dp 宽、居中 */
+.md-data-table thead th.col-switch {
+    width: 56px;
+    text-align: center;
+    padding-right: 0;
+}
+
+/* 删除列固定 40dp 宽 */
+.md-data-table thead th.col-delete {
+    width: 40px;
+    padding-right: 0;
+}
+
+/* 表格行：48dp 高、hover 过渡 */
+.md-data-table tbody tr {
+    height: 48px;
+    transition: background-color .15s;
+}
+
+/* 表格行 hover — Grey 200 背景 */
+.md-data-table tbody tr:hover {
+    background-color: #EEEEEE;
+}
+
+/* 表格单元格：13sp 87% 黑、28dp 右内边距、淡底部分割线 */
+.md-data-table tbody td {
+    font-size: 13px;
+    color: rgba(0,0,0,0.87);
+    padding: 4px 28px 4px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    vertical-align: middle;
+}
+
+/* 单元格首列无左内边距 */
+.md-data-table tbody td:first-child {
+    padding-left: 0;
+}
+
+/* 开关/删除列：48dp 宽、居中 */
+.md-data-table tbody td.col-switch,
+.md-data-table tbody td.col-delete {
+    width: 48px;
+    padding-right: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ==== 21. MD1 Switch (Selection controls) ==== */
+/* 规范:
+ * Light theme:
+ * Thumb On: Swatch 500, 100%; Track On: Swatch 500, 50%
+ * Thumb Off: #FAFAFA border 2dp; Track Off: #000000 38%
+ * Touch target: 48x48dp; Visual: 36x20dp (居中于 touch target)
+ */
+
+/* 开关根容器：36x20dp 视觉尺寸 */
+.md-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* 隐藏原生 checkbox */
+.md-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+/* 轨道：14dp 高、7dp 圆角、38% 黑 */
+.md-switch-track {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    border-radius: 7px;
+    background: rgba(0,0,0,0.38);
+    transition: background .2s;
+}
+
+/* 滑块：20dp 圆形、#fafafa 背景、2dp 38% 黑边框 */
+.md-switch-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fafafa;
+    border: 2px solid rgba(0,0,0,0.38);
+    transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* 开关 ON — 轨道：主色 50% 透明度 */
+.md-switch input:checked + .md-switch-track {
+    background: var(--md-primary);
+    opacity: 0.5;
+}
+
+/* 开关 ON — 滑块：右移 16dp、主色填充、主色边框、更大阴影 */
+.md-switch input:checked + .md-switch-track + .md-switch-thumb {
+    transform: translateX(16px);
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+}
+
+/* ==== 22. 菜单项表格行内编辑 ==== */
+/* 用于站点设置导航菜单编辑表格内的 name/url 输入框 */
+
+/* 输入框：底线式、13sp Roboto、87% 黑 */
+.menu-item-name,
+.menu-item-url {
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    padding: 4px 0;
+    font-size: 13px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    outline: none;
+    background: transparent;
+    width: 100%;
+    transition: border-color .15s;
+}
+
+/* 输入框 focus — 2dp 主色底线、补偿 padding */
+.menu-item-name:focus,
+.menu-item-url:focus {
+    border-bottom: 2px solid var(--md-primary);
+    padding-bottom: 3px;
+}
+
+.menu-item-name { width: 100%; }
+.menu-item-url { width: 100%; }
+
+/* 删除按钮：36dp 圆形、38% 黑、hover 红色 */
+.menu-item-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(0,0,0,0.38);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: color .15s, background .15s;
+}
+.menu-item-delete:hover {
+    color: #f44336;
+    background: rgba(244,67,54,0.08);
+}
+
+/* ==== 23. 封面图预览 & 上传 ==== */
+
+/* 封面预览区：120dp 高、cover 填充、2dp 圆角、浅灰默认背景 */
+.cover-preview {
+    width: 100%;
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.08);
+    margin-top: 8px;
+    position: relative;
+    background-color: #f5f5f5;
+}
+
+/* 无封面时占位文字：居中、26% 黑、12sp */
+.cover-preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(0,0,0,0.26);
+    font-size: 12px;
+}
+
+/* 封面右上角删除按钮：24dp 圆形、54% 黑背景 */
+.cover-remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.54);
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cover-remove-btn:hover { background: rgba(0,0,0,0.78); }
+
+/* 封面上传区：12dp 间距 flex 列 */
+.cover-upload-area {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 上传行：flex 水平、12dp 间距 */
+.cover-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 隐藏原生 file input */
+.cover-file-hidden {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+/* 文件信息区：弹性填充、列布局 */
+.cover-file-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 文件名：13sp、54% 黑、单行截断 */
+.cover-file-name {
+    font-size: 13px;
+    color: rgba(0,0,0,0.54);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 20px;
+}
+
+/* MD1 Linear Progress — 确定性进度条
+   绝对定位在文件名下方 (top:22px 对齐按钮底端)
+   4dp 高、12% 黑底轨道 */
+.md-progress {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+/* 进度条填充：主色、2dp 圆角、宽度过渡 */
+.md-progress-bar {
+    height: 100%;
+    background: var(--md-primary);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* ==== 24. MD1 Snackbar (Center-aligned tablet/desktop) ==== */
+/* 规范:
+ * 高度 48dp, 最小宽度 288dp, 最大宽度 568dp
+ * 2dp 圆角, 背景 #323232
+ * Action button: Roboto Medium 14sp ALL-CAPS
+ * Action button 左侧 padding 48dp
+ */
+
+/* Snackbar 容器：fixed 底部居中、#323232 背景、48dp 高 */
+.md-snackbar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #323232;
+    color: #fff;
+    height: 48px;
+    min-width: 288px;
+    max-width: 568px;
+    padding: 0 24px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+    box-shadow: 0 3px 5px rgba(0,0,0,.26);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Snackbar 显示状态：淡入 + 上移 */
+.md-snackbar.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Snackbar 文本：弹性填充、单行截断 */
+.md-snackbar-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 48px;
+}
+
+/* Snackbar 操作按钮：MDC Button 组件风格
+   36dp 高、amber 色、14sp medium uppercase、左侧 40dp 间距 + 8dp 对称内边距 */
+.md-snackbar-action {
+    background: none;
+    border: none;
+    color: #ffab00;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 0 8px;
+    margin-left: 40px;
+    height: 36px;
+    line-height: 36px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    border-radius: 2px;
+}
+
+/* Snackbar 操作按钮 hover — 8% 白背景 */
+.md-snackbar-action:hover { background: rgba(255,255,255,0.08); }
+.md-snackbar-action:focus { outline: none; }
+
+/* ==== 25. Empty state ==== */
+/* 空列表占位：居中、38% 黑、40dp 上下内边距 */
+.empty-state {
+    text-align: center;
+    color: rgba(0,0,0,0.38);
+    padding: 40px 16px;
+    font-size: 14px;
+}
+
+/* 空状态图标：48sp、块级、12dp 下间距 */
+.empty-state i { font-size: 48px; display: block; margin-bottom: 12px; }
+
+/* ==== 26. MD1 Dialog (Alert with title bar) ==== */
+/* 规范:
+ * Title: Roboto Medium 20sp
+ * Content: 14sp
+ * Padding: 24dp
+ * Elevation: 24dp shadow
+ * Action area: 52dp height
+ * Dismissive button 左, Affirmative button 右
+ */
+
+/* 对话框遮罩：fixed 全屏、40% 黑 */
+.md-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.md-dialog-overlay.show { display: flex; }
+
+/* 对话框面板：白色、2dp 圆角、280-560dp 宽、24dp elevation 阴影 */
+.md-dialog {
+    background: #fff;
+    border-radius: 2px;
+    min-width: 280px;
+    max-width: 560px;
+    box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
+    font-family: 'Roboto', sans-serif;
+}
+
+/* 对话框标题：20sp medium、87% 黑、24dp 内边距 */
+.md-dialog-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    padding: 24px 24px 20px;
+    line-height: 28px;
+}
+
+/* 对话框内容：14sp、54% 黑、0-24dp 内边距 */
+.md-dialog-content {
+    font-size: 14px;
+    color: rgba(0,0,0,0.54);
+    padding: 0 24px 24px;
+    line-height: 20px;
+}
+
+/* 对话框操作按钮区：右对齐、8dp 间距、8+24dp 内边距 */
+.md-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 8px 8px 24px;
+}
+
+/* 对话框按钮：36dp 高、64dp 最小宽、14sp medium uppercase */
+.md-dialog-actions .md-btn {
+    min-height: 36px;
+    min-width: 64px;
+    border-radius: 2px;
+    padding: 0 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: normal;
+    justify-content: center;
+}
+
+/* 取消按钮 — dismissive: 54% 黑 */
+.md-dialog-cancel {
+    color: rgba(0,0,0,0.54);
+}
+.md-dialog-cancel:hover { background: rgba(0,0,0,0.06); }
+
+/* 确认按钮 — affirmative: 红色 (危险操作) */
+.md-dialog-confirm {
+    color: #f44336;
+}
+.md-dialog-confirm:hover { background: rgba(244,67,54,0.08); }
+
+/* ==== 27. MD1 Date Picker Dialog ==== */
+/* 规范:
+ * Dialog with calendar grid
+ * Month/year header navigation
+ * Year list view
+ * Selected day: filled circle
+ * Today: different color/weight
+ */
+
+/* 日期选择器遮罩: 背景淡入动画 */
+.md-datepicker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    z-index: 25000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.md-datepicker-overlay.show {
+    display: flex;
+    animation: dp-overlay-in .2s ease forwards;
+}
+.md-datepicker-overlay.closing {
+    animation: dp-overlay-out .15s ease forwards;
+}
+@keyframes dp-overlay-in {
+    from { background: rgba(0,0,0,0); }
+    to { background: rgba(0,0,0,0.4); }
+}
+@keyframes dp-overlay-out {
+    from { background: rgba(0,0,0,0.4); }
+    to { background: rgba(0,0,0,0); }
+}
+
+/* 日期选择器面板：白色、2dp 圆角、310dp 宽、scale 进入动画 */
+.md-datepicker-dialog {
+    background: #fff;
+    border-radius: 2px;
+    width: 310px;
+    box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
+    animation: dp-dialog-in .25s cubic-bezier(.4,0,.2,1) forwards;
+    transform-origin: center top;
+}
+.md-datepicker-overlay.closing .md-datepicker-dialog {
+    animation: dp-dialog-out .15s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes dp-dialog-in {
+    from { opacity: 0; transform: scale(0.85) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes dp-dialog-out {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to { opacity: 0; transform: scale(0.85) translateY(12px); }
+}
+
+/* 日期选择器头部：月份/年份 + 前后导航 */
+.md-datepicker-header {
+    padding: 16px 24px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 月份/年份文字：18sp medium、可点击(切换年视图)、hover 变主色 */
+.md-datepicker-monthyear {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.87);
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.md-datepicker-monthyear:hover { color: var(--md-primary); }
+
+/* 前后导航按钮组 */
+.md-datepicker-nav {
+    display: flex;
+    gap: 0;
+}
+
+/* 导航按钮：36dp 圆形、54% 黑 */
+.md-datepicker-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0,0,0,0.54);
+    transition: background .15s;
+}
+.md-datepicker-nav-btn:hover { background: rgba(0,0,0,0.08); }
+.md-datepicker-nav-btn i { font-size: 20px; }
+
+/* 星期标签行：flex 等宽、12sp medium、38% 黑 */
+.md-datepicker-weekdays {
+    display: flex;
+    padding: 0 24px 4px;
+}
+.md-datepicker-weekday {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.38);
+    line-height: 28px;
+}
+
+/* 日期网格：8dp 外边距 */
+.md-datepicker-grid {
+    padding: 0 8px 8px;
+}
+
+/* 日期行：flex 居中 */
+.md-datepicker-row {
+    display: flex;
+    justify-content: center;
+}
+
+/* 日期格按钮：36x36dp 固定尺寸（flex:1 会导致椭圆）、圆形、14sp Roboto */
+.md-datepicker-day {
+    width: 36px;
+    height: 36px;
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    flex-shrink: 0;
+    transition: background .15s;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0;
+}
+.md-datepicker-day:hover { background: rgba(0,0,0,0.08); }
+
+/* 今天：主色 + 粗体 */
+.md-datepicker-day--today {
+    color: var(--md-primary);
+    font-weight: 700;
+}
+
+/* 选中日期：主色背景 + 白字 */
+.md-datepicker-day--selected {
+    background: var(--md-primary);
+    color: #fff;
+    font-weight: 500;
+}
+.md-datepicker-day--selected:hover {
+    background: #3949ab;
+}
+
+/* 不可选日期：26% 黑、禁止交互 */
+.md-datepicker-day--disabled {
+    color: rgba(0,0,0,0.26);
+    cursor: default;
+    pointer-events: none;
+}
+
+/* 非当月日期：26% 黑（视觉弱化） */
+.md-datepicker-day--outside {
+    color: rgba(0,0,0,0.26);
+}
+
+/* 年份列表视图：308dp 高、可滚动、默认隐藏 */
+.md-datepicker-yearlist {
+    height: 308px;
+    overflow-y: auto;
+    background: #fff;
+    padding: 0;
+    display: none;
+}
+.md-datepicker-yearlist.show {
+    display: block;
+    animation: dp-year-in .2s ease forwards;
+}
+@keyframes dp-year-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 年份选项按钮：16sp、24dp 左内边距 */
+.md-datepicker-year-item {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    padding: 12px 24px;
+    transition: background .15s;
+}
+.md-datepicker-year-item:hover { background: rgba(0,0,0,0.08); }
+
+/* 选中年份：主色、24sp medium */
+.md-datepicker-year-item--selected {
+    color: var(--md-primary);
+    font-size: 24px;
+    font-weight: 500;
+    padding: 8px 24px;
+}
+
+/* 日期选择器操作区：flex 右对齐、1dp 顶部分割线 */
+.md-datepicker-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 8px 8px 24px;
+    border-top: 1px solid rgba(0,0,0,0.12);
+}
+.md-datepicker-actions .md-btn {
+    min-height: 36px;
+    min-width: 64px;
+    border-radius: 2px;
+    padding: 0 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: normal;
+    justify-content: center;
+}
+
+/* 取消按钮：54% 黑 */
+.md-datepicker-cancel { color: rgba(0,0,0,0.54); }
+.md-datepicker-cancel:hover { background: rgba(0,0,0,0.06); }
+
+/* 确认按钮：主色 */
+.md-datepicker-ok { color: var(--md-primary); }
+.md-datepicker-ok:hover { background: rgba(0,0,0,0.06); }
+
+/* 日期触发字段：看起来像 textfield 但可点击、右侧 30dp 留给日历图标 */
+.md-textfield--datepicker .md-textfield__input {
+    cursor: pointer;
+    color: rgba(0,0,0,0.87);
+    padding-right: 30px;
+}
+
+/* 日期触发图标：绝对定位在输入框底线右端 (bottom:7px 对齐底线) */
+.md-textfield--datepicker .md-datepicker-trigger-icon {
+    position: absolute;
+    right: 0;
+    bottom: 7px;
+    color: rgba(0,0,0,0.54);
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* ==== 28. MD1 Time Picker Dialog ==== */
+/* 规范:
+ * 蓝色头部 显示时间 + AM/PM
+ * 白色钟面：无灰色背景圆圈，数字直接显示
+ * 时针从中心到所选数字
+ * 选中数字：主色实心圆 + 白字
+ * 无 clock 与 actions 之间的 border-top 分割线
+ */
+
+/* 时间选择器遮罩 — 同日期选择器动画 */
+.md-timepicker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    z-index: 25000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.md-timepicker-overlay.show {
+    display: flex;
+    animation: dp-overlay-in .2s ease forwards;
+}
+.md-timepicker-overlay.closing {
+    animation: dp-overlay-out .15s ease forwards;
+}
+
+/* 时间选择器面板：白色、2dp 圆角、310dp 宽 */
+.md-timepicker-dialog {
+    background: #fff;
+    border-radius: 2px;
+    width: 310px;
+    box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
+    animation: dp-dialog-in .25s cubic-bezier(.4,0,.2,1) forwards;
+    transform-origin: center top;
+}
+.md-timepicker-overlay.closing .md-timepicker-dialog {
+    animation: dp-dialog-out .15s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* 时间头部：主色背景、24dp 内边距、flex baseline 对齐 */
+.md-timepicker-header {
+    background: var(--md-primary);
+    color: #fff;
+    padding: 24px 24px 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+/* 时间数字显示：64sp light、行高 1、负字间距 */
+.md-timepicker-time-display {
+    font-size: 64px;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+/* 小时/分钟：可点击、54% 白、active 不透明 */
+.md-timepicker-time-display .tp-hour,
+.md-timepicker-time-display .tp-minute {
+    cursor: pointer;
+    opacity: 0.54;
+    transition: opacity .15s;
+}
+.md-timepicker-time-display .tp-hour.tp-active,
+.md-timepicker-time-display .tp-minute.tp-active {
+    opacity: 1;
+}
+
+/* 冒号分隔符：54% 白 */
+.md-timepicker-time-display .tp-colon {
+    opacity: 0.54;
+    margin: 0 2px;
+}
+
+/* AM/PM 按钮组：列布局、12dp 左间距、4dp 行间距 */
+.md-timepicker-ampm {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+    gap: 4px;
+}
+
+/* AM/PM 按钮：18sp medium、白字、54% 不透明、2dp 圆角 */
+.md-timepicker-ampm-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    opacity: 0.54;
+    padding: 2px 4px;
+    border-radius: 2px;
+    transition: opacity .15s, background .15s;
+    font-family: 'Roboto', sans-serif;
+}
+.md-timepicker-ampm-btn:hover { background: rgba(255,255,255,0.1); }
+.md-timepicker-ampm-btn.tp-active { opacity: 1; }
+
+/* 时钟面板：256x256dp 圆形区域、24dp 上边距、16dp 下边距
+   无灰色背景圆圈 — MD1 规范 */
+.md-timepicker-clock {
+    width: 256px;
+    height: 256px;
+    margin: 24px auto 16px;
+    border-radius: 50%;
+    position: relative;
+    user-select: none;
+}
+
+/* 时钟中心点：6dp 主色圆点 */
+.md-timepicker-clock-center {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--md-primary);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+/* 时钟指针：2dp 宽、主色、从底部(50%)向上延伸、transform-origin 底部中心 */
+.md-timepicker-clock-hand {
+    position: absolute;
+    width: 2px;
+    background: var(--md-primary);
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(0deg);
+    z-index: 1;
+    transition: height .2s cubic-bezier(.4,0,.2,1), transform .2s cubic-bezier(.4,0,.2,1);
+    border-radius: 1px;
+}
+
+/* 选中圆圈 — 指针的子元素，定位在 hand 顶端，跟随旋转实现平滑动画
+   36dp 主色实心圆，z-index -1 在数字下方 */
+.md-timepicker-clock-selection {
+    position: absolute;
+    top: -18px;       /* 向上偏移18px(圆直径36px的一半)，使圆心对齐hand顶端 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--md-primary);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 时钟数字按钮：36x36dp 圆形、透明背景、16sp Roboto、87% 黑
+   清除所有浏览器默认 button 样式 */
+.md-timepicker-clock-number {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    cursor: pointer;
+    z-index: 3;
+    transition: color .15s;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0;
+}
+.md-timepicker-clock-number:hover {
+    color: rgba(0,0,0,0.54);
+}
+
+/* 选中数字 — 白色文字（在主色圆圈上方） */
+.md-timepicker-clock-number--selected {
+    color: #fff;
+}
+
+/* 时间选择器操作区：flex 右对齐 — 无 border-top (MD1 规范) */
+.md-timepicker-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 8px 8px 24px;
+}
+.md-timepicker-actions .md-btn {
+    min-height: 36px;
+    min-width: 64px;
+    border-radius: 2px;
+    padding: 0 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: normal;
+    justify-content: center;
+}
+
+/* 取消按钮：54% 黑 */
+.md-timepicker-cancel { color: rgba(0,0,0,0.54); }
+.md-timepicker-cancel:hover { background: rgba(0,0,0,0.06); }
+
+/* 确认按钮：主色 */
+.md-timepicker-ok { color: var(--md-primary); }
+.md-timepicker-ok:hover { background: rgba(0,0,0,0.06); }
+
+/* 时间触发字段：可点击、右侧 30dp 留给时钟图标 */
+.md-textfield--timepicker .md-textfield__input {
+    cursor: pointer;
+    color: rgba(0,0,0,0.87);
+    padding-right: 30px;
+}
+
+/* 时间触发图标：绝对定位在输入框底线右端 (bottom:7px 对齐底线) */
+.md-textfield--timepicker .md-timepicker-trigger-icon {
+    position: absolute;
+    right: 0;
+    bottom: 7px;
+    color: rgba(0,0,0,0.54);
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* 日期+时间并排行：flex、16dp 间距 */
+.md-datetime-row {
+    display: flex;
+    gap: 16px;
+}
+.md-datetime-row .md-form-group {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ==== 29. MD1 Theme Color Picker ==== */
+/* 主题色选择网格：flex 换行、12dp 间距 */
+
+.md-theme-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+}
+
+/* 单个主题选项卡片：2dp 透明边框(选中变主色)、8dp 内边距、100dp 宽 */
+.md-theme-option {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 8px;
+    transition: border-color .15s, box-shadow .15s;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    text-align: center;
+    width: 100px;
+}
+.md-theme-option:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+}
+
+/* 选中主题选项 — 主色边框 */
+.md-theme-option--selected {
+    border-color: var(--md-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* 主色+强调色色条：36dp 高、flex 3:1 比例 */
+.md-theme-swatch {
+    display: flex;
+    height: 36px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.md-theme-swatch-primary { flex: 3; }
+.md-theme-swatch-accent { flex: 1; }
+
+/* 主题名称文字：12sp、54% 黑 */
+.md-theme-name {
+    font-size: 12px;
+    color: rgba(0,0,0,0.54);
+    line-height: 16px;
+}
+
+/* ==== 30. Dark Mode — MD1 Dark Theme 规范 ==== */
+/* 参照 m1.material.io/style/color.html Dark Theme 调色板:
+ * 背景: #303030  卡片/对话框: #424242
+ * 文字: 白100%(primary) 白70%(secondary) 白50%(hint/disabled) 白12%(divider)
+ *
+ * 触发方式:
+ *   html[data-mode="dark"] — 手动暗黑模式
+ *   html[data-mode="auto"] + @media (prefers-color-scheme: dark) — 跟随系统
+ */
+
+/* 页面 body：#303030 背景、87% 白文字 */
+html[data-mode="dark"] body {
+    background: #303030;
+    color: rgba(255,255,255,0.87);
+}
+
+/* App bar：保持主色背景（暗黑模式下无变化） */
+html[data-mode="dark"] .app-bar {
+    background: var(--md-primary);
+}
+
+/* 卡片：#424242 背景、100% 白文字 */
+html[data-mode="dark"] .md-card {
+    background: #424242;
+    color: rgba(255,255,255,1);
+}
+
+/* 卡片标题：100% 白 */
+html[data-mode="dark"] .md-card-title {
+    color: rgba(255,255,255,1);
+}
+
+/* 可展开卡片标题 hover：8% 白背景 */
+html[data-mode="dark"] .md-card.expandable .md-card-title:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* 展开图标：38% 白(didle) / 70% 白(hover) */
+html[data-mode="dark"] .md-card.expandable .md-card-title .md-expand-icon {
+    color: rgba(255,255,255,0.38);
+}
+html[data-mode="dark"] .md-card.expandable .md-card-title:hover .md-expand-icon {
+    color: rgba(255,255,255,0.70);
+}
+
+/* 可展开卡片内容区：100% 白 */
+html[data-mode="dark"] .md-card-body {
+    color: rgba(255,255,255,1);
+}
+
+/* 卡片分割线：12% 白 */
+html[data-mode="dark"] .md-card-divider {
+    background: rgba(255,255,255,0.12);
+}
+
+/* ---- 文本框暗黑 ---- */
+/* MD1: 白87% input, 白50% label/hint */
+
+html[data-mode="dark"] .md-textfield__input,
+html[data-mode="dark"] .md-textarea {
+    color: rgba(255,255,255,0.87);
+    border-bottom-color: rgba(255,255,255,0.50);
+}
+html[data-mode="dark"] .md-textfield__label,
+html[data-mode="dark"] .md-textarea-label {
+    color: rgba(255,255,255,0.50);
+}
+html[data-mode="dark"] .md-textfield__input:focus + .md-textfield__label,
+html[data-mode="dark"] .md-textarea:focus + .md-textarea-label {
+    color: var(--md-primary);
+}
+html[data-mode="dark"] .md-textfield__input:focus,
+html[data-mode="dark"] .md-textarea:focus {
+    border-bottom-color: var(--md-primary);
+}
+html[data-mode="dark"] .md-form-hint {
+    color: rgba(255,255,255,0.50);
+}
+
+/* Subheader：87% 白 */
+html[data-mode="dark"] .md-subheader {
+    color: rgba(255,255,255,0.87);
+}
+
+/* ---- 按钮暗黑 ---- */
+
+/* 凸起按钮：#616161 背景、100% 白文字 */
+html[data-mode="dark"] .md-btn-raised {
+    background: #616161;
+    color: rgba(255,255,255,1);
+}
+html[data-mode="dark"] .md-btn-raised:hover {
+    background: #757575;
+}
+
+/* 扁平按钮：100% 白文字 */
+html[data-mode="dark"] .md-btn-flat {
+    color: rgba(255,255,255,1);
+}
+
+/* 主要按钮：主色背景、白字 */
+html[data-mode="dark"] .md-btn-primary {
+    background: var(--md-primary);
+    color: #fff;
+}
+
+/* ---- 数据表格暗黑 ---- */
+/* 白87% 内容, 白50% 表头 */
+
+html[data-mode="dark"] .md-data-table {
+    background: #424242;
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-data-table thead th {
+    color: rgba(255,255,255,0.50);
+}
+html[data-mode="dark"] .md-data-table tbody tr:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-data-table td,
+html[data-mode="dark"] .md-data-table th {
+    border-bottom-color: rgba(255,255,255,0.12);
+}
+html[data-mode="dark"] .md-data-table input {
+    color: rgba(255,255,255,0.87);
+    background: transparent;
+    border-bottom-color: rgba(255,255,255,0.50);
+}
+
+/* ---- 开关暗黑 ---- */
+/* MD1 specs: thumb #FAFAFA off (此处 #bdbdbd 更适暗黑), track rgba(255,255,255,0.30) off;
+   thumb primary on, track primary 50% on */
+html[data-mode="dark"] .md-switch-track {
+    background: rgba(255,255,255,0.30);
+}
+html[data-mode="dark"] .md-switch input:checked + .md-switch-track {
+    background: var(--md-primary);
+    opacity: 0.5;
+}
+html[data-mode="dark"] .md-switch-thumb {
+    background: #bdbdbd;
+    border-color: transparent;
+}
+html[data-mode="dark"] .md-switch input:checked + .md-switch-track + .md-switch-thumb {
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+}
+
+/* 展开图标 — 暗黑：54% 白 */
+html[data-mode="dark"] .md-expand-icon i {
+    color: rgba(255,255,255,0.54);
+}
+
+/* 卡片摘要 — 50% 白 */
+html[data-mode="dark"] .md-card-summary {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 菜单项删除按钮 — 54% 白 */
+html[data-mode="dark"] .menu-item-delete {
+    color: rgba(255,255,255,0.54);
+}
+
+/* ---- 主题选择器暗黑 ---- */
+/* 选项卡片：#424242 背景、12% 白默认边框 */
+html[data-mode="dark"] .md-theme-option {
+    background: #424242;
+    border-color: rgba(255,255,255,0.12);
+}
+html[data-mode="dark"] .md-theme-option--selected {
+    border-color: var(--md-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+html[data-mode="dark"] .md-theme-name {
+    color: rgba(255,255,255,0.70);
+}
+
+/* 封面文件名 — 50% 白 */
+html[data-mode="dark"] .cover-file-name {
+    color: rgba(255,255,255,0.50);
+}
+
+/* Snackbar：暗黑模式下保持 #323232 (MD1 规范不随暗黑变化) */
+html[data-mode="dark"] .md-snackbar {
+    background: #323232;
+}
+
+/* ---- EasyMDE 编辑器暗黑 ---- */
+
+/* 工具栏：#424242 背景、12% 白分割线 */
+html[data-mode="dark"] .EasyMDEContainer .editor-toolbar {
+    background: #424242;
+    border-color: rgba(255,255,255,0.12);
+}
+/* 工具栏按钮：54% 白、hover 8% 白背景 */
+html[data-mode="dark"] .EasyMDEContainer .editor-toolbar button {
+    color: rgba(255,255,255,0.54);
+}
+html[data-mode="dark"] .EasyMDEContainer .editor-toolbar button:hover,
+html[data-mode="dark"] .EasyMDEContainer .editor-toolbar button.active {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,1);
+}
+/* CodeMirror 编辑区：#303030 背景、87% 白文字 */
+html[data-mode="dark"] .EasyMDEContainer .CodeMirror {
+    background: #303030;
+    color: rgba(255,255,255,0.87);
+    border-color: rgba(255,255,255,0.12);
+}
+/* 编辑器预览区：#303030 背景 */
+html[data-mode="dark"] .EasyMDEContainer .editor-preview {
+    background: #303030;
+    color: rgba(255,255,255,0.87);
+}
+/* 代码块/选中区：8% 白背景 */
+html[data-mode="dark"] .EasyMDEContainer .editor-preview pre,
+html[data-mode="dark"] .EasyMDEContainer .CodeMirror .CodeMirror-selected {
+    background: rgba(255,255,255,0.08);
+}
+
+/* ---- 对话框暗黑 ---- */
+/* MD1 dark: #424242 surface */
+
+/* 遮罩加深：70% 黑 */
+html[data-mode="dark"] .md-dialog-overlay {
+    background: rgba(0,0,0,0.7);
+}
+/* 对话框面板：#424242 */
+html[data-mode="dark"] .md-dialog {
+    background: #424242;
+}
+html[data-mode="dark"] .md-dialog-title {
+    color: rgba(255,255,255,1);
+}
+html[data-mode="dark"] .md-dialog-content {
+    color: rgba(255,255,255,0.70);
+}
+/* 对话框扁平按钮：主色 */
+html[data-mode="dark"] .md-dialog .md-btn-flat {
+    color: var(--md-primary);
+}
+
+/* ---- 日期选择器暗黑 ---- */
+
+html[data-mode="dark"] .md-datepicker-dialog,
+html[data-mode="dark"] .md-timepicker-dialog {
+    background: #424242;
+}
+
+/* 日期头部：主色背景 */
+html[data-mode="dark"] .md-datepicker-header {
+    background: var(--md-primary);
+}
+
+/* 日期网格区：87% 白 */
+html[data-mode="dark"] .md-datepicker-daynames,
+html[data-mode="dark"] .md-datepicker-grid {
+    color: rgba(255,255,255,0.87);
+}
+
+/* 日期按钮：清除浏览器默认样式、100% 白文字 */
+html[data-mode="dark"] .md-datepicker-day {
+    color: rgba(255,255,255,1);
+    border: none;
+    outline: none;
+    background: none;
+}
+html[data-mode="dark"] .md-datepicker-day:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* 选中日期：主色背景 + 白字 */
+html[data-mode="dark"] .md-datepicker-day--selected {
+    background: var(--md-primary);
+    color: #fff;
+}
+
+/* 今天：主色文字 */
+html[data-mode="dark"] .md-datepicker-day--today {
+    color: var(--md-primary);
+}
+
+/* 月份/年份：87% 白、hover 主色 */
+html[data-mode="dark"] .md-datepicker-monthyear {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-datepicker-monthyear:hover {
+    color: var(--md-primary);
+}
+
+/* 日期确认/取消：主色/70% 白 */
+html[data-mode="dark"] .md-datepicker-ok {
+    color: var(--md-primary);
+}
+html[data-mode="dark"] .md-datepicker-cancel {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .md-datepicker-cancel:hover,
+html[data-mode="dark"] .md-datepicker-ok:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* ---- 时间选择器暗黑 ---- */
+/* MD1 Time Picker Dark Theme: 对话框 #424242, 数字白色 100%, 手/选中圆/中心点全主色 */
+
+/* 时间头部：主色背景 */
+html[data-mode="dark"] .md-timepicker-header {
+    background: var(--md-primary);
+}
+
+/* 时钟数字：100% 白、清除浏览器默认样式 */
+html[data-mode="dark"] .md-timepicker-clock-number {
+    color: rgba(255,255,255,1);
+    border: none;
+    outline: none;
+    background: transparent;
+}
+html[data-mode="dark"] .md-timepicker-clock-number:hover {
+    color: rgba(255,255,255,0.70);
+}
+
+/* 时钟指针：主色 */
+html[data-mode="dark"] .md-timepicker-clock-hand {
+    background: var(--md-primary);
+}
+
+/* 选中数字：白字 */
+html[data-mode="dark"] .md-timepicker-clock-number--selected {
+    color: #fff;
+}
+
+/* 时间确认：主色 / 取消：70% 白 */
+html[data-mode="dark"] .md-timepicker-ok {
+    color: var(--md-primary);
+}
+html[data-mode="dark"] .md-timepicker-cancel {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .md-timepicker-cancel:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-timepicker-ok:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* 时钟中心点：主色 */
+html[data-mode="dark"] .md-timepicker-clock-center {
+    background: var(--md-primary);
+}
+
+/* AM/PM 按钮 hover：10% 白背景 */
+html[data-mode="dark"] .md-timepicker-ampm-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* ---- 补充暗黑覆盖 ---- */
+
+/* 编辑提示条：8% 白背景、主色左边框、70% 白文字 */
+html[data-mode="dark"] .edit-notice {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--md-primary);
+    color: rgba(255,255,255,0.70);
+}
+
+/* 进度条底轨：12% 白 */
+html[data-mode="dark"] .md-progress {
+    background: rgba(255,255,255,0.12);
+}
+
+/* 强调色按钮 + FAB：accent 色背景 */
+html[data-mode="dark"] .md-btn-accent {
+    background: var(--md-accent);
+    color: #fff;
+}
+html[data-mode="dark"] .md-fab {
+    background: var(--md-accent);
+}
+
+/* 主要按钮 hover：亮度增加 10% */
+html[data-mode="dark"] .md-btn-primary:hover {
+    background: var(--md-primary);
+    filter: brightness(1.1);
+}
+
+/* 字段标签：主色 */
+html[data-mode="dark"] .md-field-label {
+    color: var(--md-primary);
+}
+
+/* 封面预览区：#303030 背景、12% 白边框 */
+html[data-mode="dark"] .cover-preview {
+    background: #303030;
+    border-color: rgba(255,255,255,0.12);
+}
+html[data-mode="dark"] .cover-preview img {
+    border-color: rgba(255,255,255,0.12);
+}
+
+/* 日期/时间触发图标：50% 白 */
+html[data-mode="dark"] .md-datepicker-trigger-icon,
+html[data-mode="dark"] .md-timepicker-trigger-icon {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 日期星期标签：50% 白 */
+html[data-mode="dark"] .md-datepicker-weekday {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 年份列表：70% 白、选中主色 */
+html[data-mode="dark"] .md-datepicker-year {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .md-datepicker-year--selected {
+    color: var(--md-primary);
+}
+
+/* 置顶按钮：54% 白 / 置顶态 accent 色 */
+html[data-mode="dark"] .pin-btn {
+    color: rgba(255,255,255,0.54);
+}
+html[data-mode="dark"] .pin-btn--pinned {
+    color: var(--md-accent);
+}
+
+/* ---- 文章/草稿列表暗黑 ---- */
+
+html[data-mode="dark"] .md-list-item {
+    border-bottom-color: rgba(255,255,255,0.12);
+}
+html[data-mode="dark"] .md-list-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-list-item-title {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-list-item-sub {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 图标按钮：54% 白 / hover 8% 白 / 置顶 amber 色 */
+html[data-mode="dark"] .md-btn-icon {
+    color: rgba(255,255,255,0.54);
+}
+html[data-mode="dark"] .md-btn-icon:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-btn-icon.pinned {
+    color: #ffb74d;
+}
+
+/* 危险按钮暗黑：红色文字 + 12% 红背景 */
+html[data-mode="dark"] .md-btn-danger {
+    color: #ef5350;
+}
+html[data-mode="dark"] .md-btn-danger:hover {
+    background: rgba(239,83,80,0.12);
+}
+
+/* 空状态：38% 白（保持一致） */
+html[data-mode="dark"] .empty-state {
+    color: rgba(255,255,255,0.38);
+}
+
+/* 置顶徽章：橙色不变 */
+html[data-mode="dark"] .pin-badge {
+    background: #ff9800;
+    color: #fff;
+}
+
+/* 拖拽手柄：30% 白 / hover 70% 白 */
+html[data-mode="dark"] .md-card .md-drag-handle {
+    color: rgba(255,255,255,0.30);
+}
+html[data-mode="dark"] .md-card .md-drag-handle:hover {
+    color: rgba(255,255,255,0.70);
+}
+
+/* ---- Dropdown 暗黑 ---- */
+
+html[data-mode="dark"] .md-dropdown__trigger {
+    background: #616161;
+    color: rgba(255,255,255,1);
+}
+html[data-mode="dark"] .md-dropdown__trigger:hover {
+    background: #757575;
+}
+html[data-mode="dark"] .md-dropdown__trigger:active,
+html[data-mode="dark"] .md-dropdown--open .md-dropdown__trigger {
+    background: #616161;
+}
+html[data-mode="dark"] .md-dropdown__arrow {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .md-dropdown__menu {
+    background: #424242;
+}
+html[data-mode="dark"] .md-dropdown__option {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-dropdown__option:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-dropdown__option--selected {
+    color: var(--md-primary);
+}
+html[data-mode="dark"] .md-dropdown__option-icon {
+    color: rgba(255,255,255,0.54);
+}
+html[data-mode="dark"] .md-dropdown__option--selected .md-dropdown__option-icon {
+    color: var(--md-primary);
+}
+
+/* ---- Textarea 暗黑 ---- */
+
+html[data-mode="dark"] .md-textarea-field__textarea {
+    color: rgba(255,255,255,0.87);
+    border-color: rgba(255,255,255,0.50);
+    background: transparent;
+}
+html[data-mode="dark"] .md-textarea-field__textarea:focus {
+    border-color: var(--md-primary);
+}
+html[data-mode="dark"] .md-textarea-field__label {
+    color: rgba(255,255,255,0.50);
+}
+html[data-mode="dark"] .md-textarea-field__textarea:focus + .md-textarea-field__label,
+html[data-mode="dark"] .md-textarea-field__textarea.has-value + .md-textarea-field__label {
+    color: var(--md-primary);
+}
+html[data-mode="dark"] .md-textarea-field__textarea::placeholder {
+    color: rgba(255,255,255,0.38);
+}
+
+/* 封面预览占位文字：26% 白 */
+html[data-mode="dark"] .cover-preview-placeholder {
+    color: rgba(255,255,255,0.26);
+}
+
+/* 卡片内标题(如"上传自定义背景图")：87% 白 */
+html[data-mode="dark"] .md-card-supporting-title {
+    color: rgba(255,255,255,0.87);
+}

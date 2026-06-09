@@ -1,1278 +1,31 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>博客管理后台</title>
+    <link rel="icon" id="admin-favicon" href="images/favicon.png">
+    <script>
+        // 动态加载站点 favicon
+        fetch('/api/posts').then(function(r){ return r.json(); }).then(function(d){
+            if(d.site && d.site.favicon) document.getElementById('admin-favicon').href = d.site.favicon;
+        });
+    </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="lib/mdl/material-themes-indigo-pink.css">
+    <link rel="stylesheet" id="admin-theme-css" href="file/css/material-themes-indigo-pink.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
     <script src="lib/mdl/material.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
-    <style>
-        /*
-         * 博客管理后台 - Material Design 1 规范样式
-         * 遵循 MD1 设计规范：
-         *   - 8dp 网格系统
-         *   - 卡片阴影 2dp / 3dp / 6dp / 9dp / 12dp
-         *   - 色彩：Indigo 500 主色, Pink A200 强调色
-         *   - 字体：Roboto, 14sp 正文, 20sp 标题
-         *   - 触控目标最小 48dp
-         *   - 圆角 2dp
-         */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-            background: #e0e0e0;
-            color: rgba(0,0,0,0.87);
-            min-height: 100vh;
-            font-size: 14px;
-            line-height: 20px;
+    <style id="admin-theme-vars">
+        /* 主题色变量 — 由 selectTheme() 动态更新 */
+        :root {
+            --md-primary: #3f51b5;
+            --md-accent: #ff4081;
+            --md-accent-dark: #f50057;
         }
-
-        /* ---- MD1 App Bar ---- */
-        .app-bar {
-            background: #3f51b5;
-            color: #fff;
-            padding: 0 16px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,.26);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .app-bar-title {
-            font-size: 20px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .app-bar-title i { font-size: 24px; }
-        .app-bar a {
-            color: rgba(255,255,255,0.87);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            min-height: 48px;
-            padding: 0 8px;
-            border-radius: 2px;
-        }
-        .app-bar a:hover { background: rgba(255,255,255,0.12); }
-
-        /* ---- 主容器 ---- */
-        .main-container {
-            max-width: 1600px;
-            margin: 24px auto;
-            padding: 0 24px;
-            display: grid;
-            grid-template-columns: 3fr 5fr;
-            gap: 24px;
-            align-items: start;
-        }
-        @media (max-width: 960px) {
-            .main-container { grid-template-columns: 1fr; }
-        }
-
-        /* ---- MD1 Card ---- */
-        .md-card {
-            background: #fff;
-            border-radius: 2px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            /* 不用 overflow:hidden — 避免裁切 EasyMDE focus 边框和 tooltip
-               圆角裁切由子元素自身 border-radius 配合 */
-        }
-        .md-card-title {
-            font-size: 20px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.87);
-            padding: 24px 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .md-card-supporting {
-            padding: 0 16px 16px;
-        }
-        /* 卡片支撑文本区标题 — MD1 Supporting text: 14sp medium, 87% black */
-        .md-card-supporting-title {
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.87);
-            line-height: 20px;
-            padding-top: 16px;
-            margin-bottom: 4px;
-        }
-        .md-card-divider {
-            height: 1px;
-            background: #e0e0e0;
-            margin: 0 16px;
-        }
-
-        /* ---- MD1 Expansion Panel 卡片扩展 ---- */
-        /* 规范:
-         * Label: Roboto Regular 15sp, 87% black
-         * Padding: 上下 16dp, 左右 24dp
-         * Expand icon: 24x24dp, 38% black (hover 54%)
-         * 副文本: 12sp 54% black
-         * 分割线: 1dp 12% black
-         */
-        .md-card.expandable {
-            transition: box-shadow .2s;
-        }
-        .md-card.expandable .md-card-title {
-            cursor: pointer;
-            padding: 16px 24px;
-            font-size: 15px;
-            font-weight: 400;
-            user-select: none;
-            position: relative;
-        }
-        .md-card.expandable .md-card-title:hover {
-            background: #EEEEEE; /* Grey 200 — MD1 Focus state */
-        }
-        .md-card.expandable .md-card-title .md-expand-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(0,0,0,0.38);
-            transition: transform .2s, color .15s;
-            flex-shrink: 0;
-        }
-        .md-card.expandable .md-card-title:hover .md-expand-icon {
-            color: rgba(0,0,0,0.54);
-        }
-        .md-card.expandable.md-card--expanded .md-expand-icon {
-            transform: rotate(180deg);
-        }
-        .md-card.expandable .md-card-summary {
-            font-size: 12px;
-            color: rgba(0,0,0,0.54);
-            margin-right: 24px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-        }
-        .md-card.expandable.md-card--expanded .md-card-summary {
-            display: none;
-        }
-        .md-card.expandable .md-card-divider {
-            margin: 0 24px;
-        }
-        .md-card.expandable .md-card-body {
-            overflow: hidden;
-            transition: max-height .25s ease, opacity .2s ease;
-            max-height: 0;
-            opacity: 0;
-        }
-        .md-card.expandable.md-card--expanded .md-card-body {
-            max-height: 2000px;
-            opacity: 1;
-        }
-        .md-card.expandable .md-card-body-inner {
-            padding: 0 24px 16px;
-        }
-
-        /* ---- 拖拽排序 ---- */
-        .md-card.dragging {
-            opacity: 0.5;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-        .md-card.drag-over-top {
-            border-top: 3px solid #3f51b5;
-            margin-top: -3px;
-        }
-        .md-card.drag-over-bottom {
-            border-bottom: 3px solid #3f51b5;
-            margin-bottom: -3px;
-        }
-        .md-card .md-drag-handle {
-            cursor: grab;
-            color: rgba(0,0,0,0.26);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            flex-shrink: 0;
-            transition: color .15s;
-        }
-        .md-card .md-drag-handle:hover {
-            color: rgba(0,0,0,0.54);
-        }
-        .md-card .md-drag-handle:active {
-            cursor: grabbing;
-        }
-
-        /* ---- MD1 FAB (Floating Action Button) ---- */
-        .md-fab {
-            background: #ff4081;
-            color: #fff;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,.26);
-            transition: box-shadow .2s, background .2s;
-        }
-        .md-fab:hover {
-            box-shadow: 0 3px 6px rgba(0,0,0,.32);
-            background: #f50057;
-        }
-        .md-fab i { font-size: 20px; }
-
-        /* ---- MD1 List ---- */
-        .md-list { list-style: none; }
-        .md-list-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-            min-height: 48px;
-            border-bottom: 1px solid #e0e0e0;
-            transition: background .15s;
-        }
-        .md-list-item:last-child { border-bottom: none; }
-        .md-list-item:hover { background: #f5f5f5; }
-        .md-list-item-content { flex: 1; min-width: 0; }
-        .md-list-item-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.87);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .md-list-item-sub {
-            font-size: 12px;
-            color: rgba(0,0,0,0.54);
-            margin-top: 4px;
-        }
-        .md-list-item-actions {
-            display: flex;
-            gap: 4px;
-            flex-shrink: 0;
-            margin-left: 8px;
-        }
-        .md-list-item-actions-spacer {
-            width: 40px;
-            flex-shrink: 0;
-        }
-
-        /* ---- Pin Badge ---- */
-        .pin-badge {
-            display: inline-block;
-            background: #ff9800;
-            color: #fff;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 1px 8px;
-            border-radius: 2px;
-            margin-left: 8px;
-            vertical-align: middle;
-            line-height: 18px;
-        }
-
-        /* ---- MD1 Button ---- */
-        .md-btn {
-            border: none;
-            cursor: pointer;
-            padding: 0 8px;
-            min-height: 36px;
-            border-radius: 2px;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: 'Roboto', sans-serif;
-            transition: background .2s, box-shadow .2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            text-transform: none;
-            letter-spacing: normal;
-        }
-        .md-btn i { font-size: 18px; }
-        .md-btn-primary {
-            background: #3f51b5;
-            color: #fff;
-        }
-        .md-btn-primary:hover { background: #303f9f; }
-        .md-btn-raised {
-            background: #fff;
-            color: rgba(0,0,0,0.87);
-            box-shadow: 0 2px 5px rgba(0,0,0,.26);
-            cursor: pointer;
-        }
-        .md-btn-raised:hover { background: #e8e8e8; }
-        .md-btn-raised:active { box-shadow: 0 5px 12px rgba(0,0,0,.32); }
-        .md-btn-accent {
-            background: #ff4081;
-            color: #fff;
-        }
-        .md-btn-accent:hover { background: #f50057; }
-        .md-btn-flat {
-            background: transparent;
-            color: rgba(0,0,0,0.54);
-        }
-        .md-btn-flat:hover { background: rgba(0,0,0,0.06); }
-        .md-btn-icon {
-            background: transparent;
-            color: rgba(0,0,0,0.54);
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            border-radius: 50%;
-            justify-content: center;
-        }
-        .md-btn-icon:hover { background: rgba(0,0,0,0.08); }
-        .md-btn-icon.pinned {
-            color: #ff9800;
-        }
-        .md-btn-danger {
-            color: #f44336;
-        }
-        .md-btn-danger:hover { background: rgba(244,67,54,0.08); }
-
-        /* ---- MD1 Form (Text Field spec) ---- */
-        /* MD1 规范:
-         *   - Single-line: 底线 1dp idle → 2dp focus (主色), 浮动标签 16sp resting → 12sp on focus
-         *   - Text area: 可见边框同底线颜色/粗细, 垂直可滚动
-         *   - Helper text: 12sp, 54% black, 8dp top padding
-         *   - Input text: 16sp, 87% black
-         *   - Placeholder: 16sp, 42% black
-         */
-        .md-form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        /* ---- Single-line text field (底线式) ---- */
-        .md-textfield {
-            position: relative;
-            margin-bottom: 4px;
-        }
-        .md-textfield__input {
-            width: 100%;
-            padding: 20px 0 6px 0;
-            border: none;
-            border-bottom: 1px solid rgba(0,0,0,0.12);
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            color: rgba(0,0,0,0.87);
-            outline: none;
-            background: transparent;
-            transition: border-color .15s;
-        }
-        .md-textfield__input:focus {
-            border-bottom: 2px solid #3f51b5;
-            /* 补偿底线从1px→2px的偏移 — 减少padding-bottom 1px 而非使用 margin */
-            padding-bottom: 5px;
-        }
-        /* 修复 date 输入框底线 — 容器 inline-block 贴合 input 宽度 */
-        .md-textfield--date {
-            position: relative;
-            display: inline-block;
-            max-width: 220px;
-            width: 100%;
-        }
-        .md-textfield--date::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(0,0,0,0.12);
-        }
-        .md-textfield--date .md-textfield__input {
-            border-bottom: none;
-            max-width: none; /* 由容器控制宽度 */
-        }
-        .md-textfield--date .md-textfield__input:focus {
-            border-bottom: none;
-            padding-bottom: 6px;
-            margin-bottom: 0;
-        }
-        .md-textfield--date::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #3f51b5;
-            transition: width .2s ease;
-        }
-        .md-textfield--date:focus-within::after {
-            width: 100%;
-        }
-        /* 隐藏 date 输入框清空后的 "年/月/日" placeholder — 避免与浮动 label 重叠 */
-        .md-textfield__input[type="date"]::-webkit-datetime-edit {
-            color: transparent;
-        }
-        .md-textfield__input[type="date"]:focus::-webkit-datetime-edit,
-        .md-textfield__input[type="date"].has-value::-webkit-datetime-edit {
-            color: rgba(0,0,0,0.87);
-        }
-        /* 确保 date 类型日历图标始终可见 */
-        .md-textfield__input[type="date"]::-webkit-calendar-picker-indicator {
-            opacity: 0.54;
-            cursor: pointer;
-            color: rgba(0,0,0,0.54);
-        }
-        .md-textfield__input[type="date"]:focus::-webkit-calendar-picker-indicator {
-            opacity: 0.87;
-        }
-        /* Floating label — resting state (16sp, 54% black) */
-        .md-textfield__label {
-            position: absolute;
-            top: 24px;
-            left: 0;
-            font-size: 16px;
-            color: rgba(0,0,0,0.54);
-            pointer-events: none;
-            transition: top .15s, font-size .15s, color .15s;
-            transform-origin: left top;
-        }
-        /* Floating label — float state (12sp, primary color) */
-        .md-textfield__input:focus + .md-textfield__label,
-        .md-textfield__input.has-value + .md-textfield__label {
-            top: 4px;
-            font-size: 12px;
-            color: #3f51b5;
-        }
-        /* Placeholder shown only when focused or has no value */
-        .md-textfield__input::placeholder {
-            color: rgba(0,0,0,0.42);
-            font-size: 16px;
-        }
-        /* Focus underline ripple effect */
-        .md-textfield::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: #3f51b5;
-            transition: width .15s, left .15s;
-        }
-        .md-textfield__input:focus ~ .md-textfield::after,
-        .md-textfield:focus-within::after {
-            left: 0;
-            width: 100%;
-        }
-
-        /* ---- MD1 Dropdown button (替代 select) ---- */
-        /* 规范: 显示当前状态 + 下拉箭头, 按下展开菜单
-         * 视觉: 类似 raised button 样式, 2dp 圆角, 2dp 阴影
-         */
-        .md-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .md-dropdown__trigger {
-            display: inline-flex;
-            align-items: center;
-            height: 36px;
-            padding: 0 16px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.87);
-            background: #fff;
-            border: none;
-            border-radius: 2px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            cursor: pointer;
-            transition: box-shadow .2s ease, background .15s ease;
-            gap: 8px;
-            min-width: 120px;
-        }
-        .md-dropdown__trigger:hover {
-            box-shadow: 0 2px 6px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
-            background: #fafafa;
-        }
-        .md-dropdown__trigger:active,
-        .md-dropdown--open .md-dropdown__trigger {
-            box-shadow: 0 3px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
-            background: #f5f5f5;
-        }
-        .md-dropdown__arrow {
-            font-size: 18px;
-            color: rgba(0,0,0,0.54);
-            margin-left: auto;
-            transition: transform .2s ease;
-        }
-        .md-dropdown--open .md-dropdown__arrow {
-            transform: rotate(180deg);
-        }
-        .md-dropdown__menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            min-width: 100%;
-            background: #fff;
-            border-radius: 2px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
-            z-index: 50;
-            overflow: hidden;
-            animation: md-dropdown-in .15s ease-out;
-            padding: 8px 0;
-        }
-        .md-dropdown--open .md-dropdown__menu {
-            display: block;
-        }
-        @keyframes md-dropdown-in {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .md-dropdown__option {
-            display: flex;
-            align-items: center;
-            height: 48px;
-            padding: 0 16px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            color: rgba(0,0,0,0.87);
-            cursor: pointer;
-            transition: background .1s;
-            white-space: nowrap;
-        }
-        .md-dropdown__option:hover {
-            background: rgba(0,0,0,0.04);
-        }
-        .md-dropdown__option--selected {
-            color: #3f51b5;
-            font-weight: 500;
-        }
-        .md-dropdown__option-icon {
-            margin-right: 16px;
-            font-size: 20px;
-            color: rgba(0,0,0,0.54);
-        }
-        .md-dropdown__option--selected .md-dropdown__option-icon {
-            color: #3f51b5;
-        }
-
-        /* ---- Text area (边框式) ---- */
-        .md-textarea-field {
-            position: relative;
-            margin-bottom: 4px;
-        }
-        .md-textarea-field__textarea {
-            width: 100%;
-            padding: 24px 12px 8px 12px;
-            border: 1px solid rgba(0,0,0,0.12);
-            border-radius: 2px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            color: rgba(0,0,0,0.87);
-            line-height: 1.5;
-            outline: none;
-            resize: vertical;
-            min-height: 60px;
-            background: transparent;
-            transition: border-color .15s;
-        }
-        .md-textarea-field__textarea:focus {
-            border-color: #3f51b5;
-            border-width: 2px;
-            padding-top: 23px;
-            padding-left: 11px;
-        }
-        .md-textarea-field__label {
-            position: absolute;
-            top: 22px;
-            left: 12px;
-            font-size: 16px;
-            color: rgba(0,0,0,0.54);
-            pointer-events: none;
-            transition: top .15s, font-size .15s, color .15s, left .15s;
-        }
-        .md-textarea-field__textarea:focus + .md-textarea-field__label,
-        .md-textarea-field__textarea.has-value + .md-textarea-field__label {
-            top: 4px;
-            left: 12px;
-            font-size: 12px;
-            color: #3f51b5;
-        }
-        .md-textarea-field__textarea:focus + .md-textarea-field__label {
-            left: 11px;
-        }
-        .md-textarea-field__textarea::placeholder {
-            color: rgba(0,0,0,0.42);
-            font-size: 16px;
-        }
-
-        /* ---- Helper text ---- */
-        .md-form-hint {
-            font-size: 12px;
-            color: rgba(0,0,0,0.54);
-            margin-top: 8px;
-            padding-left: 0;
-        }
-        /* Helper text 附于字段前（无 subheader 时） — MD1: 12sp, 8dp 上下间距 */
-        .md-form-hint--inline {
-            margin-top: 0;
-            margin-bottom: 16px;
-        }
-
-        /* ---- MD1 Subheader ---- */
-        /* 规范: Roboto Medium 14sp, 48dp tile height, 16dp left padding
-         * 颜色: secondary grey (54% black) 或 primary color
-         */
-        .md-subheader {
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #3f51b5;
-            height: 48px;
-            line-height: 48px;
-            padding-left: 0;
-            margin: 0;
-        }
-        /* 紧凑型字段标签 — 仅用于 dropdown 等无浮动标签的组件
-         * MD1 规范: 12sp primary color, 8dp 间距到下方组件 */
-        .md-field-label {
-            font-family: 'Roboto', sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            color: #3f51b5;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        /* ---- 编辑模式提示 ---- */
-        .edit-notice {
-            background: #e8eaf6;
-            border-left: 4px solid #3f51b5;
-            padding: 8px 12px;
-            font-size: 13px;
-            color: #1a237e;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-radius: 0 2px 2px 0;
-        }
-        .edit-notice span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            min-width: 0;
-            flex: 1;
-        }
-        .edit-notice .md-btn {
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        /* ---- 编辑器 footer ---- */
-        .editor-footer {
-            display: flex;
-            gap: 8px;
-            padding-top: 16px;
-        }
-
-        /* ---- EasyMDE 编辑器覆盖样式 + MD1 Toggle Toolbar + MD1 Tooltip ---- */
-        .EasyMDEContainer {
-            max-width: 100%;
-            border: 1px solid rgba(0,0,0,0.12);
-            border-radius: 2px;
-            transition: border-color .15s;
-        }
-        .EasyMDEContainer.easy-mde-focused {
-            border-color: #3f51b5;
-            border-width: 2px;
-            margin: -1px;
-        }
-        .EasyMDEContainer .editor-toolbar {
-            border-radius: 2px 2px 0 0;
-            background: #fafafa;
-            border: none;
-            border-bottom: 1px solid rgba(0,0,0,0.12);
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 4px 2px;
-            align-items: center;
-        }
-        /* MD1 Toggle buttons — 紧凑单行
-         * 规范: 分组互斥按钮, 36dp 高, 2dp 圆角
-         */
-        .EasyMDEContainer .editor-toolbar button,
-        .EasyMDEContainer .editor-toolbar a {
-            color: rgba(0,0,0,0.54);
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            line-height: 28px;
-            text-align: center;
-            border-radius: 2px;
-            margin: 0 1px;
-            transition: background .15s ease, color .15s ease;
-            position: relative;
-            padding: 0;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .EasyMDEContainer .editor-toolbar button .material-icons,
-        .EasyMDEContainer .editor-toolbar a .material-icons {
-            font-size: 18px;
-            line-height: 28px;
-            vertical-align: middle;
-        }
-        .EasyMDEContainer .editor-toolbar button:hover,
-        .EasyMDEContainer .editor-toolbar a:hover {
-            background: rgba(0,0,0,0.08);
-            color: rgba(0,0,0,0.87);
-        }
-        /* Active toggle state — primary color fill */
-        .EasyMDEContainer .editor-toolbar button.active,
-        .EasyMDEContainer .editor-toolbar a.active {
-            background: rgba(63,81,181,0.12);
-            color: #3f51b5;
-        }
-        /* 禁用 EasyMDE 默认 FA 图标 — 用 ::before 隐藏 */
-        .EasyMDEContainer .editor-toolbar button:before,
-        .EasyMDEContainer .editor-toolbar a:before {
-            display: none !important;
-        }
-        /* 显示注入的 Material Icons */
-        .EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
-        .EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
-            font-size: 18px;
-            line-height: 28px;
-            vertical-align: middle;
-            display: inline-block;
-        }
-        /* 隐藏 EasyMDE 原始按钮内的文字内容 (FA 文字) */
-        .EasyMDEContainer .editor-toolbar button,
-        .EasyMDEContainer .editor-toolbar a {
-            font-size: 0 !important; /* 隐藏原有 FA 文字 */
-        }
-        .EasyMDEContainer .editor-toolbar button .md-toolbar-icon,
-        .EasyMDEContainer .editor-toolbar a .md-toolbar-icon {
-            font-size: 18px !important; /* Material Icons 不受影响 */
-            font-family: 'Material Icons' !important;
-        }
-        /* MD1 Toggle group divider — 替代 EasyMDE separator */
-        .EasyMDEContainer .editor-toolbar .separator {
-            border-left: 1px solid rgba(0,0,0,0.12);
-            margin: 4px 4px;
-            height: 20px;
-            flex-shrink: 0;
-        }
-        /* MD1 Tooltip — body 级定位，避免 overflow 裁切
-         * 规范: Roboto Medium 10sp, Grey 700, 90% opacity, tile 22dp, padding 8dp, 150ms
-         */
-        .md-toolbar-tooltip {
-            position: fixed;
-            font-family: 'Roboto', sans-serif;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: 0.4px;
-            color: #fff;
-            background: rgba(97, 97, 97, 0.9);
-            padding: 0 8px;
-            height: 22px;
-            line-height: 22px;
-            border-radius: 2px;
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 99999;
-            display: none;
-        }
-        .md-toolbar-tooltip.is-visible {
-            display: block;
-            animation: md-tooltip-in .15s ease-out;
-        }
-        @keyframes md-tooltip-in {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .EasyMDEContainer .CodeMirror { 
-            font-family: Consolas, Monaco, 'Courier New', monospace;
-            font-size: 14px;
-            min-height: 280px;
-            border: none !important;
-            border-radius: 0 0 2px 2px;
-        }
-        /* MDE 编辑器 focus 时 — 整体边框由 .easy-mde-filled 管理 */
-        .editor-preview-side {
-            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-            font-size: 14px;
-            line-height: 28px;
-            padding: 16px 24px;
-        }
-        .editor-preview-side h4 { margin-top: 0; margin-bottom: 12px; }
-        .editor-preview-side p { max-width: 512px; margin: 16px auto; }
-        .editor-preview-side pre {
-            background: #eee; padding: 15px; border-radius: 3px;
-            margin-bottom: 36px; font-size: 13px; overflow-x: auto;
-        }
-        .editor-preview-side code {
-            font-family: Consolas, Monaco, monospace;
-            background: rgba(0,0,0,0.07); padding: 1px 6px; border-radius: 2px; font-size: 13px;
-        }
-        .editor-preview-side pre code { background: transparent; padding: 15px; display: block; }
-
-        /* ---- 站点设置：头像/图标上传紧凑布局 ---- */
-        .settings-upload-group {
-            display: flex;
-            align-items: stretch; /* 左右等高 */
-            gap: 24px;
-        }
-        .settings-upload-left {
-            flex: 1;
-            min-width: 0;
-        }
-        .settings-upload-right {
-            flex-shrink: 0;
-            width: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* 垂直居中 */
-        }
-        .settings-icon-preview {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: #f5f5f5;
-            border: 1px solid rgba(0,0,0,0.08);
-            position: relative;
-        }
-        .settings-icon-preview--avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-        }
-        .settings-icon-preview--favicon {
-            width: 48px;
-            height: 48px;
-            border-radius: 2px;
-            background-size: contain;
-        }
-        .settings-icon-preview-label {
-            font-size: 11px;
-            color: rgba(0,0,0,0.38);
-            text-align: center;
-            margin-top: 4px;
-        }
-        .settings-icon-remove {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: rgba(0,0,0,0.54);
-            color: #fff;
-            border: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .settings-icon-remove:hover { background: rgba(0,0,0,0.78); }
-
-        /* ---- MD1 Data Table ---- */
-        /* 规范:
-         * 列间距: 最小 56dp
-         * 标题: Roboto Medium 12sp, 54% black
-         * 行高: 48dp
-         * 内容: 13sp Roboto Regular, 87% black
-         * 分割线: 1dp rgba(0,0,0,0.12)
-         * 悬停: Grey 200 (#EEEEEE)
-         */
-        .md-data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Roboto', sans-serif;
-            table-layout: fixed;
-        }
-        .md-data-table thead th {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.54);
-            text-align: left;
-            padding: 16px 28px 16px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.12);
-            white-space: nowrap;
-        }
-        .md-data-table thead th:first-child {
-            padding-left: 0;
-        }
-        .md-data-table thead th.col-switch {
-            width: 56px;
-            text-align: center;
-            padding-right: 0;
-        }
-        .md-data-table thead th.col-delete {
-            width: 40px;
-            padding-right: 0;
-        }
-        .md-data-table tbody tr {
-            height: 48px;
-            transition: background-color .15s;
-        }
-        .md-data-table tbody tr:hover {
-            background-color: #EEEEEE; /* Grey 200 */
-        }
-        .md-data-table tbody td {
-            font-size: 13px;
-            color: rgba(0,0,0,0.87);
-            padding: 4px 28px 4px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            vertical-align: middle;
-        }
-        .md-data-table tbody td:first-child {
-            padding-left: 0;
-        }
-        .md-data-table tbody td.col-switch,
-        .md-data-table tbody td.col-delete {
-            width: 48px;
-            padding-right: 0;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        /* ---- MD1 Switch (Selection controls) ---- */
-        /* 规范:
-         * Light theme:
-         * Thumb On: Swatch 500, 100%; Track On: Swatch 500, 50%
-         * Thumb Off: #FAFAFA border 2dp; Track Off: #000000 38%
-         * Touch target: 48x48dp; Visual: 36x20dp (居中于 touch target)
-         */
-        .md-switch {
-            position: relative;
-            display: inline-block;
-            width: 36px;
-            height: 20px;
-            flex-shrink: 0;
-            vertical-align: middle;
-        }
-        .md-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            position: absolute;
-        }
-        .md-switch-track {
-            position: absolute;
-            top: 3px;
-            left: 0;
-            right: 0;
-            height: 14px;
-            border-radius: 7px;
-            background: rgba(0,0,0,0.38);
-            transition: background .2s;
-        }
-        .md-switch-thumb {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fafafa;
-            border: 2px solid rgba(0,0,0,0.38);
-            transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        }
-        .md-switch input:checked + .md-switch-track {
-            background: rgba(63,81,181,0.5);
-        }
-        .md-switch input:checked + .md-switch-track + .md-switch-thumb {
-            transform: translateX(16px);
-            background: #3f51b5;
-            border-color: #3f51b5;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-        }
-
-        /* ---- 菜单项表格行内编辑 ---- */
-        .menu-item-name,
-        .menu-item-url {
-            border: none;
-            border-bottom: 1px solid rgba(0,0,0,0.12);
-            padding: 4px 0;
-            font-size: 13px;
-            font-family: 'Roboto', sans-serif;
-            color: rgba(0,0,0,0.87);
-            outline: none;
-            background: transparent;
-            width: 100%;
-            transition: border-color .15s;
-        }
-        .menu-item-name:focus,
-        .menu-item-url:focus {
-            border-bottom: 2px solid #3f51b5;
-            padding-bottom: 3px;
-        }
-        .menu-item-name { width: 100%; }
-        .menu-item-url { width: 100%; }
-        .menu-item-delete {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: rgba(0,0,0,0.38);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-            transition: color .15s, background .15s;
-        }
-        .menu-item-delete:hover {
-            color: #f44336;
-            background: rgba(244,67,54,0.08);
-        }
-
-        /* ---- 封面图预览 ---- */
-        .cover-preview {
-            width: 100%;
-            height: 120px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 2px;
-            border: 1px solid rgba(0,0,0,0.08);
-            margin-top: 8px;
-            position: relative;
-            background-color: #f5f5f5;
-        }
-        .cover-preview-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: rgba(0,0,0,0.26);
-            font-size: 12px;
-        }
-        .cover-remove-btn {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(0,0,0,0.54);
-            color: #fff;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .cover-remove-btn:hover { background: rgba(0,0,0,0.78); }
-        .cover-upload-area {
-            margin-top: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .cover-upload-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .cover-file-hidden {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .cover-file-info {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .cover-file-name {
-            font-size: 13px;
-            color: rgba(0,0,0,0.54);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            line-height: 20px;
-        }
-        /* MD1 Linear Progress — Determinate */
-        .md-progress {
-            position: absolute;
-            top: 22px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: rgba(63,81,181,0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .md-progress-bar {
-            height: 100%;
-            background: #3f51b5;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        /* ---- MD1 Snackbar (Center-aligned tablet/desktop) ---- */
-        .md-snackbar {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #323232;
-            color: #fff;
-            height: 48px;
-            min-width: 288px;
-            max-width: 568px;
-            padding: 0 24px;
-            border-radius: 2px;
-            font-size: 14px;
-            font-family: 'Roboto', sans-serif;
-            z-index: 10000;
-            opacity: 0;
-            transform: translateX(-50%) translateY(20px);
-            transition: opacity .3s, transform .3s;
-            pointer-events: none;
-            box-shadow: 0 3px 5px rgba(0,0,0,.26);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .md-snackbar.show {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateX(-50%) translateY(0);
-        }
-        .md-snackbar-text {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            line-height: 48px;
-        }
-        .md-snackbar-action {
-            background: none;
-            border: none;
-            color: #ffab00;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: 'Roboto', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            padding: 0 8px;
-            margin-left: 40px;
-            height: 36px;
-            line-height: 36px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            -webkit-appearance: none;
-            appearance: none;
-            outline: none;
-            border-radius: 2px;
-        }
-        .md-snackbar-action:hover { background: rgba(255,255,255,0.08); }
-        .md-snackbar-action:focus { outline: none; }
-
-        /* ---- Empty state ---- */
-        .empty-state {
-            text-align: center;
-            color: rgba(0,0,0,0.38);
-            padding: 40px 16px;
-            font-size: 14px;
-        }
-        .empty-state i { font-size: 48px; display: block; margin-bottom: 12px; }
-
-        /* ---- MD1 Dialog (Alert with title bar) ---- */
-        .md-dialog-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 20000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        .md-dialog-overlay.show { display: flex; }
-        .md-dialog {
-            background: #fff;
-            border-radius: 2px;
-            min-width: 280px;
-            max-width: 560px;
-            box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
-            font-family: 'Roboto', sans-serif;
-        }
-        .md-dialog-title {
-            font-size: 20px;
-            font-weight: 500;
-            color: rgba(0,0,0,0.87);
-            padding: 24px 24px 20px;
-            line-height: 28px;
-        }
-        .md-dialog-content {
-            font-size: 14px;
-            color: rgba(0,0,0,0.54);
-            padding: 0 24px 24px;
-            line-height: 20px;
-        }
-        .md-dialog-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            padding: 8px 8px 8px 24px;
-        }
-        .md-dialog-actions .md-btn {
-            min-height: 36px;
-            min-width: 64px;
-            border-radius: 2px;
-            padding: 0 8px;
-            font-size: 14px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: normal;
-            justify-content: center;
-        }
-        .md-dialog-cancel {
-            color: rgba(0,0,0,0.54);
-        }
-        .md-dialog-cancel:hover { background: rgba(0,0,0,0.06); }
-        .md-dialog-confirm {
-            color: #f44336;
-        }
-        .md-dialog-confirm:hover { background: rgba(244,67,54,0.08); }
     </style>
+    <link rel="stylesheet" href="file/css/blog-admin.css">
 </head>
 <body>
     <!-- MD1 App Bar -->
@@ -1381,6 +134,102 @@
                                 <div class="settings-icon-preview-label">默认</div>
                             </div>
                         </div>
+                        <div class="md-subheader" style="margin-top:20px;">主题配色</div>
+                        <div class="md-form-hint md-form-hint--inline">选择博客的主题颜色方案，遵循 Material Design 1 色彩体系</div>
+                        <div class="md-theme-grid" id="theme-grid">
+                            <div class="md-theme-option" data-theme="indigo-pink" onclick="selectTheme('indigo-pink')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#3f51b5;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ff4081;"></div>
+                                </div>
+                                <div class="md-theme-name">Indigo Pink</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="grey-orange" onclick="selectTheme('grey-orange')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#9e9e9e;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ffd740;"></div>
+                                </div>
+                                <div class="md-theme-name">Grey Orange</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="blue-grey-red" onclick="selectTheme('blue-grey-red')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#607d8b;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ff5252;"></div>
+                                </div>
+                                <div class="md-theme-name">Blue Grey Red</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="teal-green" onclick="selectTheme('teal-green')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#009688;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#69f0ae;"></div>
+                                </div>
+                                <div class="md-theme-name">Teal Green</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="deep-orange-pink" onclick="selectTheme('deep-orange-pink')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#ff5722;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ff4081;"></div>
+                                </div>
+                                <div class="md-theme-name">Deep Orange</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="red-amber" onclick="selectTheme('red-amber')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#f44336;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ffd740;"></div>
+                                </div>
+                                <div class="md-theme-name">Red Amber</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="purple-pink" onclick="selectTheme('purple-pink')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#9c27b0;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ff4081;"></div>
+                                </div>
+                                <div class="md-theme-name">Purple Pink</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="blue-amber" onclick="selectTheme('blue-amber')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#2196f3;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ffd740;"></div>
+                                </div>
+                                <div class="md-theme-name">Blue Amber</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="deep-purple-amber" onclick="selectTheme('deep-purple-amber')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#673ab7;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ffd740;"></div>
+                                </div>
+                                <div class="md-theme-name">Deep Purple</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="cyan-orange" onclick="selectTheme('cyan-orange')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#00bcd4;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ffab40;"></div>
+                                </div>
+                                <div class="md-theme-name">Cyan Orange</div>
+                            </div>
+                            <div class="md-theme-option" data-theme="light-blue-deep-orange" onclick="selectTheme('light-blue-deep-orange')">
+                                <div class="md-theme-swatch">
+                                    <div class="md-theme-swatch-primary" style="background:#03a9f4;"></div>
+                                    <div class="md-theme-swatch-accent" style="background:#ff6e40;"></div>
+                                </div>
+                                <div class="md-theme-name">Light Blue</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="setting-theme" value="">
+                        <div class="md-subheader" style="margin-top:20px;">显示模式</div>
+                        <div class="md-form-hint md-form-hint--inline">选择博客的深色/浅色模式</div>
+                        <div class="md-dropdown" id="darkmode-dropdown" style="margin-top:8px;">
+                            <button class="md-dropdown__trigger" type="button" onclick="toggleDropdown('darkmode-dropdown')">
+                                <span id="darkmode-label">明亮</span>
+                                <i class="material-icons md-dropdown__arrow">arrow_drop_down</i>
+                            </button>
+                            <div class="md-dropdown__menu">
+                                <div class="md-dropdown__option md-dropdown__option--selected" data-value="light" onclick="selectDarkMode('light')">明亮</div>
+                                <div class="md-dropdown__option" data-value="dark" onclick="selectDarkMode('dark')">黑暗</div>
+                                <div class="md-dropdown__option" data-value="system" onclick="selectDarkMode('system')">根据系统设置</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="setting-darkmode" value="light">
                         <div style="margin-top:16px;text-align:right;">
                             <button class="md-btn md-btn-raised md-btn-primary" onclick="saveSettings()">
                                 <i class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:4px;">save</i>保存设置
@@ -1495,10 +344,22 @@
                         <label class="md-textfield__label" for="f-title">文章标题</label>
                     </div>
                 </div>
-                <div class="md-form-group">
-                    <div class="md-textfield md-textfield--date">
-                        <input type="date" class="md-textfield__input" id="f-date" style="max-width:220px;">
-                        <label class="md-textfield__label" for="f-date">发布日期</label>
+                <div class="md-datetime-row">
+                    <div class="md-form-group">
+                        <div class="md-textfield md-textfield--datepicker">
+                            <input type="text" class="md-textfield__input" id="f-date" readonly onclick="dpOpen()">
+                            <label class="md-textfield__label" for="f-date">发布日期</label>
+                            <i class="material-icons md-datepicker-trigger-icon" onclick="dpOpen()">event</i>
+                        </div>
+                        <input type="hidden" id="f-date-value" value="">
+                    </div>
+                    <div class="md-form-group">
+                        <div class="md-textfield md-textfield--timepicker">
+                            <input type="text" class="md-textfield__input" id="f-time" readonly onclick="tpOpen()">
+                            <label class="md-textfield__label" for="f-time">发布时间</label>
+                            <i class="material-icons md-timepicker-trigger-icon" onclick="tpOpen()">schedule</i>
+                        </div>
+                        <input type="hidden" id="f-time-value" value="">
                     </div>
                 </div>
                 <div class="md-form-group">
@@ -1600,6 +461,61 @@
             <div class="md-dialog-actions">
                 <button class="md-btn md-btn-flat md-dialog-cancel" id="dialog-cancel">取消</button>
                 <button class="md-btn md-btn-flat md-dialog-confirm" id="dialog-confirm">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MD1 Date Picker Dialog -->
+    <div class="md-datepicker-overlay" id="dp-overlay">
+        <div class="md-datepicker-dialog">
+            <div class="md-datepicker-header">
+                <div class="md-datepicker-monthyear" id="dp-monthyear" onclick="dpToggleYearList()"></div>
+                <div class="md-datepicker-nav">
+                    <button type="button" class="md-datepicker-nav-btn" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
+                    <button type="button" class="md-datepicker-nav-btn" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
+                </div>
+            </div>
+            <div class="md-datepicker-weekdays">
+                <div class="md-datepicker-weekday">日</div>
+                <div class="md-datepicker-weekday">一</div>
+                <div class="md-datepicker-weekday">二</div>
+                <div class="md-datepicker-weekday">三</div>
+                <div class="md-datepicker-weekday">四</div>
+                <div class="md-datepicker-weekday">五</div>
+                <div class="md-datepicker-weekday">六</div>
+            </div>
+            <div class="md-datepicker-yearlist" id="dp-yearlist"></div>
+            <div id="dp-calendar">
+                <div class="md-datepicker-grid" id="dp-grid"></div>
+            </div>
+            <div class="md-datepicker-actions">
+                <button type="button" class="md-btn md-btn-flat md-datepicker-cancel" onclick="dpClose()">取消</button>
+                <button type="button" class="md-btn md-btn-flat md-datepicker-ok" id="dp-ok" onclick="dpConfirm()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MD1 Time Picker Dialog -->
+    <div class="md-timepicker-overlay" id="tp-overlay">
+        <div class="md-timepicker-dialog">
+            <div class="md-timepicker-header">
+                <div class="md-timepicker-time-display">
+                    <span class="tp-hour tp-active" id="tp-hour-display" onclick="tpSwitchToHour()">12</span><span class="tp-colon">:</span><span class="tp-minute" id="tp-minute-display" onclick="tpSwitchToMinute()">00</span>
+                </div>
+                <div class="md-timepicker-ampm">
+                    <button type="button" class="md-timepicker-ampm-btn tp-active" id="tp-am" onclick="tpSelectAm()">AM</button>
+                    <button type="button" class="md-timepicker-ampm-btn" id="tp-pm" onclick="tpSelectPm()">PM</button>
+                </div>
+            </div>
+            <div class="md-timepicker-clock" id="tp-clock">
+                <div class="md-timepicker-clock-center"></div>
+                <div class="md-timepicker-clock-hand" id="tp-hand">
+                    <div class="md-timepicker-clock-selection" id="tp-selection"></div>
+                </div>
+            </div>
+            <div class="md-timepicker-actions">
+                <button type="button" class="md-btn md-btn-flat md-timepicker-cancel" onclick="tpClose()">取消</button>
+                <button type="button" class="md-btn md-btn-flat md-timepicker-ok" onclick="tpConfirm()">确定</button>
             </div>
         </div>
     </div>
@@ -1766,6 +682,369 @@
         });
     }
 
+    // ---- MD1 Date Picker ----
+    var dpState = {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
+        selectedDate: null,   // Date object
+        callback: null,       // function(dateStr)
+        closing: false
+    };
+    var DP_MONTHS = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+    function dpOpen() {
+        var overlay = document.getElementById('dp-overlay');
+        var hiddenVal = document.getElementById('f-date-value').value;
+        if (hiddenVal) {
+            var parts = hiddenVal.split('-');
+            dpState.year = parseInt(parts[0], 10);
+            dpState.month = parseInt(parts[1], 10) - 1;
+            dpState.selectedDate = new Date(dpState.year, dpState.month, parseInt(parts[2], 10));
+        } else {
+            dpState.year = new Date().getFullYear();
+            dpState.month = new Date().getMonth();
+            dpState.selectedDate = null;
+        }
+        dpState.closing = false;
+        overlay.classList.remove('closing');
+        overlay.classList.add('show');
+        dpRenderYearList();
+        dpRenderCalendar();
+    }
+    function dpClose() {
+        var overlay = document.getElementById('dp-overlay');
+        dpState.closing = true;
+        overlay.classList.add('closing');
+        setTimeout(function() {
+            overlay.classList.remove('show');
+            overlay.classList.remove('closing');
+            dpState.closing = false;
+        }, 150);
+    }
+    function dpConfirm() {
+        dpClose();
+        setTimeout(function() {
+            if (dpState.selectedDate) {
+                var dateStr = dpFormatDate(dpState.selectedDate);
+                document.getElementById('f-date').value = dpDisplayDate(dpState.selectedDate);
+                document.getElementById('f-date').classList.add('has-value');
+                document.getElementById('f-date-value').value = dateStr;
+            }
+        }, 160);
+    }
+    // 辅助：Date → "YYYY-MM-DD"
+    function dpFormatDate(d) {
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+    }
+    // 辅助："YYYY-MM-DD" → 显示 "YYYY年M月D日"
+    function dpDisplayDate(dateObj) {
+        return dateObj.getFullYear() + '年' + (dateObj.getMonth() + 1) + '月' + dateObj.getDate() + '日';
+    }
+    // 辅助：设置日期字段（f-date 显示 + f-date-value 隐藏值 + 浮动标签）
+    function dpSetDate(dateStr) {
+        // dateStr: "YYYY-MM-DD" or empty
+        var hiddenInput = document.getElementById('f-date-value');
+        var displayInput = document.getElementById('f-date');
+        if (dateStr) {
+            var parts = dateStr.split('-');
+            var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+            displayInput.value = dpDisplayDate(d);
+            displayInput.classList.add('has-value');
+        } else {
+            displayInput.value = '';
+            displayInput.classList.remove('has-value');
+        }
+        hiddenInput.value = dateStr || '';
+    }
+    // 辅助：获取日期值 "YYYY-MM-DD"
+    function dpGetDate() {
+        return document.getElementById('f-date-value').value;
+    }
+    function dpPrevMonth() {
+        dpState.month--;
+        if (dpState.month < 0) { dpState.month = 11; dpState.year--; }
+        dpRenderCalendar();
+    }
+    function dpNextMonth() {
+        dpState.month++;
+        if (dpState.month > 11) { dpState.month = 0; dpState.year++; }
+        dpRenderCalendar();
+    }
+    function dpToggleYearList() {
+        var yearlist = document.getElementById('dp-yearlist');
+        var calendar = document.getElementById('dp-calendar');
+        if (yearlist.classList.contains('show')) {
+            yearlist.classList.remove('show');
+            calendar.style.display = '';
+            dpRenderCalendar();
+        } else {
+            calendar.style.display = 'none';
+            yearlist.classList.add('show');
+            dpRenderYearList();
+            // Scroll selected year into view
+            var selItem = yearlist.querySelector('.md-datepicker-year-item--selected');
+            if (selItem) selItem.scrollIntoView({ block: 'center' });
+        }
+    }
+    function dpRenderYearList() {
+        var container = document.getElementById('dp-yearlist');
+        var currentYear = new Date().getFullYear();
+        var html = '';
+        var startYear = currentYear - 100;
+        var endYear = currentYear + 100;
+        for (var y = startYear; y <= endYear; y++) {
+            var cls = 'md-datepicker-year-item';
+            if (y === dpState.year) cls += ' md-datepicker-year-item--selected';
+            html += '<button type="button" class="' + cls + '" onclick="dpSelectYear(' + y + ')">' + y + '</button>';
+        }
+        container.innerHTML = html;
+    }
+    function dpSelectYear(year) {
+        dpState.year = year;
+        var yearlist = document.getElementById('dp-yearlist');
+        var calendar = document.getElementById('dp-calendar');
+        yearlist.classList.remove('show');
+        calendar.style.display = '';
+        dpRenderCalendar();
+    }
+    function dpRenderCalendar() {
+        // Update header
+        document.getElementById('dp-monthyear').textContent = dpState.year + '年 ' + DP_MONTHS[dpState.month];
+        var grid = document.getElementById('dp-grid');
+        var firstDay = new Date(dpState.year, dpState.month, 1).getDay(); // 0=Sun
+        var daysInMonth = new Date(dpState.year, dpState.month + 1, 0).getDate();
+        var today = new Date();
+        var todayY = today.getFullYear(), todayM = today.getMonth(), todayD = today.getDate();
+        var selY = dpState.selectedDate ? dpState.selectedDate.getFullYear() : null;
+        var selM = dpState.selectedDate ? dpState.selectedDate.getMonth() : null;
+        var selD = dpState.selectedDate ? dpState.selectedDate.getDate() : null;
+        var html = '';
+        // Previous month padding
+        var prevMonthDays = new Date(dpState.year, dpState.month, 0).getDate();
+        for (var i = firstDay - 1; i >= 0; i--) {
+            var d = prevMonthDays - i;
+            html += '<button type="button" class="md-datepicker-day md-datepicker-day--outside" disabled>' + d + '</button>';
+        }
+        // Current month days
+        for (var d = 1; d <= daysInMonth; d++) {
+            var cls = 'md-datepicker-day';
+            if (d === todayD && dpState.month === todayM && dpState.year === todayY) cls += ' md-datepicker-day--today';
+            if (d === selD && dpState.month === selM && dpState.year === selY) cls += ' md-datepicker-day--selected';
+            html += '<button type="button" class="' + cls + '" onclick="dpSelectDay(' + d + ')">' + d + '</button>';
+        }
+        // Next month padding
+        var totalCells = firstDay + daysInMonth;
+        var remaining = (7 - totalCells % 7) % 7;
+        for (var i = 1; i <= remaining; i++) {
+            html += '<button type="button" class="md-datepicker-day md-datepicker-day--outside" disabled>' + i + '</button>';
+        }
+        // Wrap in rows
+        var rowHtml = '';
+        var days = grid.querySelectorAll ? [] : [];
+        // Re-split into rows of 7
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        var buttons = tempDiv.querySelectorAll('.md-datepicker-day');
+        rowHtml = '';
+        for (var i = 0; i < buttons.length; i++) {
+            if (i % 7 === 0) rowHtml += '<div class="md-datepicker-row">';
+            rowHtml += buttons[i].outerHTML;
+            if (i % 7 === 6 || i === buttons.length - 1) rowHtml += '</div>';
+        }
+        grid.innerHTML = rowHtml;
+    }
+    function dpSelectDay(day) {
+        dpState.selectedDate = new Date(dpState.year, dpState.month, day);
+        dpRenderCalendar();
+    }
+    // Click overlay backdrop to dismiss
+    document.getElementById('dp-overlay').addEventListener('click', function(e) {
+        if (e.target === this && !dpState.closing) dpClose();
+    });
+
+    // ---- MD1 Time Picker ----
+    var tpState = {
+        hour: 12,
+        minute: 0,
+        ampm: 'AM',
+        mode: 'hour',  // 'hour' or 'minute'
+        closing: false,
+        _lastAngle: 0   // 追踪上一次指针角度，用于最短路径旋转
+    };
+
+    function tpOpen() {
+        var overlay = document.getElementById('tp-overlay');
+        var hiddenVal = document.getElementById('f-time-value').value;
+        if (hiddenVal) {
+            var parts = hiddenVal.split(':');
+            var h = parseInt(parts[0], 10);
+            var m = parseInt(parts[1], 10);
+            tpState.ampm = h >= 12 ? 'PM' : 'AM';
+            tpState.hour = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+            tpState.minute = m;
+        } else {
+            var now = new Date();
+            tpState.ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            tpState.hour = now.getHours() > 12 ? now.getHours() - 12 : (now.getHours() === 0 ? 12 : now.getHours());
+            tpState.minute = 0;
+        }
+        tpState.mode = 'hour';
+        tpState.closing = false;
+        // 重置指针角度追踪，避免从上次关闭位置异常旋转
+        var initAngle = (tpState.hour % 12) * 30;
+        tpState._lastAngle = initAngle;
+        overlay.classList.remove('closing');
+        overlay.classList.add('show');
+        tpRenderClock();
+        tpUpdateHeader();
+    }
+    function tpClose() {
+        var overlay = document.getElementById('tp-overlay');
+        tpState.closing = true;
+        overlay.classList.add('closing');
+        setTimeout(function() {
+            overlay.classList.remove('show');
+            overlay.classList.remove('closing');
+            tpState.closing = false;
+        }, 150);
+    }
+    function tpConfirm() {
+        tpClose();
+        setTimeout(function() {
+            var h = tpState.hour;
+            if (tpState.ampm === 'AM' && h === 12) h = 0;
+            if (tpState.ampm === 'PM' && h !== 12) h += 12;
+            var timeStr = String(h).padStart(2, '0') + ':' + String(tpState.minute).padStart(2, '0');
+            var displayStr = tpState.hour + ':' + String(tpState.minute).padStart(2, '0') + ' ' + tpState.ampm;
+            document.getElementById('f-time').value = displayStr;
+            document.getElementById('f-time').classList.add('has-value');
+            document.getElementById('f-time-value').value = timeStr;
+        }, 160);
+    }
+    function tpSwitchToHour() {
+        tpState.mode = 'hour';
+        tpRenderClock();
+        tpUpdateHeader();
+    }
+    function tpSwitchToMinute() {
+        tpState.mode = 'minute';
+        tpRenderClock();
+        tpUpdateHeader();
+    }
+    function tpSelectAm() {
+        tpState.ampm = 'AM';
+        tpUpdateHeader();
+    }
+    function tpSelectPm() {
+        tpState.ampm = 'PM';
+        tpUpdateHeader();
+    }
+    function tpUpdateHeader() {
+        document.getElementById('tp-hour-display').textContent = tpState.hour;
+        document.getElementById('tp-minute-display').textContent = String(tpState.minute).padStart(2, '0');
+        document.getElementById('tp-hour-display').classList.toggle('tp-active', tpState.mode === 'hour');
+        document.getElementById('tp-minute-display').classList.toggle('tp-active', tpState.mode === 'minute');
+        document.getElementById('tp-am').classList.toggle('tp-active', tpState.ampm === 'AM');
+        document.getElementById('tp-pm').classList.toggle('tp-active', tpState.ampm === 'PM');
+    }
+    function tpRenderClock() {
+        var clock = document.getElementById('tp-clock');
+        var hand = document.getElementById('tp-hand');
+        var selection = document.getElementById('tp-selection');
+        // Remove old numbers only (selection is a child of hand, persists)
+        clock.querySelectorAll('.md-timepicker-clock-number').forEach(function(el) { el.remove(); });
+        // Clock radius and center
+        var R = 106; // radius for number positions (from center)
+        var numbers;
+        if (tpState.mode === 'hour') {
+            numbers = [12,1,2,3,4,5,6,7,8,9,10,11];
+        } else {
+            numbers = [0,5,10,15,20,25,30,35,40,45,50,55];
+        }
+        var selectedIndex = -1;
+        numbers.forEach(function(num, i) {
+            var angle = (i * 30 - 90) * Math.PI / 180;
+            var x = 128 + R * Math.cos(angle) - 18;
+            var y = 128 + R * Math.sin(angle) - 18;
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            var cls = 'md-timepicker-clock-number';
+            var isSelected = (tpState.mode === 'hour' && num === tpState.hour) ||
+                             (tpState.mode === 'minute' && num === tpState.minute);
+            if (isSelected) {
+                cls += ' md-timepicker-clock-number--selected';
+                selectedIndex = i;
+            }
+            btn.className = cls;
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            btn.textContent = tpState.mode === 'minute' ? String(num).padStart(2, '0') : num;
+            btn.onclick = function() { tpSelectNumber(num); };
+            clock.appendChild(btn);
+        });
+        // Update hand
+        var handAngle;
+        if (tpState.mode === 'hour') {
+            handAngle = (tpState.hour % 12) * 30;
+        } else {
+            handAngle = tpState.minute * 6;
+        }
+        // 最短路径旋转：计算与上次角度的差值，取 <= 180° 的方向
+        var lastAngle = tpState._lastAngle || 0;
+        var delta = handAngle - (lastAngle % 360);
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+        var targetAngle = lastAngle + delta;
+        tpState._lastAngle = targetAngle;
+        hand.style.height = R + 'px';
+        hand.style.transform = 'translateX(-50%) rotate(' + targetAngle + 'deg)';
+        // Show/hide selection circle (child of hand, rotates with it automatically)
+        if (selection) {
+            selection.style.display = selectedIndex >= 0 ? '' : 'none';
+        }
+    }
+    function tpSelectNumber(num) {
+        if (tpState.mode === 'hour') {
+            tpState.hour = num;
+            // Auto-switch to minute mode after hour selection
+            tpState.mode = 'minute';
+        } else {
+            tpState.minute = num;
+        }
+        tpRenderClock();
+        tpUpdateHeader();
+    }
+    // Click overlay backdrop to dismiss
+    document.getElementById('tp-overlay').addEventListener('click', function(e) {
+        if (e.target === this && !tpState.closing) tpClose();
+    });
+
+    // ---- 时间字段辅助函数 ----
+    function tpSetTime(timeStr) {
+        // timeStr: "HH:MM" or empty
+        var display = document.getElementById('f-time');
+        var hidden = document.getElementById('f-time-value');
+        if (timeStr) {
+            var parts = timeStr.split(':');
+            var h24 = parseInt(parts[0], 10);
+            var m = parseInt(parts[1], 10);
+            var ampm = h24 >= 12 ? 'PM' : 'AM';
+            var h12 = h24 > 12 ? h24 - 12 : (h24 === 0 ? 12 : h24);
+            display.value = h12 + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+            display.classList.add('has-value');
+        } else {
+            display.value = '';
+            display.classList.remove('has-value');
+        }
+        hidden.value = timeStr || '';
+    }
+    function tpGetTime() {
+        return document.getElementById('f-time-value').value;
+    }
+
     // ---- 初始化 EasyMDE (Material Icons + MD1 Toggle Tooltips) ----
     // 使用默认字符串 toolbar 以保留 EasyMDE 内置按钮功能
     // 后通过 CSS 隐藏 FA ::before, 用 JS 注入 Material Icons
@@ -1881,12 +1160,17 @@
         var el = document.getElementById(id);
         if (!el) return;
         var isOpen = el.classList.contains('md-dropdown--open');
-        // 关闭所有其他 dropdown
+        // 关闭所有 dropdown — 同时恢复父级 overflow
         document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
             d.classList.remove('md-dropdown--open');
+            var cardBody = d.closest('.md-card-body');
+            if (cardBody) cardBody.style.overflow = '';
         });
         if (!isOpen) {
             el.classList.add('md-dropdown--open');
+            // 允许 dropdown 超出 card 边界
+            var cardBody = el.closest('.md-card-body');
+            if (cardBody) cardBody.style.overflow = 'visible';
         }
     }
     function selectDropdown(id, value, label) {
@@ -1911,6 +1195,8 @@
         if (!e.target.closest('.md-dropdown')) {
             document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
                 d.classList.remove('md-dropdown--open');
+                var cardBody = d.closest('.md-card-body');
+                if (cardBody) cardBody.style.overflow = '';
             });
         }
     });
@@ -2029,7 +1315,8 @@
         editingId = null;
         currentCoverImage = '';
         document.getElementById('f-title').value = '';
-        document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+        dpSetDate(new Date().toISOString().split('T')[0]);
+        tpSetTime('');
         document.getElementById('f-format').value = 'standard';
         selectDropdown('f-format-dropdown', 'standard', '博客文章');
         document.getElementById('f-summary').value = '';
@@ -2055,7 +1342,8 @@
             editingId = id;
             currentCoverImage = post.coverImage || '';
             document.getElementById('f-title').value = post.title;
-            document.getElementById('f-date').value = post.date;
+            dpSetDate(post.date);
+            tpSetTime(post.time || '');
             document.getElementById('f-format').value = post.cardFormat || 'standard';
             var fmtLabel = post.cardFormat === 'quote' ? '名言警句' : '博客文章';
             selectDropdown('f-format-dropdown', post.cardFormat || 'standard', fmtLabel);
@@ -2077,7 +1365,7 @@
     // ---- 保存文章 ----
     function savePost() {
         var title = document.getElementById('f-title').value.trim();
-        var date = document.getElementById('f-date').value;
+        var date = dpGetDate();
         var format = document.getElementById('f-format').value;
         var summary = document.getElementById('f-summary').value.trim();
         var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
@@ -2089,6 +1377,7 @@
         var body = {
             title: title,
             date: date,
+            time: tpGetTime(),
             cardFormat: format,
             summary: summary,
             content: content,
@@ -2249,7 +1538,7 @@
         var title = document.getElementById('f-title').value.trim() || '预览文章';
         var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
         var format = document.getElementById('f-format').value;
-        var date = document.getElementById('f-date').value;
+        var date = dpGetDate();
         var summary = document.getElementById('f-summary').value.trim();
         var coverImage = document.getElementById('f-cover-image').value;
 
@@ -2262,6 +1551,7 @@
         var fields = {
             title: title,
             date: date,
+            time: tpGetTime(),
             summary: summary,
             content: content,
             cardFormat: format,
@@ -2313,6 +1603,10 @@
             updateAvatarPreview(avatar);
             var favicon = _siteData.favicon || '';
             updateFaviconPreview(favicon);
+            var theme = _siteData.theme || 'indigo-pink';
+            selectTheme(theme);
+            var darkMode = _siteData.darkMode || 'light';
+            selectDarkMode(darkMode);
         });
     }
 
@@ -2382,7 +1676,7 @@
             label.textContent = '已上传';
         } else {
             preview.style.backgroundImage = '';
-            preview.style.backgroundColor = '#f5f5f5';
+            preview.style.backgroundColor = '';  // 清除inline，让CSS默认值（含暗黑覆盖）生效
             preview.innerHTML = '';
             label.textContent = '默认';
         }
@@ -2467,7 +1761,7 @@
             label.textContent = '已上传';
         } else {
             preview.style.backgroundImage = '';
-            preview.style.backgroundColor = '#f5f5f5';
+            preview.style.backgroundColor = '';  // 清除inline，让CSS默认值（含暗黑覆盖）生效
             preview.innerHTML = '';
             label.textContent = '默认';
         }
@@ -2493,17 +1787,82 @@
             return;
         }
         var subtitle = document.getElementById('setting-subtitle').value.trim();
+        var theme = document.getElementById('setting-theme').value || 'indigo-pink';
+        var darkMode = document.getElementById('setting-darkmode').value || 'light';
         api('PUT', '/settings', {
             author: author,
-            subtitle: subtitle
+            subtitle: subtitle,
+            theme: theme,
+            darkMode: darkMode
         }).then(function(res) {
             if (res.ok) {
                 toast('设置已保存');
                 loadPosts();
+                selectTheme(theme);
+                selectDarkMode(darkMode);
             } else {
                 toast('保存失败');
             }
         });
+    }
+
+    // ---- MD1 主题色选择 ----
+    var _themeMap = {
+        'indigo-pink':          { primary: '#3f51b5', accent: '#ff4081', accentDark: '#f50057' },
+        'grey-orange':          { primary: '#9e9e9e', accent: '#ffd740', accentDark: '#ffc400' },
+        'blue-grey-red':        { primary: '#607d8b', accent: '#ff5252', accentDark: '#ff1744' },
+        'teal-green':           { primary: '#009688', accent: '#69f0ae', accentDark: '#00e676' },
+        'deep-orange-pink':     { primary: '#ff5722', accent: '#ff4081', accentDark: '#f50057' },
+        'red-amber':            { primary: '#f44336', accent: '#ffd740', accentDark: '#ffc400' },
+        'purple-pink':          { primary: '#9c27b0', accent: '#ff4081', accentDark: '#f50057' },
+        'blue-amber':           { primary: '#2196f3', accent: '#ffd740', accentDark: '#ffc400' },
+        'deep-purple-amber':    { primary: '#673ab7', accent: '#ffd740', accentDark: '#ffc400' },
+        'cyan-orange':          { primary: '#00bcd4', accent: '#ffab40', accentDark: '#ff9100' },
+        'light-blue-deep-orange':{ primary: '#03a9f4', accent: '#ff6e40', accentDark: '#ff3d00' }
+    };
+    function selectTheme(themeId) {
+        document.getElementById('setting-theme').value = themeId;
+        document.querySelectorAll('.md-theme-option').forEach(function(el) {
+            el.classList.toggle('md-theme-option--selected', el.getAttribute('data-theme') === themeId);
+        });
+        // 更新 CSS 变量
+        var t = _themeMap[themeId] || _themeMap['indigo-pink'];
+        var root = document.documentElement;
+        root.style.setProperty('--md-primary', t.primary);
+        root.style.setProperty('--md-accent', t.accent);
+        root.style.setProperty('--md-accent-dark', t.accentDark);
+        // 切换 MDL 主题 CSS
+        document.getElementById('admin-theme-css').href = 'file/css/material-themes-' + themeId + '.css';
+    }
+
+    // ---- 显示模式 ----
+    var _darkModeLabels = { light: '明亮', dark: '黑暗', system: '根据系统设置' };
+    function selectDarkMode(mode) {
+        document.getElementById('setting-darkmode').value = mode;
+        document.getElementById('darkmode-label').textContent = _darkModeLabels[mode] || mode;
+        // 高亮选中项
+        document.querySelectorAll('#darkmode-dropdown .md-dropdown__option').forEach(function(el) {
+            el.classList.toggle('md-dropdown__option--selected', el.getAttribute('data-value') === mode);
+        });
+        document.getElementById('darkmode-dropdown').classList.remove('md-dropdown--open');
+        var cardBody = document.getElementById('darkmode-dropdown').closest('.md-card-body');
+        if (cardBody) cardBody.style.overflow = '';
+        applyDarkMode(mode);
+    }
+
+    function applyDarkMode(mode) {
+        var root = document.documentElement;
+        if (mode === 'dark') {
+            root.setAttribute('data-mode', 'dark');
+        } else if (mode === 'system') {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                root.setAttribute('data-mode', 'dark');
+            } else {
+                root.removeAttribute('data-mode');
+            }
+        } else {
+            root.removeAttribute('data-mode');
+        }
     }
 
     // ---- 菜单项管理 ----
@@ -2698,7 +2057,7 @@
     // ---- 草稿管理 ----
     function saveDraft() {
         var title = document.getElementById('f-title').value.trim() || '未命名草稿';
-        var date = document.getElementById('f-date').value;
+        var date = dpGetDate();
         var format = document.getElementById('f-format').value;
         var summary = document.getElementById('f-summary').value.trim();
         var content = easyMDE ? easyMDE.value() : document.getElementById('f-content').value;
@@ -2707,6 +2066,7 @@
         api('POST', '/drafts', {
             title: title,
             date: date,
+            time: tpGetTime(),
             cardFormat: format,
             summary: summary,
             content: content,
@@ -2758,7 +2118,8 @@
             if (!draft) { toast('草稿未找到'); return; }
             editingId = null;
             document.getElementById('f-title').value = draft.title || '';
-            document.getElementById('f-date').value = draft.date || new Date().toISOString().split('T')[0];
+            dpSetDate(draft.date || new Date().toISOString().split('T')[0]);
+            tpSetTime(draft.time || '');
             document.getElementById('f-format').value = draft.cardFormat || 'standard';
             var dl = draft.cardFormat === 'quote' ? '名言警句' : '博客文章';
             selectDropdown('f-format-dropdown', draft.cardFormat || 'standard', dl);

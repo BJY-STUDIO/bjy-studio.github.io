@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="blog/favicons/26d7839df0b8.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="file/css/material-themes-teal-green.css">
+    <link rel="stylesheet" href="file/css/styles.css">
     <style>
     #view-source {
       position: fixed;
@@ -45,65 +45,13 @@
     body::before { background-image: url('blog/backgrounds/8cc59a4cdeb6.jpg') !important; }
     </style>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var menuTheme1 = document.getElementById('menu-theme-1');
-        var menuTheme2 = document.getElementById('menu-theme-2');
-        var menuTheme3 = document.getElementById('menu-theme-3');
-        menuTheme1.addEventListener('click', function() {
-          setThemeColor('lib/mdl/material-themes-grey-orange.css');
-        });
-        menuTheme2.addEventListener('click', function() {
-          setThemeColor('lib/mdl/material-themes-blue-grey-red.css');
-        });
-        menuTheme3.addEventListener('click', function() {
-          setThemeColor('lib/mdl/material-themes-teal-green.css');
-        });
-      });
-      function setThemeColor(themeUrl) {
-        var themeLink = document.querySelector('link[href^="lib/mdl/material-themes"]');
-        if (themeLink) {
-          themeLink.href = themeUrl;
-        }
-      }
     </script>
   </head>
   <body>
     <div class="blog mdl-layout mdl-js-layout has-drawer is-upgraded">
       <main class="mdl-layout__content">
         <div class="theme">
-          <button id="menu-button" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons" role="presentation">palette</i>
-          </button>
-          <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="menu-button">
-            <li id="menu-theme-1" class="mdl-menu__item">Grey - Orange</li>
-            <li id="menu-theme-2" class="mdl-menu__item">Blue Grey - Red</li>
-            <li id="menu-theme-3" class="mdl-menu__item">Teal - Green</li>
-          </ul>
-          <div class="mdl-tooltip mdl-tooltip--right" for="menu-button">
-            更改主题配色
-          </div>
         </div>
-        <div id="theme-snackbar-container" class="mdl-js-snackbar mdl-snackbar">
-          <div class="mdl-snackbar__text"></div>
-          <button class="mdl-snackbar__action" type="button"></button>
-        </div>
-        <script>
-          (function() {
-            'use strict';
-            var snackbarContainer = document.querySelector('#theme-snackbar-container');
-            var menuItems = document.querySelectorAll('.mdl-menu__item');
-            menuItems.forEach(function(menuItem) {
-              menuItem.addEventListener('click', function() {
-                var theme = this.innerText;
-                var data = {
-                  message: '选择了 ' + theme + ' 主题',
-                  timeout: 2000,
-                };
-                snackbarContainer.MaterialSnackbar.showSnackbar(data);
-              });
-            });
-          })();
-        </script>
         <div class="blog__posts mdl-grid">
           <div class="mdl-card card-article mdl-cell mdl-cell--8-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
@@ -134,9 +82,6 @@
               </div>
               <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="menubtn">
                 <li><a href="./file/about.html" class="mdl-menu__item">关于</a></li>
-<li class="mdl-menu__item">私信</li>
-<li class="mdl-menu__item">收藏</li>
-<li class="mdl-menu__item">搜索</li>
 
               </ul>
               <button id="menubtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
@@ -190,7 +135,7 @@
               </div>
             </div>
           </div>
-          <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
+           <div class="mdl-card card-article mdl-cell mdl-cell--12-col">
             <div class="mdl-card__media mdl-color-text--grey-50" style="background-image: url('blog/covers/c554d17c6c16.jpg')">
               <h3><a href="blog/posts/hello-world.html">Hello World!</a></h3>
             </div>
