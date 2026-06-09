@@ -2766,6 +2766,7 @@
             if (easyMDE) {
                 easyMDE.value(draft.content || '');
             }
+            updateFloatingLabels();
             document.getElementById('f-cover-image').value = draft.coverImage || '';
             updateCoverPreview(draft.coverImage || '');
             document.getElementById('editor-title').textContent = '新建文章（从草稿加载）';
