@@ -1466,7 +1466,7 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     white-space: nowrap;
 }
 
-/* Switch 轨道 — 40x14dp、7dp 圆角（MD1 标准） */
+/* Switch 轨道 — 40x14dp、7dp 圆角（MD1 spec: 40×14dp） */
 .blog-dark-switch__track {
     position: relative;
     width: 40px;
@@ -1477,7 +1477,9 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     flex-shrink: 0;
 }
 
-/* Switch 滑块 (thumb) — Off 20dp 圆（含 border），border-box 计量 */
+/* Switch 滑块 (thumb) — Off 20dp（MD1 spec: Off=20dp, On=24dp）
+   定位：top=-3dp 使 thumb 垂直居中于 14dp track
+   On 状态通过 scale(1.2) 从 20dp 放大到 24dp，避免布局重算问题 */
 .blog-dark-switch__thumb {
     position: absolute;
     top: -3px;
@@ -1492,12 +1494,12 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-/* === On 状态 — 跟随主题 primary 色 === */
+/* === On 状态 — MD1 spec: thumb 放大至 24dp (20×1.2), 右移至 track 右端 === */
 .blog-dark-switch input:checked + .blog-dark-switch__track {
     background: color-mix(in srgb, var(--md-primary) 50%, transparent);       /* primary Swatch 500 × 50% */
 }
 .blog-dark-switch input:checked + .blog-dark-switch__track .blog-dark-switch__thumb {
-    transform: translateX(20px);
+    transform: translateX(20px) scale(1.2);
     background: var(--md-primary);       /* primary 500 */
     border-color: var(--md-primary);
 }
