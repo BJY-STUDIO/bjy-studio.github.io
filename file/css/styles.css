@@ -1068,12 +1068,12 @@ body .blog {
 
 /* ---- 手动暗黑模式 ---- */
 
-/* 背景变 #303030 */
+/* 背景 → #303030 */
 html[data-mode="dark"] body::before {
     background-color: #303030;
 }
 
-/* 卡片变 #424242 */
+/* 卡片 → #424242 */
 html[data-mode="dark"] .mdl-card {
     background: #424242;
 }
@@ -1088,11 +1088,35 @@ html[data-mode="dark"] .mdl-card__media.mdl-color--white {
     background: #424242 !important;
 }
 
-/* 卡片支撑文本/meta → 70% 白 */
+/* 侧边栏封面区灰色文字 (如 "发现生活中的美") → 70% 白
+   MDL .mdl-color-text--grey-600 强制设置 #757575，需 !important 覆盖 */
+html[data-mode="dark"] .mdl-card__media.mdl-color-text--grey-600 {
+    color: rgba(255,255,255,0.70) !important;
+}
+
+/* 卡片支撑文本/摘要 → 70% 白
+   MDL .mdl-color-text--grey-600 强制设置 #757575，需 !important 覆盖
+   同时覆盖 .blog:not(.blog--article) 下的首页卡片摘要 */
 html[data-mode="dark"] .mdl-card__supporting-text,
 html[data-mode="dark"] .mdl-card__supporting-text.meta,
-html[data-mode="dark"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600 {
-    color: rgba(255,255,255,0.70);
+html[data-mode="dark"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600,
+html[data-mode="dark"] .mdl-card__supporting-text.mdl-color-text--grey-600 {
+    color: rgba(255,255,255,0.70) !important;
+}
+
+/* 首页卡片摘要区之间的分割线 → 12% 白 */
+html[data-mode="dark"] .blog:not(.blog--article) .mdl-card__supporting-text ~ .mdl-card__supporting-text {
+    border-top-color: rgba(255,255,255,0.12);
+}
+
+/* 侧边栏底部支撑区背景 → 深色 */
+html[data-mode="dark"] .blog .sidebar-card .mdl-card__supporting-text {
+    background-color: #353535;
+}
+
+/* 迷你 logo 底色 → 深色 */
+html[data-mode="dark"] .blog .minilogo {
+    background-color: #353535;
 }
 
 /* 文章 meta → 50% 白 */
@@ -1105,17 +1129,86 @@ html[data-mode="dark"] .blog--article .docs-layout {
     color: rgba(255,255,255,1);
 }
 
-/* 文章标题 h1-h4 → 100% 白 */
+/* 文章段落 → 87% 白 */
+html[data-mode="dark"] .blog--article .docs-layout p {
+    color: rgba(255,255,255,0.87);
+}
+
+/* 文章标题 h1-h6 → 白色系 */
 html[data-mode="dark"] .blog--article .docs-layout h1,
 html[data-mode="dark"] .blog--article .docs-layout h2,
 html[data-mode="dark"] .blog--article .docs-layout h3,
 html[data-mode="dark"] .blog--article .docs-layout h4 {
     color: rgba(255,255,255,1);
 }
+html[data-mode="dark"] .blog--article .docs-layout h5 {
+    color: rgba(255,255,255,0.80);
+}
+html[data-mode="dark"] .blog--article .docs-layout h6 {
+    color: rgba(255,255,255,0.65);
+}
 
-/* 文章链接 → MD1 dark 链接蓝色 #82b1ff */
+/* h1 底部分割线 → 12% 白 */
+html[data-mode="dark"] .blog--article .docs-layout h1 {
+    border-bottom-color: rgba(255,255,255,0.12);
+}
+
+/* 文章链接 → MD1 dark 链接蓝色 #82b1ff + 半透明下划线 */
 html[data-mode="dark"] .blog--article .docs-layout a {
     color: #82b1ff;
+    border-bottom-color: rgba(130,177,255,0.3);
+}
+
+/* 行内 code → 深色背景 + 浅红色文字 */
+html[data-mode="dark"] .blog--article .docs-layout code {
+    background: rgba(255,255,255,0.10);
+    color: #f97583;
+}
+
+/* 列表项文字 → 80% 白 */
+html[data-mode="dark"] .blog--article .docs-layout li {
+    color: rgba(255,255,255,0.80);
+}
+html[data-mode="dark"] .blog--article .docs-layout ul > li,
+html[data-mode="dark"] .blog--article .docs-layout ol > li {
+    color: rgba(255,255,255,0.80);
+}
+
+/* 无序列表圆点 → 40% 白 / 嵌套 24% 白 */
+html[data-mode="dark"] .blog--article .docs-layout ul > li::before {
+    background: rgba(255,255,255,0.40);
+}
+html[data-mode="dark"] .blog--article .docs-layout li > ul > li::before {
+    background: rgba(255,255,255,0.24);
+}
+
+/* 有序列表编号 → 50% 白 */
+html[data-mode="dark"] .blog--article .docs-layout ol > li::before {
+    color: rgba(255,255,255,0.50);
+}
+
+/* 引用块 → 加强背景 + 30% 白左边框、70% 白文字 */
+html[data-mode="dark"] .blog--article blockquote {
+    border-left-color: rgba(255,255,255,0.30);
+    background: rgba(63,81,181,0.12);
+    color: rgba(255,255,255,0.70);
+}
+
+/* 表格 → 12% 白边框、5% 白表头、3% 白斑马纹 */
+html[data-mode="dark"] .blog--article .docs-layout th,
+html[data-mode="dark"] .blog--article .docs-layout td {
+    border-color: rgba(255,255,255,0.12);
+}
+html[data-mode="dark"] .blog--article .docs-layout th {
+    background: rgba(255,255,255,0.05);
+}
+html[data-mode="dark"] .blog--article .docs-layout tr:nth-child(even) {
+    background: rgba(255,255,255,0.03);
+}
+
+/* 水平分割线 → 12% 白 */
+html[data-mode="dark"] .blog--article .docs-layout hr {
+    border-top-color: rgba(255,255,255,0.12);
 }
 
 /* code-with-text 代码块：#1e1e1e 背景、87% 白文字、12% 白边框 */
@@ -1136,12 +1229,6 @@ html[data-mode="dark"] .blog--article .code-with-text pre {
     background: #1e1e1e;
 }
 
-/* 引用块：30% 白左边框、70% 白文字 */
-html[data-mode="dark"] .blog--article blockquote {
-    border-left-color: rgba(255,255,255,0.30);
-    color: rgba(255,255,255,0.70);
-}
-
 /* 文章导航按钮：70% 白 / hover 95% 白 */
 html[data-mode="dark"] .article-nav__btn {
     color: rgba(255,255,255,0.70);
@@ -1155,9 +1242,15 @@ html[data-mode="dark"] .back-btn {
     color: #fff;
 }
 
-/* 页脚：#212121 深灰背景 */
+/* 页脚：#212121 深灰背景 + 70% 白文字 */
 html[data-mode="dark"] .mdl-mini-footer {
     background: #212121;
+    color: rgba(255,255,255,0.70);
+}
+
+/* 社交分享按钮文字 → 54% 白 */
+html[data-mode="dark"] .social-btn__share {
+    color: rgba(255,255,255,0.54);
 }
 
 /* 侧边栏头像：85% 不透明度 */
@@ -1190,10 +1283,23 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     html[data-mode="auto"] .mdl-card__media.mdl-color--white {
         background: #424242 !important;
     }
+    html[data-mode="auto"] .mdl-card__media.mdl-color-text--grey-600 {
+        color: rgba(255,255,255,0.70) !important;
+    }
     html[data-mode="auto"] .mdl-card__supporting-text,
     html[data-mode="auto"] .mdl-card__supporting-text.meta,
-    html[data-mode="auto"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600 {
-        color: rgba(255,255,255,0.70);
+    html[data-mode="auto"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600,
+    html[data-mode="auto"] .mdl-card__supporting-text.mdl-color-text--grey-600 {
+        color: rgba(255,255,255,0.70) !important;
+    }
+    html[data-mode="auto"] .blog:not(.blog--article) .mdl-card__supporting-text ~ .mdl-card__supporting-text {
+        border-top-color: rgba(255,255,255,0.12);
+    }
+    html[data-mode="auto"] .blog .sidebar-card .mdl-card__supporting-text {
+        background-color: #353535;
+    }
+    html[data-mode="auto"] .blog .minilogo {
+        background-color: #353535;
     }
     html[data-mode="auto"] .blog--article .meta {
         color: rgba(255,255,255,0.50);
@@ -1201,14 +1307,65 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     html[data-mode="auto"] .blog--article .docs-layout {
         color: rgba(255,255,255,1);
     }
+    html[data-mode="auto"] .blog--article .docs-layout p {
+        color: rgba(255,255,255,0.87);
+    }
     html[data-mode="auto"] .blog--article .docs-layout h1,
     html[data-mode="auto"] .blog--article .docs-layout h2,
     html[data-mode="auto"] .blog--article .docs-layout h3,
     html[data-mode="auto"] .blog--article .docs-layout h4 {
         color: rgba(255,255,255,1);
     }
+    html[data-mode="auto"] .blog--article .docs-layout h5 {
+        color: rgba(255,255,255,0.80);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout h6 {
+        color: rgba(255,255,255,0.65);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout h1 {
+        border-bottom-color: rgba(255,255,255,0.12);
+    }
     html[data-mode="auto"] .blog--article .docs-layout a {
         color: #82b1ff;
+        border-bottom-color: rgba(130,177,255,0.3);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout code {
+        background: rgba(255,255,255,0.10);
+        color: #f97583;
+    }
+    html[data-mode="auto"] .blog--article .docs-layout li {
+        color: rgba(255,255,255,0.80);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout ul > li,
+    html[data-mode="auto"] .blog--article .docs-layout ol > li {
+        color: rgba(255,255,255,0.80);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout ul > li::before {
+        background: rgba(255,255,255,0.40);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout li > ul > li::before {
+        background: rgba(255,255,255,0.24);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout ol > li::before {
+        color: rgba(255,255,255,0.50);
+    }
+    html[data-mode="auto"] .blog--article blockquote {
+        border-left-color: rgba(255,255,255,0.30);
+        background: rgba(63,81,181,0.12);
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout th,
+    html[data-mode="auto"] .blog--article .docs-layout td {
+        border-color: rgba(255,255,255,0.12);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout th {
+        background: rgba(255,255,255,0.05);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout tr:nth-child(even) {
+        background: rgba(255,255,255,0.03);
+    }
+    html[data-mode="auto"] .blog--article .docs-layout hr {
+        border-top-color: rgba(255,255,255,0.12);
     }
     html[data-mode="auto"] .blog--article .code-with-text {
         background: #1e1e1e;
@@ -1222,10 +1379,6 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     html[data-mode="auto"] .blog--article .code-with-text pre {
         background: #1e1e1e;
     }
-    html[data-mode="auto"] .blog--article blockquote {
-        border-left-color: rgba(255,255,255,0.30);
-        color: rgba(255,255,255,0.70);
-    }
     html[data-mode="auto"] .article-nav__btn {
         color: rgba(255,255,255,0.70);
     }
@@ -1237,6 +1390,10 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     }
     html[data-mode="auto"] .mdl-mini-footer {
         background: #212121;
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .social-btn__share {
+        color: rgba(255,255,255,0.54);
     }
     html[data-mode="auto"] .sidebar-card img {
         opacity: 0.85;
