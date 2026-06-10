@@ -1478,12 +1478,12 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
 }
 
 /* Switch 滑块 (thumb) — MD1 spec: Off/On resting 20dp, 无 border
-   定位：left=2dp (距 track 左边缘 2dp), top=-3dp 垂直居中于 14dp track
-   travel 距离 = 36 - 20 - 4(两端各2dp) = 12dp */
+   定位：left=0 贴 track 左边缘, top=-3dp 垂直居中于 14dp track
+   travel 距离 = 36 - 20 = 16dp */
 .blog-dark-switch__thumb {
     position: absolute;
     top: -3px;
-    left: 2px;
+    left: 0;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -1492,12 +1492,12 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     transition: transform 0.15s ease, background 0.15s ease;
 }
 
-/* === On 状态 — MD1 spec: thumb 20dp 右移 12dp 到 track 右端 === */
+/* === On 状态 — MD1 spec: thumb 20dp 右移 16dp 到 track 右端 === */
 .blog-dark-switch input:checked + .blog-dark-switch__track {
     background: color-mix(in srgb, var(--md-primary) 50%, transparent);       /* Swatch 500 × 50% */
 }
 .blog-dark-switch input:checked + .blog-dark-switch__track .blog-dark-switch__thumb {
-    transform: translateX(12px);
+    transform: translateX(16px);
     background: var(--md-primary);       /* Swatch 500 100% */
 }
 
