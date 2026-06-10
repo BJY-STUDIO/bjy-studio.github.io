@@ -1068,8 +1068,10 @@ body .blog {
 
 /* ---- 手动暗黑模式 ---- */
 
-/* 背景 → #303030 */
+/* 背景 → #303030 纯色，去除背景图
+   暗色模式下全屏背景图过于明亮，直接用纯色深灰替代 */
 html[data-mode="dark"] body::before {
+    background-image: none !important;
     background-color: #303030;
 }
 
@@ -1088,20 +1090,36 @@ html[data-mode="dark"] .mdl-card__media.mdl-color--white {
     background: #424242 !important;
 }
 
-/* 侧边栏封面区灰色文字 (如 "发现生活中的美") → 70% 白
-   MDL .mdl-color-text--grey-600 强制设置 #757575，需 !important 覆盖 */
+/* 侧边栏封面区灰色文字 (如 "发现生活中的美") → 87% 白
+   MDL .mdl-color-text--grey-600 强制设置 #757575，需 !important 覆盖
+   原值 70% 在 #424242 背景上对比度不足，提高至 87% */
 html[data-mode="dark"] .mdl-card__media.mdl-color-text--grey-600 {
-    color: rgba(255,255,255,0.70) !important;
+    color: rgba(255,255,255,0.87) !important;
 }
 
-/* 卡片支撑文本/摘要 → 70% 白
+/* 卡片支撑文本/摘要 → 80% 白
    MDL .mdl-color-text--grey-600 强制设置 #757575，需 !important 覆盖
-   同时覆盖 .blog:not(.blog--article) 下的首页卡片摘要 */
+   同时覆盖 .blog:not(.blog--article) 下的首页卡片摘要和 meta 区
+   原值 70% 在 #424242 背景上对比度不足，提高至 80% */
 html[data-mode="dark"] .mdl-card__supporting-text,
 html[data-mode="dark"] .mdl-card__supporting-text.meta,
 html[data-mode="dark"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600,
 html[data-mode="dark"] .mdl-card__supporting-text.mdl-color-text--grey-600 {
-    color: rgba(255,255,255,0.70) !important;
+    color: rgba(255,255,255,0.80) !important;
+}
+
+/* 侧边栏导航菜单 → 暗色模式适配 */
+html[data-mode="dark"] .sidebar-card .mdl-menu {
+    background-color: #424242;
+}
+html[data-mode="dark"] .sidebar-card .mdl-menu__item {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .sidebar-card .mdl-menu__item:hover {
+    background-color: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .sidebar-card .mdl-menu__item .mdl-menu__item::after {
+    background-color: rgba(255,255,255,0.06);
 }
 
 /* 首页卡片摘要区之间的分割线 → 12% 白 */
@@ -1272,6 +1290,7 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
 /* 与手动暗黑相同的样式，选择器改为 html[data-mode="auto"] */
 @media (prefers-color-scheme: dark) {
     html[data-mode="auto"] body::before {
+        background-image: none !important;
         background-color: #303030;
     }
     html[data-mode="auto"] .mdl-card {
@@ -1284,16 +1303,26 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
         background: #424242 !important;
     }
     html[data-mode="auto"] .mdl-card__media.mdl-color-text--grey-600 {
-        color: rgba(255,255,255,0.70) !important;
+        color: rgba(255,255,255,0.87) !important;
     }
     html[data-mode="auto"] .mdl-card__supporting-text,
     html[data-mode="auto"] .mdl-card__supporting-text.meta,
     html[data-mode="auto"] .mdl-card__supporting-text.meta.mdl-color-text--grey-600,
     html[data-mode="auto"] .mdl-card__supporting-text.mdl-color-text--grey-600 {
-        color: rgba(255,255,255,0.70) !important;
+        color: rgba(255,255,255,0.80) !important;
     }
     html[data-mode="auto"] .blog:not(.blog--article) .mdl-card__supporting-text ~ .mdl-card__supporting-text {
         border-top-color: rgba(255,255,255,0.12);
+    }
+    /* 侧边栏导航菜单暗色适配 */
+    html[data-mode="auto"] .sidebar-card .mdl-menu {
+        background-color: #424242;
+    }
+    html[data-mode="auto"] .sidebar-card .mdl-menu__item {
+        color: rgba(255,255,255,0.87);
+    }
+    html[data-mode="auto"] .sidebar-card .mdl-menu__item:hover {
+        background-color: rgba(255,255,255,0.08);
     }
     html[data-mode="auto"] .blog .sidebar-card .mdl-card__supporting-text {
         background-color: #353535;
