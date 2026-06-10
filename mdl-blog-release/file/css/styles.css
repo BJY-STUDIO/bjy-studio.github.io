@@ -676,54 +676,57 @@ body .blog {
   display: flex !important;
 }
 
-/* ==== 社交分享按钮 ==== */
-/* 24x24dp 图标按钮、居中裁切、46% 不透明度、2dp 圆角 */
-.social-btn {
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: transparent;
-  margin: 0 16px;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  opacity: 0.46;
-  border-radius: 2px;
+/* ==== 页脚图标按钮 ==== */
+/* MD1 Icon Toggle Button 规范:
+   46% 黑图标、36x36dp 触摸区域、hover 12% 黑背景、
+   暗色模式下 70% 白图标、hover 8% 白背景 */
+.footer-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: rgba(0,0,0,0.46);
+    transition: background 0.15s ease, color 0.15s ease;
 }
-
-/* Twitter 分享图标 */
-.social-btn__twitter {
-  background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_twitter_black_24dp.png');
+.footer-icon-btn:hover {
+    background: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.74);
 }
-
-/* Facebook/Blogger 分享图标 */
-.social-btn__blogger {
-  background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_facebook_black_24dp.png');
+.footer-icon-btn:active {
+    background: rgba(0,0,0,0.18);
 }
-
-/* Google+ 分享图标 */
-.social-btn__gplus {
-  background-image: url('https://www.gstatic.com/images/icons/material/system/2x/post_gplus_black_24dp.png');
-}
-
-/* 通用分享按钮：54% 黑文字、透明背景 */
-.social-btn__share {
-  color: rgba(0, 0, 0, 0.54);
-  background: transparent;
+.footer-icon-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 /* ==== 页脚 ==== */
-/* MDL mini footer：80dp 顶部间距、120dp 高、40dp 内边距、白色背景 */
+/* MD1 mini footer：80dp 顶部间距、120dp 高、40dp 内边距、白色背景 */
 .blog .mdl-mini-footer {
-  margin-top: 80px;
-  height: 120px;
-  padding: 40px;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  background-color: white;
-  box-sizing: border-box;
+    margin-top: 80px;
+    height: 120px;
+    padding: 40px;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    background-color: white;
+    box-sizing: border-box;
 }
+/* 页脚左右区域垂直居中对齐 */
+.blog .mdl-mini-footer--left-section,
+.blog .mdl-mini-footer--right-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 
 /* ==== code-with-text 内 inline code 样式 ==== */
 /* 语法高亮容器内的行内 code：等宽字体、7% 黑背景、2dp 圆角、13sp */
@@ -1265,10 +1268,6 @@ html[data-mode="dark"] .mdl-mini-footer {
     background: #212121;
     color: rgba(255,255,255,0.70);
 }
-
-/* 社交分享按钮文字 → 54% 白 */
-html[data-mode="dark"] .social-btn__share {
-    color: rgba(255,255,255,0.54);
 }
 
 /* 侧边栏头像：85% 不透明度 */
@@ -1421,9 +1420,6 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
         background: #212121;
         color: rgba(255,255,255,0.70);
     }
-    html[data-mode="auto"] .social-btn__share {
-        color: rgba(255,255,255,0.54);
-    }
     html[data-mode="auto"] .sidebar-card img {
         opacity: 0.85;
     }
@@ -1441,9 +1437,10 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
    规范: MD1 Light Switch
    Thumb On: Swatch 500 100%; Track On: Swatch 500 50%
    Thumb Off: #FAFAFA + 2dp border; Track Off: #000 38% opacity
+   颜色跟随 --md-primary 变量，随主题切换动态调整
    ============================================================== */
 
-/* Switch 外层容器 — label 作为可点击区域 */
+/* Switch 外层容器 — 与 footer-icon-btn 同高 36dp，垂直居中 */
 .blog-dark-switch {
     display: inline-flex;
     align-items: center;
@@ -1451,17 +1448,25 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+    height: 36px;
+    padding: 0 8px;
+    border-radius: 18px;
+    transition: background 0.15s ease;
+}
+.blog-dark-switch:hover {
+    background: rgba(0,0,0,0.04);
 }
 
-/* Switch 标签文字 */
+/* Switch 标签文字 — 12sp 54% 黑 */
 .blog-dark-switch__label {
     font-size: 12px;
     color: rgba(0,0,0,0.54);
     line-height: 1;
     letter-spacing: 0.4px;
+    white-space: nowrap;
 }
 
-/* Switch 轨道 + 滑块外壳 */
+/* Switch 轨道 — 36x14dp、7dp 圆角 */
 .blog-dark-switch__track {
     position: relative;
     width: 36px;
@@ -1469,9 +1474,10 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     border-radius: 7px;
     background: rgba(0,0,0,0.38);
     transition: background 0.15s ease;
+    flex-shrink: 0;
 }
 
-/* Switch 滑块 (thumb) */
+/* Switch 滑块 (thumb) — 20dp 圆 */
 .blog-dark-switch__thumb {
     position: absolute;
     top: -5px;
@@ -1485,14 +1491,14 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-/* === On 状态 === */
+/* === On 状态 — 跟随主题 primary 色 === */
 .blog-dark-switch input:checked + .blog-dark-switch__track {
-    background: rgba(63,81,181,0.50);    /* primary 50% */
+    background: color-mix(in srgb, var(--md-primary) 50%, transparent);       /* primary Swatch 500 × 50% */
 }
 .blog-dark-switch input:checked + .blog-dark-switch__track .blog-dark-switch__thumb {
     transform: translateX(16px);
-    background: #3f51b5;                 /* primary 500 */
-    border-color: #3f51b5;
+    background: var(--md-primary);       /* primary 500 */
+    border-color: var(--md-primary);
 }
 
 /* 隐藏原生 checkbox */
@@ -1503,23 +1509,67 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     height: 0;
 }
 
-/* === 暗色模式下的 Switch 适配 === */
-/* On 状态 — 滑块在 primary 色上，不需要改动 */
-/* Off 状态文字 → 70% 白 */
-html[data-mode="dark"] .blog-dark-switch__label,
+/* === 暗色模式下的 Switch + 图标按钮适配 === */
+/* Switch Off 文字 → 70% 白 */
+html[data-mode="dark"] .blog-dark-switch__label {
+    color: rgba(255,255,255,0.70);
+}
+.blog-dark-switch:hover {
+    background: rgba(255,255,255,0.04);
+}
+/* Switch Off Track → 30% 白（仅 unchecked） */
+html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__track {
+    background: rgba(255,255,255,0.30);
+}
+/* Switch Off Thumb → #bdbdbd（仅 unchecked） */
+html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
+    background: #bdbdbd;
+    border-color: rgba(255,255,255,0.12);
+}
+/* Switch On Track 暗色模式 — primary 50%（覆盖 Off 规则） */
+html[data-mode="dark"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
+    background: color-mix(in srgb, var(--md-primary) 50%, transparent);
+}
+/* Switch On Thumb 暗色模式 — primary 100% */
+html[data-mode="dark"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+}
+
+/* 图标按钮暗色适配 */
+html[data-mode="dark"] .footer-icon-btn {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="dark"] .footer-icon-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.95);
+}
+
+/* === auto 模式 — 同 dark 逻辑 === */
 html[data-mode="auto"] .blog-dark-switch__label {
     color: rgba(255,255,255,0.70);
 }
-/* Track Off 在暗色下适当降低对比 */
-html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__track,
 html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__track {
     background: rgba(255,255,255,0.30);
 }
-/* Thumb Off 在暗色下 */
-html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb,
 html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
     background: #bdbdbd;
     border-color: rgba(255,255,255,0.12);
+}
+/* Switch On Track/Thumb auto 模式 — primary 色跟随 */
+html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
+    background: color-mix(in srgb, var(--md-primary) 50%, transparent);
+}
+html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+}
+html[data-mode="auto"] .footer-icon-btn {
+    color: rgba(255,255,255,0.70);
+}
+html[data-mode="auto"] .footer-icon-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.95);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1532,6 +1582,21 @@ html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-swi
     html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
         background: #bdbdbd;
         border-color: rgba(255,255,255,0.12);
+    }
+    /* Switch On Track/Thumb auto 模式 @media dark — primary 色跟随 */
+    html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
+        background: color-mix(in srgb, var(--md-primary) 50%, transparent);
+    }
+    html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
+        background: var(--md-primary);
+        border-color: var(--md-primary);
+    }
+    html[data-mode="auto"] .footer-icon-btn {
+        color: rgba(255,255,255,0.70);
+    }
+    html[data-mode="auto"] .footer-icon-btn:hover {
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.95);
     }
 }
 

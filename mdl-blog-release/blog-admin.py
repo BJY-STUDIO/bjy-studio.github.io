@@ -530,6 +530,7 @@ def api_preview():
       z-index: 900;
     }}
     {post_bg_override}
+    {theme_vars_css(site.get('theme', 'indigo-pink'))}
     </style>
   </head>
   <body class="started">
@@ -568,18 +569,22 @@ def api_preview():
         </div>
         <footer class="mdl-mini-footer">
           <div class="mdl-mini-footer--left-section">
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
               <span class="visuallyhidden">Twitter</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
               <span class="visuallyhidden">Facebook</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
-              <span class="visuallyhidden">Google Plus</span>
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span class="visuallyhidden">Google</span>
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
-            <button class="mdl-mini-footer--social-btn social-btn__share">
+            {_DARK_SWITCH_HTML}
+            <button class="footer-icon-btn" title="Share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
             </button>
@@ -603,6 +608,35 @@ def fmt_datetime(post):
     t = post.get('time', '')
     return f"{d} {t}" if t else d
 
+
+# 页脚暗色模式 Switch HTML 片段（首页/文章页/预览共用）
+_DARK_SWITCH_HTML = '''<label class="blog-dark-switch">
+            <span class="blog-dark-switch__label">深色模式</span>
+            <input type="checkbox" id="dark-mode-switch">
+            <span class="blog-dark-switch__track">
+              <span class="blog-dark-switch__thumb"></span>
+            </span>
+          </label>'''
+
+# 主题色映射 — 用于博客前端 CSS 变量注入（Switch 主题色联动）
+_THEME_COLORS = {
+    'indigo-pink':           {'primary': '#3f51b5'},
+    'grey-orange':           {'primary': '#9e9e9e'},
+    'blue-grey-red':         {'primary': '#607d8b'},
+    'teal-green':            {'primary': '#009688'},
+    'deep-orange-pink':      {'primary': '#ff5722'},
+    'red-amber':             {'primary': '#f44336'},
+    'purple-pink':           {'primary': '#9c27b0'},
+    'blue-amber':            {'primary': '#2196f3'},
+    'deep-purple-amber':     {'primary': '#673ab7'},
+    'cyan-orange':           {'primary': '#00bcd4'},
+    'light-blue-deep-orange':{'primary': '#03a9f4'},
+}
+
+def theme_vars_css(theme):
+    """返回博客前端所需的 CSS 变量声明字符串"""
+    c = _THEME_COLORS.get(theme, _THEME_COLORS['indigo-pink'])
+    return f":root{{--md-primary:{c['primary']};}}"
 
 def dark_mode_attr(site):
     """根据站点设置返回 <html> 标签上的暗黑模式属性字符串"""
@@ -852,6 +886,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
       pointer-events: none;
     }}
     {bg_override}
+    {theme_vars_css(theme)}
     </style>
     <script>
     </script>
@@ -870,18 +905,22 @@ def generate_index(posts, pinned_id, site, bg_image=''):
         </div>
         <footer class="mdl-mini-footer">
           <div class="mdl-mini-footer--left-section">
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
               <span class="visuallyhidden">Twitter</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
               <span class="visuallyhidden">Facebook</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               <span class="visuallyhidden">Google</span>
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
-            <button class="mdl-mini-footer--social-btn social-btn__share">
+            {_DARK_SWITCH_HTML}
+            <button class="footer-icon-btn" title="Share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
             </button>
@@ -891,6 +930,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
       <div class="mdl-layout__obfuscator"></div>
     </div>
     <script src="lib/mdl/material.min.js"></script>
+    <script src="file/javascript/snippets.js"></script>
   </body>
   <script>
     Array.prototype.forEach.call(document.querySelectorAll('.mdl-card__media'), function(el) {{
@@ -941,7 +981,10 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
         post_bg_override = f"""body::before {{ background-image: url('{post_bg}') !important; }}"""
 
     # --- 动态头像和 favicon ---
+    # 文章页在 blog/posts/ 下，需要 ../../ 前缀回到根目录
     avatar_src = site.get('avatar') or '../../images/logo.png'
+    if site.get('avatar') and not avatar_src.startswith('http') and not avatar_src.startswith('../../'):
+        avatar_src = f"../../{avatar_src}"
     post_minilogo_style = f" style=\"background-image: url('{avatar_src}')\"" if site.get('avatar') else ''
     post_favicon_href = site.get('favicon') or '../../images/favicon.png'
     if post_favicon_href and not post_favicon_href.startswith('http') and not post_favicon_href.startswith('../../'):
@@ -1033,6 +1076,7 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
       z-index: 900;
     }}
     {post_bg_override}
+    {theme_vars_css(theme)}
     </style>
   </head>
   <body class="started">
@@ -1075,18 +1119,22 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
         </div>
         <footer class="mdl-mini-footer">
           <div class="mdl-mini-footer--left-section">
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
               <span class="visuallyhidden">Twitter</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
               <span class="visuallyhidden">Facebook</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
-              <span class="visuallyhidden">Google Plus</span>
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span class="visuallyhidden">Google</span>
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
-            <button class="mdl-mini-footer--social-btn social-btn__share">
+            {_DARK_SWITCH_HTML}
+            <button class="footer-icon-btn" title="Share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
             </button>

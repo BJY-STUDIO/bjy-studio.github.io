@@ -7,11 +7,33 @@
     "avatar": "blog/avatars/37bbe62ce366.png",
     "favicon": "blog/favicons/26d7839df0b8.png",
     "menuItems": [
-      { "id": "about", "name": "关于", "url": "./file/about.html", "enabled": true },
-      { "id": "message", "name": "私信", "url": "", "enabled": true },
-      { "id": "favorite", "name": "收藏", "url": "", "enabled": true },
-      { "id": "search", "name": "搜索", "url": "", "enabled": true }
-    ]
+      {
+        "id": "about",
+        "name": "关于",
+        "url": "./file/about.html",
+        "enabled": true
+      },
+      {
+        "id": "message",
+        "name": "私信",
+        "url": "",
+        "enabled": false
+      },
+      {
+        "id": "favorite",
+        "name": "收藏",
+        "url": "",
+        "enabled": false
+      },
+      {
+        "id": "search",
+        "name": "搜索",
+        "url": "",
+        "enabled": false
+      }
+    ],
+    "theme": "teal-green",
+    "darkMode": "light"
   },
   "pinnedPostId": "v2-changelog",
   "drafts": [
@@ -24,6 +46,16 @@
       "cardFormat": "standard",
       "coverImage": "",
       "savedAt": "2026-06-07T13:10:41.240638"
+    },
+    {
+      "id": "93fe61b1",
+      "title": "草稿测试",
+      "date": "2026-06-09",
+      "summary": "测试",
+      "content": "",
+      "cardFormat": "standard",
+      "coverImage": "",
+      "savedAt": "2026-06-09T19:12:22.514915"
     }
   ],
   "posts": [

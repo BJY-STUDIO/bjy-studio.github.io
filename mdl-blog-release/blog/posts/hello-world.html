@@ -5,19 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Hello World!">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>My MDL Blog - Hello World!</title>
+    <title>Kernel 的个人博客 - Hello World!</title>
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="192x192" href="../../images/touch/chrome-touch-icon-192x192.png">
+    <link rel="icon" sizes="192x192" href="../../blog/favicons/26d7839df0b8.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Material Design Lite">
-    <link rel="apple-touch-icon-precomposed" href="../../apple-touch-icon-precomposed.png">
-    <meta name="msapplication-TileImage" content="../../images/touch/ms-touch-icon-144x144-precomposed.png">
-    <meta name="msapplication-TileColor" content="#3372DF">
+    <link rel="apple-touch-icon-precomposed" href="../../blog/favicons/26d7839df0b8.png">
+    <link rel="shortcut icon" href="../../blog/favicons/26d7839df0b8.png">
     <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../../lib/mdl/material-themes-grey-orange.css">
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../file/css/material-themes-teal-green.css">
+    <link rel="stylesheet" href="../../file/css/styles.css">
     <link rel="stylesheet" href="../../file/css/prism-default.css">
     <link rel="stylesheet" href="../../file/css/mdl-main.css">
     <style>
@@ -30,7 +29,8 @@
       margin-bottom: 40px;
       z-index: 900;
     }
-    
+    body::before { background-image: url('../../blog/backgrounds/8cc59a4cdeb6.jpg') !important; }
+    :root{--md-primary:#009688;}
     </style>
   </head>
   <body class="started">
@@ -43,14 +43,14 @@
         </div>
         <div class="blog__posts mdl-grid">
           <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
-            <div class="mdl-card__media mdl-color-text--grey-50">
+            <div class="mdl-card__media mdl-color-text--grey-50" style="background-image: url('../../blog/covers/c554d17c6c16.jpg')">
               <h3>Hello World!</h3>
             </div>
             <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
-              <div class="minilogo"></div>
+              <div class="minilogo" style="background-image: url('../../blog/avatars/37bbe62ce366.png')"></div>
               <div>
-                <strong>Your Name</strong>
-                <span>2026-06-07</span>
+                <strong>Kernel</strong>
+                <span>2024-03-26</span>
               </div>
               <div class="section-spacer"></div>
               <div>
@@ -63,46 +63,38 @@
               </div>
             </div>
             <div class="mdl-color-text--grey-700 mdl-card__supporting-text docs-layout">
-              <h2>欢迎使用 MDL Blog！</h2>
-<p>这是你的第一篇博客文章。你可以通过管理后台编辑或删除它。</p>
-<h3>开始写作</h3>
+              <h4>选择 Material Design Lite</h4>
+<p>在选择搭建个人博客的框架时，我花了一些时间研究了不同的选项。我想要一个现代化的设计，同时也要确保我的博客在不同设备上都有良好的响应性。在这个过程中，我发现了Material Design Lite框架。这个框架基于Google的Material Design原则，具有简洁、清晰的设计风格，而且易于使用。</p>
+<h4>MDL框架的优势</h4>
+<p>MDL 框架具有许多优势，这些优势使它成为我的首选：</p>
 <ol>
-<li>访问 http://localhost:5001/admin 打开管理后台</li>
-<li>点击左侧文章列表中的编辑按钮，或点击 + 新建文章</li>
-<li>在 Markdown 编辑器中自由书写</li>
-<li>点击预览查看效果，点击保存并发布上线</li>
+<li><p><strong>现代化设计</strong>：MDL框架提供了一套现代化的UI组件，包括按钮、卡片、导航栏等，使得我的博客看起来非常时尚和专业。</p></li>
+<li><p><strong>响应式布局</strong>：使用MDL框架，我可以轻松地创建响应式布局，确保我的博客在各种设备上都有良好的显示效果，无论是桌面、平板还是手机。</p></li>
+<li><p><strong>易于定制</strong>：虽然MDL框架提供了许多默认的UI组件和样式，但我也可以根据自己的需求进行定制，以满足我的个性化需求。</p></li>
+<li><p><strong>文档丰富</strong>：MDL框架有着清晰而详细的文档，对于初学者来说非常友好。我可以轻松地查阅文档，找到我需要的信息和解决方案。</p></li>
 </ol>
-<h3>你可以用 Markdown 做什么？</h3>
-<p><strong>粗体</strong>、<em>斜体</em>、~~删除线~~、行内代码</p>
-<blockquote>
-<p>引用块可以突出重要内容</p>
-</blockquote>
-<p>代码高亮：</p>
-<p><code>javascript
-const greeting = "Hello, MDL Blog!";
-console.log(greeting);</code></p>
-<p>列表：</p>
-<ul>
-<li>支持无序列表</li>
-<li>支持有序列表</li>
-<li>支持嵌套列表</li>
-</ul>
-<p>祝你写作愉快！</p>
+<h4>我的博客体验</h4>
+<p>搭建我的博客过程非常顺利。我使用了MDL框架提供的各种组件和样式，同时根据我的喜好进行了一些定制。结果是一个漂亮而功能丰富的个人博客，我非常满意。</p>
+<p>通过我的博客，我可以分享我的想法、经验和知识，与其他人建立联系。我相信，这将是我个人成长和技术探索的一个重要平台。</p>
+<h4>结语</h4>
+<p>搭建我的第一个个人博客并不容易，但是通过选择Material Design Lite框架，我能够轻松地创建出一个现代化、响应式的博客。我很高兴我做出了这个选择，我期待着在我的博客上与大家分享更多内容。</p>
+<p>如果你也想搭建自己的个人博客，我强烈推荐你考虑使用Material Design Lite框架。它简单易用，同时提供了丰富的功能和定制选项，可以帮助你打造出一个与众不同的博客。</p>
+<p>谢谢你阅读我的博客！如果你有任何问题或意见，请随时在评论区留言，我会尽快回复。</p>
             </div>
             <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
               <div class="comment mdl-color-text--grey-700"></div>
             </div>
           </div>
           <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
-            <a href="quick-start.html" class="article-nav__btn" title="快速入门 (2026-06-07)">
+            <a href="code-demo.html" class="article-nav__btn" title="Code (2024-03-28)">
               <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
               </button>
               前一篇
             </a>
             <div class="section-spacer"></div>
-            <a href="../../index.html" class="article-nav__btn" title="返回博客首页">
-              返回首页
+            <a href="announcement.html" class="article-nav__btn" title="预告 (2024-03-20)">
+              后一篇
               <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_forward</i>
               </button>
@@ -110,18 +102,28 @@ console.log(greeting);</code></p>
         </div>
         <footer class="mdl-mini-footer">
           <div class="mdl-mini-footer--left-section">
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
               <span class="visuallyhidden">Twitter</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
               <span class="visuallyhidden">Facebook</span>
             </button>
-            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
-              <span class="visuallyhidden">Google Plus</span>
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span class="visuallyhidden">Google</span>
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
-            <button class="mdl-mini-footer--social-btn social-btn__share">
+            <label class="blog-dark-switch">
+            <span class="blog-dark-switch__label">深色模式</span>
+            <input type="checkbox" id="dark-mode-switch">
+            <span class="blog-dark-switch__track">
+              <span class="blog-dark-switch__thumb"></span>
+            </span>
+          </label>
+            <button class="footer-icon-btn" title="Share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
             </button>
