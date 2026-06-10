@@ -1466,10 +1466,10 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     white-space: nowrap;
 }
 
-/* Switch 轨道 — 40x14dp、7dp 圆角（MD1 spec: 40×14dp） */
+/* Switch 轨道 — MD1 spec: 36×14dp、7dp 圆角 */
 .blog-dark-switch__track {
     position: relative;
-    width: 40px;
+    width: 36px;
     height: 14px;
     border-radius: 7px;
     background: rgba(0,0,0,0.38);
@@ -1477,31 +1477,28 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     flex-shrink: 0;
 }
 
-/* Switch 滑块 (thumb) — Off 20dp（MD1 spec: Off=20dp, On=24dp）
-   定位：top=-3dp 使 thumb 垂直居中于 14dp track
-   On 状态通过 scale(1.2) 从 20dp 放大到 24dp，避免布局重算问题 */
+/* Switch 滑块 (thumb) — MD1 spec: Off/On resting 20dp, 无 border
+   定位：left=2dp (距 track 左边缘 2dp), top=-3dp 垂直居中于 14dp track
+   travel 距离 = 36 - 20 - 4(两端各2dp) = 12dp */
 .blog-dark-switch__thumb {
     position: absolute;
     top: -3px;
-    left: 0;
+    left: 2px;
     width: 20px;
     height: 20px;
-    box-sizing: border-box;
     border-radius: 50%;
     background: #fafafa;
-    border: 2px solid rgba(0,0,0,0.12);
     box-shadow: 0 1px 3px rgba(0,0,0,0.26);
-    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
-/* === On 状态 — MD1 spec: thumb 放大至 24dp (20×1.2), 右移至 track 右端 === */
+/* === On 状态 — MD1 spec: thumb 20dp 右移 12dp 到 track 右端 === */
 .blog-dark-switch input:checked + .blog-dark-switch__track {
-    background: color-mix(in srgb, var(--md-primary) 50%, transparent);       /* primary Swatch 500 × 50% */
+    background: color-mix(in srgb, var(--md-primary) 50%, transparent);       /* Swatch 500 × 50% */
 }
 .blog-dark-switch input:checked + .blog-dark-switch__track .blog-dark-switch__thumb {
-    transform: translateX(20px) scale(1.2);
-    background: var(--md-primary);       /* primary 500 */
-    border-color: var(--md-primary);
+    transform: translateX(12px);
+    background: var(--md-primary);       /* Swatch 500 100% */
 }
 
 /* 隐藏原生 checkbox */
@@ -1524,10 +1521,9 @@ html[data-mode="dark"] .blog-dark-switch__label {
 html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__track {
     background: rgba(255,255,255,0.30);
 }
-/* Switch Off Thumb → #bdbdbd（仅 unchecked） */
+/* Switch Off Thumb → #bdbdbd（仅 unchecked，MD1 无 border） */
 html[data-mode="dark"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
     background: #bdbdbd;
-    border-color: rgba(255,255,255,0.12);
 }
 /* Switch On Track 暗色模式 — primary 50%（覆盖 Off 规则） */
 html[data-mode="dark"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
@@ -1536,7 +1532,6 @@ html[data-mode="dark"] .blog-dark-switch:has(input:checked) .blog-dark-switch__t
 /* Switch On Thumb 暗色模式 — primary 100% */
 html[data-mode="dark"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
     background: var(--md-primary);
-    border-color: var(--md-primary);
 }
 
 /* 图标按钮暗色适配 */
@@ -1557,7 +1552,6 @@ html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-swi
 }
 html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
     background: #bdbdbd;
-    border-color: rgba(255,255,255,0.12);
 }
 /* Switch On Track/Thumb auto 模式 — primary 色跟随 */
 html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
@@ -1565,7 +1559,6 @@ html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__t
 }
 html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
     background: var(--md-primary);
-    border-color: var(--md-primary);
 }
 html[data-mode="auto"] .footer-icon-btn {
     color: rgba(255,255,255,0.70);
@@ -1584,7 +1577,6 @@ html[data-mode="auto"] .footer-icon-btn:hover {
     }
     html[data-mode="auto"] .blog-dark-switch:not(:has(input:checked)) .blog-dark-switch__thumb {
         background: #bdbdbd;
-        border-color: rgba(255,255,255,0.12);
     }
     /* Switch On Track/Thumb auto 模式 @media dark — primary 色跟随 */
     html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__track {
@@ -1592,7 +1584,6 @@ html[data-mode="auto"] .footer-icon-btn:hover {
     }
     html[data-mode="auto"] .blog-dark-switch:has(input:checked) .blog-dark-switch__thumb {
         background: var(--md-primary);
-        border-color: var(--md-primary);
     }
     html[data-mode="auto"] .footer-icon-btn {
         color: rgba(255,255,255,0.70);
