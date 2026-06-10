@@ -941,7 +941,10 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
         post_bg_override = f"""body::before {{ background-image: url('{post_bg}') !important; }}"""
 
     # --- 动态头像和 favicon ---
+    # 文章页在 blog/posts/ 下，需要 ../../ 前缀回到根目录
     avatar_src = site.get('avatar') or '../../images/logo.png'
+    if site.get('avatar') and not avatar_src.startswith('http') and not avatar_src.startswith('../../'):
+        avatar_src = f"../../{avatar_src}"
     post_minilogo_style = f" style=\"background-image: url('{avatar_src}')\"" if site.get('avatar') else ''
     post_favicon_href = site.get('favicon') or '../../images/favicon.png'
     if post_favicon_href and not post_favicon_href.startswith('http') and not post_favicon_href.startswith('../../'):
