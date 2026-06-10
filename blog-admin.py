@@ -615,6 +615,9 @@ _DARK_SWITCH_HTML = '''<label class="blog-dark-switch">
             <input type="checkbox" id="dark-mode-switch">
             <span class="blog-dark-switch__track">
               <span class="blog-dark-switch__thumb"></span>
+              <span class="blog-dark-switch__ripple-container mdl-js-ripple-effect">
+                <span class="mdl-ripple"></span>
+              </span>
             </span>
           </label>'''
 

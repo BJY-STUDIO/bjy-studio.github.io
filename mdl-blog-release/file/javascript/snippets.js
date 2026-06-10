@@ -109,4 +109,10 @@ window.addEventListener("load", function() {
             console.warn('保存暗色模式偏好失败:', err);
         });
     });
+
+    // 初始化 MDL ripple 效果
+    var rippleContainer = document.querySelector('.blog-dark-switch__ripple-container');
+    if (rippleContainer && window.componentHandler) {
+        componentHandler.upgradeElement(rippleContainer, 'MaterialRipple');
+    }
 })();

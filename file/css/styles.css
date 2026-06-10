@@ -1501,6 +1501,31 @@ html[data-mode="dark"] .card-article .mdl-card__media h3 a {
     background: var(--md-primary);       /* Swatch 500 100% */
 }
 
+/* === Ripple 容器 — MDL 规范：48x48dp 圆形，跟随 thumb 位置 === */
+/* Off: 以 thumb 中心为圆心 (thumb left=0, width=20, 中心=10)
+   48dp 圆的 top = thumb中心(10-3) - 24 = -17dp, left = 10-24 = -14dp */
+.blog-dark-switch__ripple-container {
+    position: absolute;
+    z-index: 2;
+    top: -17px;
+    left: -14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-mask-image: -webkit-radial-gradient(circle, #fff, #000);
+    transition: left 0.4s step-end;
+}
+/* On: ripple 跟随 thumb 右移 — thumb 中心 = 16+10=26dp, 26-24=2dp */
+.blog-dark-switch input:checked + .blog-dark-switch__track .blog-dark-switch__ripple-container {
+    left: 2px;
+}
+/* Ripple 背景色跟随主题 */
+.blog-dark-switch__ripple-container .mdl-ripple {
+    background: var(--md-primary);
+}
+
 /* 隐藏原生 checkbox */
 .blog-dark-switch input {
     position: absolute;
