@@ -579,6 +579,7 @@ def api_preview():
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
+            {_DARK_SWITCH_HTML}
             <button class="mdl-mini-footer--social-btn social-btn__share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
@@ -603,6 +604,15 @@ def fmt_datetime(post):
     t = post.get('time', '')
     return f"{d} {t}" if t else d
 
+
+# 页脚暗色模式 Switch HTML 片段（首页/文章页/预览共用）
+_DARK_SWITCH_HTML = '''<label class="blog-dark-switch">
+            <span class="blog-dark-switch__label">深色模式</span>
+            <input type="checkbox" id="dark-mode-switch">
+            <span class="blog-dark-switch__track">
+              <span class="blog-dark-switch__thumb"></span>
+            </span>
+          </label>'''
 
 def dark_mode_attr(site):
     """根据站点设置返回 <html> 标签上的暗黑模式属性字符串"""
@@ -881,6 +891,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
+            {_DARK_SWITCH_HTML}
             <button class="mdl-mini-footer--social-btn social-btn__share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>
@@ -891,6 +902,7 @@ def generate_index(posts, pinned_id, site, bg_image=''):
       <div class="mdl-layout__obfuscator"></div>
     </div>
     <script src="lib/mdl/material.min.js"></script>
+    <script src="file/javascript/snippets.js"></script>
   </body>
   <script>
     Array.prototype.forEach.call(document.querySelectorAll('.mdl-card__media'), function(el) {{
@@ -1089,6 +1101,7 @@ def generate_post_page(post, site, all_posts, post_index, bg_image=''):
             </button>
           </div>
           <div class="mdl-mini-footer--right-section">
+            {_DARK_SWITCH_HTML}
             <button class="mdl-mini-footer--social-btn social-btn__share">
               <i class="material-icons" role="presentation">share</i>
               <span class="visuallyhidden">share</span>

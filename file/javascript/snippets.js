@@ -69,3 +69,44 @@ window.addEventListener("load", function() {
     "use strict";
     new MaterialComponentsSnippets();
 });
+
+/**
+ * 暗色模式 Switch 切换
+ * 切换 html[data-mode] 属性 + 调用 API 持久化偏好
+ */
+(function() {
+    "use strict";
+
+    var checkbox = document.getElementById('dark-mode-switch');
+    if (!checkbox) return;
+
+    // 初始化 checkbox 状态：data-mode 为 "dark" 时勾选
+    var currentMode = document.documentElement.getAttribute('data-mode') || 'light';
+    // auto 模式下，如果系统偏好深色，也视为深色
+    if (currentMode === 'auto') {
+        checkbox.checked = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } else {
+        checkbox.checked = (currentMode === 'dark');
+    }
+
+    checkbox.addEventListener('change', function() {
+        var isDark = checkbox.checked;
+        var newMode = isDark ? 'dark' : 'light';
+
+        // 立即应用暗色模式到当前页面
+        if (isDark) {
+            document.documentElement.setAttribute('data-mode', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-mode');
+        }
+
+        // 异步保存偏好到后端（不阻塞 UI）
+        fetch('/api/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ darkMode: newMode })
+        }).catch(function(err) {
+            console.warn('保存暗色模式偏好失败:', err);
+        });
+    });
+})();
