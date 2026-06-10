@@ -21,6 +21,7 @@
         /* 主题色变量 — 由 selectTheme() 动态更新 */
         :root {
             --md-primary: #3f51b5;
+            --md-primary-dark: #303f9f;
             --md-accent: #ff4081;
             --md-accent-dark: #f50057;
         }
@@ -1808,17 +1809,17 @@
 
     // ---- MD1 主题色选择 ----
     var _themeMap = {
-        'indigo-pink':          { primary: '#3f51b5', accent: '#ff4081', accentDark: '#f50057' },
-        'grey-orange':          { primary: '#9e9e9e', accent: '#ffd740', accentDark: '#ffc400' },
-        'blue-grey-red':        { primary: '#607d8b', accent: '#ff5252', accentDark: '#ff1744' },
-        'teal-green':           { primary: '#009688', accent: '#69f0ae', accentDark: '#00e676' },
-        'deep-orange-pink':     { primary: '#ff5722', accent: '#ff4081', accentDark: '#f50057' },
-        'red-amber':            { primary: '#f44336', accent: '#ffd740', accentDark: '#ffc400' },
-        'purple-pink':          { primary: '#9c27b0', accent: '#ff4081', accentDark: '#f50057' },
-        'blue-amber':           { primary: '#2196f3', accent: '#ffd740', accentDark: '#ffc400' },
-        'deep-purple-amber':    { primary: '#673ab7', accent: '#ffd740', accentDark: '#ffc400' },
-        'cyan-orange':          { primary: '#00bcd4', accent: '#ffab40', accentDark: '#ff9100' },
-        'light-blue-deep-orange':{ primary: '#03a9f4', accent: '#ff6e40', accentDark: '#ff3d00' }
+        'indigo-pink':          { primary: '#3f51b5', primaryDark: '#303f9f', accent: '#ff4081', accentDark: '#f50057' },
+        'grey-orange':          { primary: '#9e9e9e', primaryDark: '#757575', accent: '#ffd740', accentDark: '#ffc400' },
+        'blue-grey-red':        { primary: '#607d8b', primaryDark: '#455a64', accent: '#ff5252', accentDark: '#ff1744' },
+        'teal-green':           { primary: '#009688', primaryDark: '#00796b', accent: '#69f0ae', accentDark: '#00e676' },
+        'deep-orange-pink':     { primary: '#ff5722', primaryDark: '#e64a19', accent: '#ff4081', accentDark: '#f50057' },
+        'red-amber':            { primary: '#f44336', primaryDark: '#d32f2f', accent: '#ffd740', accentDark: '#ffc400' },
+        'purple-pink':          { primary: '#9c27b0', primaryDark: '#7b1fa2', accent: '#ff4081', accentDark: '#f50057' },
+        'blue-amber':           { primary: '#2196f3', primaryDark: '#1976d2', accent: '#ffd740', accentDark: '#ffc400' },
+        'deep-purple-amber':    { primary: '#673ab7', primaryDark: '#512da8', accent: '#ffd740', accentDark: '#ffc400' },
+        'cyan-orange':          { primary: '#00bcd4', primaryDark: '#0097a7', accent: '#ffab40', accentDark: '#ff9100' },
+        'light-blue-deep-orange':{ primary: '#03a9f4', primaryDark: '#0288d1', accent: '#ff6e40', accentDark: '#ff3d00' }
     };
     function selectTheme(themeId) {
         document.getElementById('setting-theme').value = themeId;
@@ -1829,6 +1830,7 @@
         var t = _themeMap[themeId] || _themeMap['indigo-pink'];
         var root = document.documentElement;
         root.style.setProperty('--md-primary', t.primary);
+        root.style.setProperty('--md-primary-dark', t.primaryDark);
         root.style.setProperty('--md-accent', t.accent);
         root.style.setProperty('--md-accent-dark', t.accentDark);
         // 切换 MDL 主题 CSS
