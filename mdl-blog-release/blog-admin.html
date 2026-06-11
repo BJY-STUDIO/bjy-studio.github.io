@@ -1248,8 +1248,9 @@
             var cardBody = el.closest('.md-card-body');
             if (cardBody) cardBody.style.overflow = 'visible';
             // 提升父卡片 z-index，防止被相邻卡片遮挡
+            // 50 低于 app-bar(z-index:100)，滚动时不会盖住顶部栏
             var card = el.closest('.md-card');
-            if (card) card.style.zIndex = '200';
+            if (card) card.style.zIndex = '50';
         }
     }
     function selectDropdown(id, value, label) {
