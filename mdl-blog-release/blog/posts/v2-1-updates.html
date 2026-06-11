@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="博客 V2.1 迭代记录 - 主题系统、暗色模式与 MD1 规范化">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Kernel 的个人博客 - 博客 V2.1 迭代记录 - 主题系统、暗色模式与 MD1 规范化</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="../../blog/favicons/26d7839df0b8.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="../../blog/favicons/26d7839df0b8.png">
+    <link rel="shortcut icon" href="../../blog/favicons/26d7839df0b8.png">
+    <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../../file/css/material-themes-teal-green.css">
+    <link rel="stylesheet" href="../../file/css/styles.css">
+    <link rel="stylesheet" href="../../file/css/prism-default.css">
+    <link rel="stylesheet" href="../../file/css/mdl-main.css">
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    body::before { background-image: url('../../blog/backgrounds/8cc59a4cdeb6.jpg') !important; }
+    :root{--md-primary:#009688;}
+    </style>
+  </head>
+  <body class="started">
+    <div class="blog blog--article mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="back-btn">
+          <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color-text--white" href="javascript:history.back()" title="go back" role="button">
+            <i class="material-icons" role="presentation">arrow_back</i>
+          </a>
+        </div>
+        <div class="blog__posts mdl-grid">
+          <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3>博客 V2.1 迭代记录 - 主题系统、暗色模式与 MD1 规范化</h3>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+              <div class="minilogo" style="background-image: url('../../blog/avatars/cda77ca7046d.png')"></div>
+              <div>
+                <strong>Kernel</strong>
+                <span>2026-06-11</span>
+              </div>
+              <div class="section-spacer"></div>
+              <div>
+                <i class="material-icons" role="presentation">bookmark</i>
+                <span class="visuallyhidden">bookmark</span>
+              </div>
+              <div>
+                <i class="material-icons" role="presentation">share</i>
+                <span class="visuallyhidden">share</span>
+              </div>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text docs-layout">
+              <h4>前言</h4>
+<p>v2.0 发布后，博客系统进入了密集迭代期。本文汇总了第二轮开发中的所有改动，涵盖主题系统、暗色模式、移动端适配、管理后台组件规范化等核心模块，并附带实际截图。所有改动均严格遵循 Google Material Design 1 设计规范。</p>
+
+<h4>1. 11 套 MDL 主题配色系统</h4>
+<p>博客从单主题扩展为 11 套配色方案。管理后台提供色板选择器，点击即切换，所有页面（首页、文章详情、管理后台）同步响应主题变化。</p>
+
+<p><img src="../../images/update3-admin-desktop.png" alt="管理后台 - 主题色板" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>技术实现上，通过 Python 后端注入 CSS 自定义属性（<code>--md-primary</code>、<code>--md-accent</code> 等），替代了所有硬编码的颜色值。主题切换时只需更换引用的 MDL 主题 CSS 文件，其余颜色通过变量自动跟随。</p>
+
+<div class="code-with-text">Python: CSS 变量注入
+<pre class="language-python"><code class="language-python">def theme_vars_css(site):
+    theme = site.get('theme', 'indigo-pink')
+    colors = _THEME_COLORS.get(theme, _THEME_COLORS['indigo-pink'])
+    return f'''  :root {{
+    --md-primary: {colors['primary']};
+    --md-accent: {colors['accent']};
+    --md-primary-dark: {colors['primary_dark']};
+    --md-accent-dark: {colors['accent_dark']};
+  }}'''</code></pre>
+</div>
+
+<h4>2. 完整暗色模式</h4>
+<p>暗色模式覆盖范围包括：博客首页、文章详情页、管理后台。支持三种模式切换——明亮、黑暗、根据系统设置自动切换。</p>
+
+<p><img src="../../images/update3-dark-desktop.png" alt="暗色模式 - 博客首页" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>文章详情页的暗色模式需要处理更多元素：代码块容器、行内代码、引用块、图片圆角边框、文章导航按钮等，全部通过 <code>html[data-mode="dark"]</code> 选择器覆盖。</p>
+
+<p><img src="../../images/update3-dark-code.png" alt="暗色模式 - 文章代码块" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>关键实现细节：</p>
+<ul>
+<li><strong>背景图处理</strong>：暗色模式下通过 <code>background-image: none !important</code> 移除自定义背景图，因为 <code>background-color</code> 无法遮盖 <code>background-image</code>（CSS 层叠顺序导致）</li>
+<li><strong>Switch 组件</strong>：On 状态使用 <code>color-mix(in srgb, var(--md-primary) 50%, transparent)</code> 替代 <code>opacity: 0.5</code>，避免父级透明度影响子元素 thumb 的颜色</li>
+<li><strong>高优先级覆盖</strong>：MDL 的 <code>.mdl-color-text--grey-600</code> 等工具类具有高特异性，暗色模式覆盖必须使用 <code>!important</code></li>
+</ul>
+
+<div class="code-with-text">CSS: Switch On 状态的 color-mix 方案
+<pre class="language-css"><code class="language-css">/* 错误方案：opacity 影响子元素 thumb */
+.md-switch .md-switch__track {
+    opacity: 0.5;  /* thumb 也会变半透明！ */
+}
+
+/* 正确方案：color-mix 仅影响 track 自身 */
+.md-switch .md-switch__track {
+    background: color-mix(in srgb, var(--md-primary) 50%, transparent);
+}</code></pre>
+</div>
+
+<h4>3. 页脚 Switch + 暗色模式切换</h4>
+<p>博客前端页脚新增了 MD1 规范的 Switch 组件和图标按钮。Switch 切换时通过 JS 修改 <code>&lt;html&gt;</code> 的 <code>data-mode</code> 属性，并调用后端 API 持久化设置。</p>
+
+<div class="code-with-text">JavaScript: snippets.js 暗色模式切换
+<pre class="language-javascript"><code class="language-javascript">(function() {
+    var checkbox = document.querySelector('.md-switch__input');
+    if (!checkbox) return;
+
+    checkbox.addEventListener('change', function() {
+        var mode = this.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-mode', mode);
+
+        fetch('/api/settings', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({darkMode: mode})
+        });
+    });
+})();</code></pre>
+</div>
+
+<h4>4. 管理后台移动端全面适配</h4>
+<p>管理后台从桌面端单一布局扩展为三级响应式断点：桌面（>768px）、平板（480-768px）、手机（<480px）。</p>
+
+<p><img src="../../images/update3-admin-mobile.png" alt="管理后台 - 移动端" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>适配覆盖的模块包括：</p>
+<ul>
+<li>文章列表 / 导航管理的数据表格（列间距压缩）</li>
+<li>编辑器底部按钮换行、工具栏自动折叠</li>
+<li>日期/时间字段竖向堆叠</li>
+<li>主题色板网格自适应</li>
+<li>设置页面上传区域堆叠</li>
+<li>Dialog / 日期选择器 / 时间选择器宽度自适应</li>
+</ul>
+
+<div class="code-with-text">CSS: Grid 溢出修复
+<pre class="language-css"><code class="language-css">/* Grid 子元素默认 min-width: auto，会被内容撑开 */
+/* 必须显式设置 min-width: 0 防止溢出 */
+.md-form-group {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+}
+.md-form-group > * {
+    min-width: 0;  /* 关键：允许 Grid 子项收缩 */
+}</code></pre>
+</div>
+
+<h4>5. MD1 组件规范化实现</h4>
+<p>管理后台的多个组件严格按照 m1.material.io 规范重新实现或修正：</p>
+
+<h5>Snackbar 消息通知</h5>
+<p>完全遵循 MD1 Snackbar 规范：</p>
+<ul>
+<li>桌面端：居中显示，高度 48dp，最小宽度 288dp，最大宽度 568dp，2dp 圆角</li>
+<li>移动端：宽度 = 屏幕宽度 - 16dp，底部贴边，无圆角，<code>translateY(100%)</code> 入场动画</li>
+<li>操作按钮：Roboto Medium 14sp 全大写，左内边距 48dp</li>
+</ul>
+
+<h5>Dialog 对话框</h5>
+<p>删除确认等场景使用带标题栏的 Alert Dialog：标题 Roboto Medium 20sp，内容 14sp，24dp 内边距，24dp 阴影，操作区域 52dp 高度。</p>
+
+<h5>Text Field 文本字段</h5>
+<p>遵循 MD1 单行 / 多行文本字段规范：浮动标签 12sp 主色，输入文字 16sp 87% 黑色，底部线条 1dp（聚焦时 2dp）。长标签使用 <code>text-overflow: ellipsis</code> 截断。</p>
+
+<h5>Datepicker 日期选择器</h5>
+<p>自研实现，严格遵循 MD1 规范，包含多项细节修正：</p>
+
+<div class="code-with-text">CSS: 日期选择器今日 + 选中状态冲突修复
+<pre class="language-css"><code class="language-css">/* 错误：.md-datepicker-day--today 声明在 --selected 之后，同特异性下后者覆盖前者 */
+.md-datepicker-day--selected {
+    color: #fff;
+    background: var(--md-primary);
+}
+.md-datepicker-day--today {
+    color: var(--md-primary);  /* 覆盖了 selected 的白色文字！ */
+}
+
+/* 正确：用 :not() 排除已选中的今天 */
+.md-datepicker-day--today:not(.md-datepicker-day--selected) {
+    color: var(--md-primary);
+}</code></pre>
+</div>
+
+<ul>
+<li>月份切换滑动动画（200ms slide-in/slide-out）</li>
+<li>移动端下拉菜单使用 <code>position: fixed</code> + <code>getBoundingClientRect()</code> 定位，避免 <code>overflow: hidden</code> 裁剪</li>
+<li>暗色模式：选中日期悬停色、月份/年份悬停高亮、禁用/非当月日期透明度</li>
+</ul>
+
+<h5>Switch 开关</h5>
+<p>尺寸严格遵循 MD1 规范：Track 36×14dp，Thumb 20dp（无边框），行程 16dp，48×48dp 触摸目标。附加 MDL Ripple 效果。</p>
+
+<div class="code-with-text">CSS: Switch 精确尺寸（MD1 规范）
+<pre class="language-css"><code class="language-css">.md-switch__track {
+    width: 36px;
+    height: 14px;
+    border-radius: 7px;
+}
+.md-switch__thumb {
+    width: 20px;
+    height: 20px;
+    border: none;          /* MD1: thumb 无边框 */
+    top: -3px;             /* (14 - 20) / 2 = -3 */
+    transition: left 0.2s;
+}
+/* On 状态：thumb 左移 16dp */
+.md-switch__input:checked + .md-switch__thumb {
+    left: 16px;
+}</code></pre>
+</div>
+
+<h4>6. Sidebar 导航菜单暗色模式</h4>
+<p>侧边栏在暗色模式下切换为深色背景（#212121），菜单项文字 70% 白色，悬停 12% 白色高亮，分割线 12% 白色。当前激活项保持主色调指示条。</p>
+
+<h4>7. 按钮悬停色跟随主题</h4>
+<p>引入 <code>--md-primary-dark</code> 和 <code>--md-accent-dark</code> CSS 变量，使按钮 hover 状态、编辑提示栏背景色自动跟随当前主题，无需为每个主题单独写悬停规则。</p>
+
+<h4>8. 文章详情页优化</h4>
+<ul>
+<li><strong>minilogo 头像路径修正</strong>：修复了文章页小头像因相对路径计算错误导致无法显示的问题</li>
+<li><strong>预览页面 1:1 匹配</strong>：<code>/api/preview</code> 端点现在返回与 <code>blog/posts/*.html</code> 完全相同的模板，包括返回按钮、底部栏、Switch 等</li>
+<li><strong>编辑提示栏主题色</strong>：编辑中的提示条颜色跟随 <code>--md-primary</code> 变量</li>
+</ul>
+
+<h4>9. 导航文案与引用卡片</h4>
+<p>文章底部导航文案改为中文"前一篇"/"后一篇"，移除箭头符号。引用卡片（名言警句）不生成详情页、不出现在导航中、首页无链接。</p>
+
+<h4>10. 博客首页移动端</h4>
+
+<p><img src="../../images/update3-home-mobile.png" alt="博客首页 - 移动端" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>首页在移动端保持卡片流式布局，封面图自适应宽度，页脚 Switch 和图标按钮竖向排列。</p>
+
+<h4>11. 管理后台暗色模式</h4>
+
+<p><img src="../../images/update3-admin-dark.png" alt="管理后台 - 暗色模式" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p>管理后台暗色模式覆盖了所有自定义组件：文本字段、下拉菜单、卡片、 Snackbar、Dialog、日期选择器、进度条、上传区域等。全局使用 <code>--md-primary</code> 变量确保主题色一致性。</p>
+
+<h4>总结</h4>
+<p>本轮迭代的核心方向是<strong>规范化</strong>和<strong>全平台覆盖</strong>：</p>
+
+<ul>
+<li>11 套主题配色 + CSS 变量系统，一键切换全局配色</li>
+<li>完整暗色模式（博客前端 + 管理后台 + 所有组件）</li>
+<li>管理后台三级响应式断点（桌面 / 平板 / 手机）</li>
+<li>6 个自定义组件严格遵循 MD1 规范（Snackbar、Dialog、Text Field、Datepicker、Switch、Tooltip）</li>
+<li>页脚 Switch 实时切换 + 后端持久化</li>
+<li>多项 CSS 细节修正（opacity 陷阱、Grid 溢出、 specificity 冲突、position: fixed 定位）</li>
+</ul>
+
+<p>博客系统现已具备完整的前后台体验，覆盖桌面和移动端，支持明亮/暗色双模式。后续计划包括评论系统和更多主题定制选项。</p>
+            </div>
+            <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+              <div class="comment mdl-color-text--grey-700"></div>
+            </div>
+          </div>
+          <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="../../index.html" class="article-nav__btn" title="返回博客首页">
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+              </button>
+              返回首页
+            </a>
+            <div class="section-spacer"></div>
+            <a href="v2-changelog.html" class="article-nav__btn" title="博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统 (2026-06-07)">
+              后一篇
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </a>          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer--left-section">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
+              <span class="visuallyhidden">Twitter</span>
+            </button>
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
+              <span class="visuallyhidden">Facebook</span>
+            </button>
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span class="visuallyhidden">Google</span>
+            </button>
+          </div>
+          <div class="mdl-mini-footer--right-section">
+            <label class="blog-dark-switch">
+            <span class="blog-dark-switch__label">深色模式</span>
+            <input type="checkbox" id="dark-mode-switch">
+            <span class="blog-dark-switch__track">
+              <span class="blog-dark-switch__thumb"></span>
+              <span class="blog-dark-switch__ripple-container mdl-js-ripple-effect">
+                <span class="mdl-ripple"></span>
+              </span>
+            </span>
+          </label>
+            <button class="footer-icon-btn" title="Share">
+              <i class="material-icons" role="presentation">share</i>
+              <span class="visuallyhidden">share</span>
+            </button>
+          </div>
+        </footer>
+      </main>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="../../lib/mdl/material.min.js"></script>
+    <script src="../../file/javascript/snippets.js"></script>
+    <!-- Prism 代码高亮（含17种语言） -->
+    <script src="../../file/javascript/prism-bundle.min.js"></script>
+  </body>
+</html>

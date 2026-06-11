@@ -765,14 +765,45 @@
         return document.getElementById('f-date-value').value;
     }
     function dpPrevMonth() {
-        dpState.month--;
-        if (dpState.month < 0) { dpState.month = 11; dpState.year--; }
-        dpRenderCalendar();
+        dpAnimateMonth('prev', function() {
+            dpState.month--;
+            if (dpState.month < 0) { dpState.month = 11; dpState.year--; }
+            dpRenderCalendar();
+        });
     }
     function dpNextMonth() {
-        dpState.month++;
-        if (dpState.month > 11) { dpState.month = 0; dpState.year++; }
-        dpRenderCalendar();
+        dpAnimateMonth('next', function() {
+            dpState.month++;
+            if (dpState.month > 11) { dpState.month = 0; dpState.year++; }
+            dpRenderCalendar();
+        });
+    }
+    /* 月份切换滑动动画：
+     * 1. 当前内容滑出（向左/右）
+     * 2. 内容替换后，新内容从反向滑入 */
+    function dpAnimateMonth(direction, renderFn) {
+        var grid = document.getElementById('dp-grid');
+        var inner = grid.querySelector('.md-datepicker-grid-inner');
+        if (!inner) {
+            // 无动画容器则直接渲染
+            renderFn();
+            return;
+        }
+        var outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
+        var inClass  = direction === 'next' ? 'slide-in-right'  : 'slide-in-left';
+
+        inner.classList.add(outClass);
+        setTimeout(function() {
+            renderFn();
+            // 渲染后新内容在原位，先设置"从对面进入"的起始状态
+            var newInner = grid.querySelector('.md-datepicker-grid-inner');
+            if (newInner) {
+                newInner.classList.add(inClass);
+                // 强制 reflow 让起始状态生效
+                void newInner.offsetWidth;
+                newInner.classList.remove(inClass);
+            }
+        }, 200);
     }
     function dpToggleYearList() {
         var yearlist = document.getElementById('dp-yearlist');
@@ -855,7 +886,7 @@
             rowHtml += buttons[i].outerHTML;
             if (i % 7 === 6 || i === buttons.length - 1) rowHtml += '</div>';
         }
-        grid.innerHTML = rowHtml;
+        grid.innerHTML = '<div class="md-datepicker-grid-inner">' + rowHtml + '</div>';
     }
     function dpSelectDay(day) {
         dpState.selectedDate = new Date(dpState.year, dpState.month, day);
@@ -1161,9 +1192,11 @@
         var el = document.getElementById(id);
         if (!el) return;
         var isOpen = el.classList.contains('md-dropdown--open');
-        // 关闭所有 dropdown — 同时恢复父级 overflow
+        // 关闭所有 dropdown — 同时恢复父级 overflow 和 z-index
         document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
             d.classList.remove('md-dropdown--open');
+            var menu = d.querySelector('.md-dropdown__menu');
+            if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
             var cardBody = d.closest('.md-card-body');
             if (cardBody) cardBody.style.overflow = '';
         });
@@ -1172,6 +1205,16 @@
             // 允许 dropdown 超出 card 边界
             var cardBody = el.closest('.md-card-body');
             if (cardBody) cardBody.style.overflow = 'visible';
+            // 使用 fixed 定位让菜单脱离 stacking context，防止被相邻卡片遮挡
+            var menu = el.querySelector('.md-dropdown__menu');
+            if (menu) {
+                var trigger = el.querySelector('.md-dropdown__trigger');
+                var triggerRect = trigger.getBoundingClientRect();
+                menu.style.position = 'fixed';
+                menu.style.top = (triggerRect.bottom + 4) + 'px';
+                menu.style.left = triggerRect.left + 'px';
+                menu.style.minWidth = triggerRect.width + 'px';
+            }
         }
     }
     function selectDropdown(id, value, label) {
@@ -1190,12 +1233,18 @@
         if (hidden) hidden.value = value;
         // 关闭菜单
         el.classList.remove('md-dropdown--open');
+        var menu = el.querySelector('.md-dropdown__menu');
+        if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
+        var cardBody = el.closest('.md-card-body');
+        if (cardBody) cardBody.style.overflow = '';
     }
     // 点击外部关闭 dropdown
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.md-dropdown')) {
             document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
                 d.classList.remove('md-dropdown--open');
+                var menu = d.querySelector('.md-dropdown__menu');
+                if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
                 var cardBody = d.closest('.md-card-body');
                 if (cardBody) cardBody.style.overflow = '';
             });
@@ -1847,6 +1896,8 @@
             el.classList.toggle('md-dropdown__option--selected', el.getAttribute('data-value') === mode);
         });
         document.getElementById('darkmode-dropdown').classList.remove('md-dropdown--open');
+        var menu = document.querySelector('#darkmode-dropdown .md-dropdown__menu');
+        if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
         var cardBody = document.getElementById('darkmode-dropdown').closest('.md-card-body');
         if (cardBody) cardBody.style.overflow = '';
         applyDarkMode(mode);

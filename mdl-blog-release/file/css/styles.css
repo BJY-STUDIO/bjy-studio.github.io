@@ -984,12 +984,13 @@ body .blog {
 }
 
 /* ---- 图片 ---- */
-/* 全宽上限、自适应高度、4dp 圆角、8dp 上下间距 */
+/* 全宽上限、自适应高度、4dp 圆角、居中显示、8dp 上下间距 */
 .blog--article .docs-layout img {
     max-width: 100%;
     height: auto;
     border-radius: 4px;
-    margin: 8px 0;
+    margin: 8px auto;
+    display: block;
 }
 
 /* ---- 表格 ---- */

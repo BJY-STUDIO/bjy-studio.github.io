@@ -470,6 +470,7 @@ def api_preview():
     }
     data = load_data()
     site = data['site']
+    theme_css = f"file/css/material-themes-{site.get('theme', 'indigo-pink')}.css"
     bg_image = site.get('backgroundImage', '')
     dm_attr = dark_mode_attr(site)
 
@@ -1201,7 +1202,7 @@ def process_code_blocks(content):
 def markdown_to_html(content):
     """
     将 Markdown 内容转换为 HTML
-    - 保留已有 HTML 标签（markdown 库默认行为）
+    - 保留已有 HTML 标签（markdown 库默认行为），支持 HTML 直接输出
     - 支持 fenced code blocks（```语言）
     - 支持 tables, nl2br 等扩展
     - fenced code blocks 输出 Prism 兼容的 code-with-text 格式
@@ -1244,6 +1245,7 @@ def markdown_to_html(content):
     content = re.sub(fenced_pattern, replace_fenced_code, content)
 
     # 用 markdown 库处理其余内容（标题、列表、链接、图片等）
+    # HTML 标签会被保留并正常渲染，代码块内已由上方逻辑转义
     md = markdown.Markdown(extensions=['tables', 'nl2br'], output_format='html5')
     result = md.convert(content)
     return result

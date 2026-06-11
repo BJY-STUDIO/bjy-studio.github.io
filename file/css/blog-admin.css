@@ -125,6 +125,7 @@ body {
     background: #fff;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+    position: relative;
 }
 
 /* 卡片标题行：20sp medium、左右两端对齐 */
@@ -519,16 +520,22 @@ body {
 /* .md-textfield__input[type="date"]::-webkit-datetime-edit { ... } */
 /* .md-textfield__input[type="date"]::-webkit-calendar-picker-indicator { ... } */
 
-/* 浮动标签 — resting 状态 (16sp, 54% 黑，贴输入框起始位置) */
+/* 浮动标签 — resting 状态 (16sp, 54% 黑，贴输入框起始位置)
+ * 宽度受限于父容器，防止在窄屏下被 overflow:hidden 截断 */
 .md-textfield__label {
     position: absolute;
     top: 24px;
     left: 0;
+    right: 0;
     font-size: 16px;
     color: rgba(0,0,0,0.54);
     pointer-events: none;
     transition: top .15s, font-size .15s, color .15s;
     transform-origin: left top;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 浮动标签 — 浮动状态 (12sp, 主色，上移到输入框上方) */
@@ -630,7 +637,7 @@ body {
     background: #fff;
     border-radius: 2px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.23);
-    z-index: 50;
+    z-index: 100;
     overflow: hidden;
     animation: md-dropdown-in .15s ease-out;
     padding: 8px 0;
@@ -716,15 +723,21 @@ body {
     padding-left: 11px;
 }
 
-/* 文本域浮动标签 — resting 状态 (16sp, 54% 黑) */
+/* 文本域浮动标签 — resting 状态 (16sp, 54% 黑)
+ * 宽度受限于父容器，防止窄屏截断 */
 .md-textarea-field__label {
     position: absolute;
     top: 22px;
     left: 12px;
+    right: 12px;
     font-size: 16px;
     color: rgba(0,0,0,0.54);
     pointer-events: none;
     transition: top .15s, font-size .15s, color .15s, left .15s;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 文本域浮动标签 — 浮动状态 (12sp, 主色) */
@@ -1671,9 +1684,37 @@ body {
     line-height: 28px;
 }
 
-/* 日期网格：8dp 外边距 */
+/* 日期网格：8dp 外边距、overflow hidden 裁剪滑动动画 */
 .md-datepicker-grid {
     padding: 0 8px 8px;
+    overflow: hidden;
+}
+
+/* 月份切换滑动动画 — 容器 */
+.md-datepicker-grid-inner {
+    transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+}
+
+/* 向左滑出（切到下月） */
+.md-datepicker-grid-inner.slide-out-left {
+    transform: translateX(-30%);
+    opacity: 0;
+}
+/* 从右侧滑入（切到下月） */
+.md-datepicker-grid-inner.slide-in-right {
+    transform: translateX(30%);
+    opacity: 0;
+}
+
+/* 向右滑出（切到上月） */
+.md-datepicker-grid-inner.slide-out-right {
+    transform: translateX(30%);
+    opacity: 0;
+}
+/* 从左侧滑入（切到上月） */
+.md-datepicker-grid-inner.slide-in-left {
+    transform: translateX(-30%);
+    opacity: 0;
 }
 
 /* 日期行：flex 居中 */
@@ -1718,7 +1759,7 @@ body {
     font-weight: 500;
 }
 .md-datepicker-day--selected:hover {
-    background: #3949ab;
+    background: var(--md-primary-dark);
 }
 
 /* 不可选日期：26% 黑、禁止交互 */
@@ -2287,9 +2328,25 @@ html[data-mode="dark"] .md-theme-name {
     color: rgba(255,255,255,0.70);
 }
 
-/* 封面文件名 — 50% 白 */
+/* 封面文件名 — 70% 白（13sp 小字同"默认"标签需更高对比度） */
 html[data-mode="dark"] .cover-file-name {
-    color: rgba(255,255,255,0.50);
+    color: rgba(255,255,255,0.70);
+}
+
+/* 头像/图标预览标签（"默认"/"已上传"） — 70% 白（标签字号仅 11sp，需更高对比度） */
+html[data-mode="dark"] .settings-icon-preview-label {
+    color: rgba(255,255,255,0.70);
+}
+
+/* 头像/图标预览框：#303030 背景、12% 白边框 */
+html[data-mode="dark"] .settings-icon-preview {
+    background-color: #303030;
+    border-color: rgba(255,255,255,0.12);
+}
+
+/* 进度条轨道 — 12% 白（深色背景上可见） */
+html[data-mode="dark"] .md-progress {
+    background: rgba(255,255,255,0.12);
 }
 
 /* Snackbar：暗黑模式下保持 #323232 (MD1 规范不随暗黑变化) */
@@ -2386,18 +2443,43 @@ html[data-mode="dark"] .md-datepicker-day--selected {
     background: var(--md-primary);
     color: #fff;
 }
+/* 选中日期 hover：深色主色背景保持白字可读性
+ * 避免 hover 半透明背景叠加导致数字与圆圈颜色一致 */
+html[data-mode="dark"] .md-datepicker-day--selected:hover {
+    background: var(--md-primary-dark);
+}
 
-/* 今天：主色文字 */
-html[data-mode="dark"] .md-datepicker-day--today {
+/* 今天：主色文字（选中时优先用白字，见 --selected 规则） */
+html[data-mode="dark"] .md-datepicker-day--today:not(.md-datepicker-day--selected) {
     color: var(--md-primary);
 }
 
-/* 月份/年份：87% 白、hover 主色 */
+/* 非当月日期：30% 白（视觉弱化，与当月 100% 白区分） */
+html[data-mode="dark"] .md-datepicker-day--outside {
+    color: rgba(255,255,255,0.30);
+}
+
+/* 不可选日期：30% 白（与 --outside 一致，禁止交互） */
+html[data-mode="dark"] .md-datepicker-day--disabled {
+    color: rgba(255,255,255,0.30);
+}
+
+/* 月份/年份：87% 白、hover 加背景高亮（主色背景上不变文字色，避免融合） */
 html[data-mode="dark"] .md-datepicker-monthyear {
     color: rgba(255,255,255,0.87);
+    border-radius: 2px;
+    transition: background .15s;
 }
 html[data-mode="dark"] .md-datepicker-monthyear:hover {
-    color: var(--md-primary);
+    background: rgba(255,255,255,0.12);
+}
+
+/* 导航按钮：54% 白图标、hover 半透明白色背景 */
+html[data-mode="dark"] .md-datepicker-nav-btn {
+    color: rgba(255,255,255,0.54);
+}
+html[data-mode="dark"] .md-datepicker-nav-btn:hover {
+    background: rgba(255,255,255,0.12);
 }
 
 /* 日期确认/取消：主色/70% 白 */
@@ -2759,12 +2841,19 @@ html[data-mode="dark"] .md-card-supporting-title {
         aspect-ratio: 1;
     }
 
-    /* Snackbar：移动端全宽 */
+    /* Snackbar：移动端全宽，左右各 8dp 外边距，底部 0dp
+     * MD1 规范: 移动端 snackbar 宽度 = 100vw - 16dp，距底部 0dp */
     .md-snackbar {
         min-width: auto;
-        width: calc(100% - 32px);
-        left: 16px;
-        transform: none;
+        max-width: none;
+        width: calc(100vw - 16px);
+        left: 8px;
+        bottom: 0;
+        transform: translateY(100%);
+        border-radius: 0;
+    }
+    .md-snackbar.show {
+        transform: translateY(0);
     }
     .md-snackbar-action {
         margin-left: 24px;
@@ -2773,6 +2862,19 @@ html[data-mode="dark"] .md-card-supporting-title {
     /* Expansion panel 摘要文字：缩小或隐藏 */
     .md-card.expandable .md-card-summary {
         max-width: 120px;
+    }
+
+    /* 下拉选择：移动端全宽，防止布局异常 */
+    .md-dropdown {
+        display: block;
+        width: 100%;
+    }
+    .md-dropdown__trigger {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .md-dropdown__menu {
+        min-width: 100%;
     }
 }
 
@@ -2786,5 +2888,21 @@ html[data-mode="dark"] .md-card-supporting-title {
     .main-container {
         padding: 0 8px;
         gap: 12px;
+    }
+
+    /* 导航菜单表格：名称/URL 列自适应，隐藏 URL 表头文字
+     * 输入框 placeholder 已提供提示，无需重复表头 */
+    .md-data-table thead th:nth-child(2) {
+        font-size: 0;
+    }
+    .md-data-table thead th:nth-child(2)::after {
+        content: 'URL';
+        font-size: 12px;
+    }
+    .menu-item-name {
+        max-width: 90px;
+    }
+    .menu-item-url {
+        max-width: 120px;
     }
 }

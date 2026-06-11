@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-mode="dark">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="博客 v2.0 更新说明 - 从 MDL 模板到完整博客系统">
+    <meta name="description" content="博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Kernel 的个人博客 - 博客 v2.0 更新说明 - 从 MDL 模板到完整博客系统</title>
+    <title>Kernel 的个人博客 - 博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统</title>
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" sizes="192x192" href="../../blog/favicons/26d7839df0b8.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -44,10 +44,10 @@
         <div class="blog__posts mdl-grid">
           <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
             <div class="mdl-card__media mdl-color-text--grey-50">
-              <h3>博客 v2.0 更新说明 - 从 MDL 模板到完整博客系统</h3>
+              <h3>博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统</h3>
             </div>
             <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
-              <div class="minilogo" style="background-image: url('../../blog/avatars/37bbe62ce366.png')"></div>
+              <div class="minilogo" style="background-image: url('../../blog/avatars/cda77ca7046d.png')"></div>
               <div>
                 <strong>Kernel</strong>
                 <span>2026-06-07</span>
@@ -84,7 +84,7 @@
 <h4>2. 博客管理后台</h4>
 <p>从零构建了完整的 Flask 后端 + 管理界面，支持文章的增删改查、置顶、封面图片上传、背景图管理等功能。管理后台遵循 Google Material Design 1 规范设计。</p>
 
-<p><img src="../../images/changelog-admin.png" alt="管理后台界面" style="max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p><img src="../../images/changelog-admin.png" alt="管理后台界面" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
 <div class="code-with-text">Python: Flask 文章创建 API
 <pre class="language-python"><code class="language-python">@app.route('/api/posts', methods=['POST'])
 def api_create_post():
@@ -141,7 +141,7 @@ def api_create_post():
     return md.convert(content)</code></pre>
 </div>
 
-<p><img src="../../images/changelog-code.png" alt="代码高亮效果" style="max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p><img src="../../images/changelog-code.png" alt="代码高亮效果" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
 <h4>4. 标准卡片 vs 引用卡片</h4>
 <p>区分了<strong>标准文章卡片</strong>和<strong>引用卡片</strong>两种格式。引用卡片用于展示名言警句，不会生成详情页，不参与文章导航，仅在首页展示。</p>
 
@@ -198,7 +198,7 @@ def api_save_draft():
 <h4>7. 服务端预览（1:1 匹配发布页面）</h4>
 <p>预览功能通过服务端渲染，使用与实际发布页面完全相同的模板和 Markdown 处理流程，确保"所见即所得"。关键修复：预览页面的 URL 为 <code>/api/preview</code>，所有静态资源路径必须使用绝对路径（以 <code>/</code> 开头），否则浏览器会将相对路径错误解析为 <code>/api/lib/mdl/...</code>。</p>
 
-<p><img src="../../images/changelog-preview.png" alt="预览效果" style="max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p><img src="../../images/changelog-preview.png" alt="预览效果" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
 <div class="code-with-text">HTML: 绝对路径 vs 相对路径
 <pre class="language-markup"><code class="language-markup">&lt;!-- Wrong: relative path resolved as /api/styles.css --&gt;
 &lt;link rel="stylesheet" href="styles.css"&gt;
@@ -259,7 +259,7 @@ def api_save_draft():
 <h4>10. 博客背景图管理</h4>
 <p>管理后台新增背景图上传/删除功能，自定义背景图存储在 <code>blog/backgrounds/</code> 目录，通过 CSS <code>body::before</code> 伪元素覆盖默认山景图。</p>
 
-<p><img src="../../images/changelog-homepage.png" alt="博客首页（自定义背景图）" style="max-width:100%;border-radius:4px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<p><img src="../../images/changelog-homepage.png" alt="博客首页（自定义背景图）" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
 <h4>总结</h4>
 <p>本次重构涉及以下核心改动：</p>
 
@@ -281,11 +281,11 @@ def api_save_draft():
             </div>
           </div>
           <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
-            <a href="../../index.html" class="article-nav__btn" title="返回博客首页">
+            <a href="v2-1-updates.html" class="article-nav__btn" title="博客 V2.1 迭代记录 - 主题系统、暗色模式与 MD1 规范化 (2026-06-11)">
               <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
               </button>
-              返回首页
+              前一篇
             </a>
             <div class="section-spacer"></div>
             <a href="quick-start.html" class="article-nav__btn" title="快速入门 (2026-06-07)">
