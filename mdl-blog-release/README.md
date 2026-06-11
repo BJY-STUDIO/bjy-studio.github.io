@@ -1,14 +1,3 @@
----
-AIGC:
-  ContentProducer: '001191110102MAD55U9H0F10002'
-  ContentPropagator: '001191110102MAD55U9H0F10002'
-  Label: '1'
-  ProduceID: '2907a479-c497-466a-96e5-379dd83d780a'
-  PropagateID: '2907a479-c497-466a-96e5-379dd83d780a'
-  ReservedCode1: 'ce72dcc1-05af-4ec4-8af0-fd2810b5df20'
-  ReservedCode2: 'ce72dcc1-05af-4ec4-8af0-fd2810b5df20'
----
-
 # MDL Blog
 
 基于 Google Material Design Lite (MDL) 的轻量级个人博客框架。Flask 本地管理 + Markdown 写作 + 静态页面一键部署到 GitHub Pages，零数据库，全端响应式。
