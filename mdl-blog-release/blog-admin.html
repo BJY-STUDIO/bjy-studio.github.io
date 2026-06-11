@@ -713,6 +713,15 @@
         dpState.closing = false;
         overlay.classList.remove('closing');
         overlay.classList.add('show');
+        // 重置视图状态：显示日历和星期行，隐藏年份/月份视图
+        var calendar = document.getElementById('dp-calendar');
+        var weekdays = document.querySelector('.md-datepicker-weekdays');
+        var yearlist = document.getElementById('dp-yearlist');
+        var monthgrid = document.getElementById('dp-monthgrid');
+        if (calendar) calendar.style.display = '';
+        if (weekdays) weekdays.style.display = '';
+        if (yearlist) yearlist.classList.remove('show');
+        if (monthgrid) monthgrid.classList.remove('show');
         dpRenderYearList();
         dpRenderCalendar();
     }
@@ -813,13 +822,16 @@
         var yearlist = document.getElementById('dp-yearlist');
         var calendar = document.getElementById('dp-calendar');
         var monthgrid = document.getElementById('dp-monthgrid');
+        var weekdays = document.querySelector('.md-datepicker-weekdays');
         if (yearlist.classList.contains('show')) {
             yearlist.classList.remove('show');
             calendar.style.display = '';
+            if (weekdays) weekdays.style.display = '';
             dpRenderCalendar();
         } else {
             calendar.style.display = 'none';
             monthgrid.classList.remove('show');
+            if (weekdays) weekdays.style.display = 'none';
             yearlist.classList.add('show');
             dpRenderYearList();
             // Scroll selected year into view
@@ -844,8 +856,10 @@
         dpState.year = year;
         var yearlist = document.getElementById('dp-yearlist');
         var calendar = document.getElementById('dp-calendar');
+        var weekdays = document.querySelector('.md-datepicker-weekdays');
         yearlist.classList.remove('show');
         calendar.style.display = '';
+        if (weekdays) weekdays.style.display = '';
         dpRenderCalendar();
     }
     // ---- 月份选择网格 ----
@@ -854,13 +868,16 @@
         var monthgrid = document.getElementById('dp-monthgrid');
         var calendar = document.getElementById('dp-calendar');
         var yearlist = document.getElementById('dp-yearlist');
+        var weekdays = document.querySelector('.md-datepicker-weekdays');
         if (monthgrid.classList.contains('show')) {
             monthgrid.classList.remove('show');
             calendar.style.display = '';
+            if (weekdays) weekdays.style.display = '';
             dpRenderCalendar();
         } else {
             calendar.style.display = 'none';
             yearlist.classList.remove('show');
+            if (weekdays) weekdays.style.display = 'none';
             monthgrid.classList.add('show');
             dpRenderMonthGrid();
         }
@@ -879,8 +896,10 @@
         dpState.month = month;
         var monthgrid = document.getElementById('dp-monthgrid');
         var calendar = document.getElementById('dp-calendar');
+        var weekdays = document.querySelector('.md-datepicker-weekdays');
         monthgrid.classList.remove('show');
         calendar.style.display = '';
+        if (weekdays) weekdays.style.display = '';
         dpRenderCalendar();
     }
     function dpRenderCalendar() {

@@ -1,0 +1,151 @@
+/* ==============================================================
+   Prism 代码高亮主题 - prism-default.css
+   ==============================================================
+   本文件是 Prism.js 的默认浅色代码高亮主题。
+   为 code.html 页面中的代码块提供语法着色。
+
+   【引用方式】
+   在需要代码高亮的页面的 <head> 中引入：
+     <link rel="stylesheet" href="./css/prism-default.css">
+
+   【配套 JS】
+   需配合以下 Prism.js 文件使用：
+     ./javascript/prism.js
+     ./javascript/prism-markup.min.js
+     ./javascript/prism-javascript.min.js
+     ./javascript/prism-css.min.js
+     ./javascript/prism-bash.min.js
+
+   【注意】
+   - Prism 是独立的代码高亮库，与 MDL 无关联，不可与其他类型 CSS 合并
+   ============================================================== */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: #000;
+    text-shadow: 0 1px #fff;
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none
+}
+
+pre[class*="language-"]::-moz-selection,
+pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection,
+code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background: #b3d4fc
+}
+
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none
+    }
+}
+
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto
+}
+
+:not(pre)>code[class*="language-"],
+pre[class*="language-"] {
+    background: #f5f2f0
+}
+
+:not(pre)>code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray
+}
+
+.token.punctuation {
+    color: #999
+}
+
+.namespace {
+    opacity: .7
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #a67f59;
+    background: hsla(0, 0%, 100%, .5)
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a
+}
+
+.token.function {
+    color: #DD4A68
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90
+}
+
+.token.important,
+.token.bold {
+    font-weight: 700
+}
+
+.token.italic {
+    font-style: italic
+}
+
+.token.entity {
+    cursor: help
+}

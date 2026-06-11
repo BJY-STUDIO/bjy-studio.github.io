@@ -1,0 +1,196 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Kernel 的个人博客 - 使用 Material Design Lite 搭建</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css">
+    <style>
+        .code-area {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .code-title {
+            background-color: #555;
+            color: #fff;
+            padding: 5px 10px;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .code-title .code-type {
+            float: left;
+        }
+        .code-title .copy-button {
+            float: right;
+            padding: 5px 10px;
+            background-color: #3f51b5;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .code-content {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        </style>
+    <style>
+        #view-source {
+            position: fixed;
+            display: block;
+            right: 0;
+            bottom: 0;
+            margin-right: 40px;
+            margin-bottom: 40px;
+            z-index: 900;
+        }
+        /* 让链接填充整个菜单项 */
+        .mdl-menu__item a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none; /* 如果需要取消下划线 */
+        }
+
+        /* 鼠标悬停时，为链接添加样式 */
+        .mdl-menu__item a:hover {
+            background-color: #f0f0f0; /* 根据需要修改颜色 */
+        }
+
+        /* 禁用链接时的样式 */
+        .mdl-menu__item a[disabled] {
+            color: #aaa; /* 根据需要修改颜色 */
+            pointer-events: none; /* 禁用鼠标事件 */
+        }
+    </style>
+
+</head>
+<body>
+<!-- HTML 部分 -->
+<code id="http-code">
+    <!-- 这里是您的 HTTP 请求代码 -->
+    GET / HTTP/1.1
+    Host: example.com
+    Connection: keep-alive
+</code>
+<button class="mdl-button mdl-js-button mdl-button--icon copy-btn" onclick="copyCode(this)">
+    <i class="material-icons">content_copy</i>
+</button>
+
+<!-- JavaScript 部分 -->
+<script>
+    function copyCode(button) {
+        // 获取要复制的文本内容
+        var codeElement = button.previousElementSibling;
+        var codeText = codeElement.textContent.trim();
+
+        // 创建一个临时 textarea 元素用于复制
+        var tempTextarea = document.createElement('textarea');
+        tempTextarea.value = codeText;
+        tempTextarea.setAttribute('readonly', '');
+        tempTextarea.style.position = 'absolute';
+        tempTextarea.style.left = '-9999px';
+        document.body.appendChild(tempTextarea);
+
+        // 选择并复制文本
+        tempTextarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextarea);
+
+        // 切换按钮图标为 ✓
+        button.innerHTML = '<i class="material-icons">done</i>';
+        button.disabled = true;
+
+        console.log('HTTP 请求已复制到剪贴板。');
+    }
+</script>
+
+<div class="code-area">
+    <div class="code-title">
+        <span class="code-type">HTML</span>
+        <button class="copy-button" onclick="copyCode(this)">
+            <i class="material-icons">content_copy</i> 复制
+        </button>
+    </div>
+    <div class="code-content">
+        <!-- 这里是您的代码 -->
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Document</title>
+        </head>
+        <body>
+        <h1>Hello, World!</h1>
+        </body>
+        </html>
+    </div>
+</div>
+
+<script>
+    function copyCode(button) {
+        var codeContent = button.parentElement.nextElementSibling.textContent.trim();
+        var tempTextarea = document.createElement('textarea');
+        tempTextarea.value = codeContent;
+        tempTextarea.setAttribute('readonly', '');
+        tempTextarea.style.position = 'absolute';
+        tempTextarea.style.left = '-9999px';
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextarea);
+        button.innerHTML = '<i class="material-icons">done</i> 已复制';
+        button.disabled = true;
+    }
+</script>
+
+</body>

@@ -1628,24 +1628,25 @@ body {
     to { opacity: 0; transform: scale(0.85) translateY(12px); }
 }
 
-/* 日期选择器头部：月份/年份 + 前后导航 */
+/* 日期选择器头部：MD1 规范 — 主题色背景、白色文字 */
 .md-datepicker-header {
+    background: var(--md-primary);
     padding: 16px 24px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-/* 月份/年份文字：18sp medium、可点击(切换年视图)、hover 变主色 */
+/* 月份/年份文字：MD1 规范 — 白色、18sp medium、可点击(切换年/月视图) */
 .md-datepicker-monthyear {
     font-size: 18px;
     font-weight: 500;
-    color: rgba(0,0,0,0.87);
+    color: #fff;
     cursor: pointer;
     user-select: none;
     padding: 4px 0;
 }
-.md-datepicker-monthyear:hover { color: var(--md-primary); }
+.md-datepicker-monthyear:hover { opacity: 0.85; }
 
 /* 前后导航按钮组 */
 .md-datepicker-nav {
@@ -1653,7 +1654,7 @@ body {
     gap: 0;
 }
 
-/* 导航按钮：36dp 圆形、54% 黑 */
+/* 导航按钮：MD1 规范 — 36dp 圆形、白色、hover 白色半透明背景 */
 .md-datepicker-nav-btn {
     width: 36px;
     height: 36px;
@@ -1664,10 +1665,10 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(0,0,0,0.54);
+    color: #fff;
     transition: background .15s;
 }
-.md-datepicker-nav-btn:hover { background: rgba(0,0,0,0.08); }
+.md-datepicker-nav-btn:hover { background: rgba(255,255,255,0.12); }
 .md-datepicker-nav-btn i { font-size: 20px; }
 
 /* 星期标签行：flex 等宽、12sp medium、38% 黑 */
@@ -1855,20 +1856,22 @@ body {
 }
 
 /* ---- Header 年份/月份点击区域 ---- */
-/* 年份可点击进入年份选择视图 */
+/* 年份可点击进入年份选择视图 — 白色文字（头部主题色背景上） */
 .md-datepicker-year {
     cursor: pointer;
     font-weight: 500;
     font-size: 16px;
+    color: rgba(255,255,255,0.7);
 }
 .md-datepicker-year:hover {
-    opacity: 0.85;
+    color: #fff;
 }
-/* 月份可点击进入月份选择视图 */
+/* 月份可点击进入月份选择视图 — 白色文字（头部主题色背景上） */
 .md-datepicker-month-name {
     cursor: pointer;
     font-weight: 500;
     font-size: 16px;
+    color: #fff;
 }
 .md-datepicker-month-name:hover {
     opacity: 0.85;
@@ -2476,10 +2479,7 @@ html[data-mode="dark"] .md-timepicker-dialog {
     background: #424242;
 }
 
-/* 日期头部：主色背景 */
-html[data-mode="dark"] .md-datepicker-header {
-    background: var(--md-primary);
-}
+/* 日期头部：亮暗模式统一使用主题色背景，无需暗色覆盖 */
 
 /* 日期网格区：87% 白 */
 html[data-mode="dark"] .md-datepicker-daynames,
@@ -2524,19 +2524,17 @@ html[data-mode="dark"] .md-datepicker-day--disabled {
     color: rgba(255,255,255,0.30);
 }
 
-/* 月份/年份：87% 白、hover 加背景高亮（主色背景上不变文字色，避免融合） */
+/* 月份/年份：白色文字（头部已是主题色背景，亮暗模式统一） */
 html[data-mode="dark"] .md-datepicker-monthyear {
-    color: rgba(255,255,255,0.87);
-    border-radius: 2px;
-    transition: background .15s;
+    color: #fff;
 }
 html[data-mode="dark"] .md-datepicker-monthyear:hover {
-    background: rgba(255,255,255,0.12);
+    opacity: 0.85;
 }
 
-/* 导航按钮：54% 白图标、hover 半透明白色背景 */
+/* 导航按钮：白色图标、hover 半透明白色背景（头部主题色背景上） */
 html[data-mode="dark"] .md-datepicker-nav-btn {
-    color: rgba(255,255,255,0.54);
+    color: #fff;
 }
 html[data-mode="dark"] .md-datepicker-nav-btn:hover {
     background: rgba(255,255,255,0.12);

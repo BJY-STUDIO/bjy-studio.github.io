@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Kernel 的个人博客 - 博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="../../blog/favicons/26d7839df0b8.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+    <link rel="apple-touch-icon-precomposed" href="../../blog/favicons/26d7839df0b8.png">
+    <link rel="shortcut icon" href="../../blog/favicons/26d7839df0b8.png">
+    <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../../file/css/material-themes-teal-green.css">
+    <link rel="stylesheet" href="../../file/css/styles.css">
+    <link rel="stylesheet" href="../../file/css/prism-default.css">
+    <link rel="stylesheet" href="../../file/css/mdl-main.css">
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    body::before { background-image: url('../../blog/backgrounds/8cc59a4cdeb6.jpg') !important; }
+    :root{--md-primary:#009688;}
+    </style>
+  </head>
+  <body class="started">
+    <div class="blog blog--article mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="back-btn">
+          <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color-text--white" href="javascript:history.back()" title="go back" role="button">
+            <i class="material-icons" role="presentation">arrow_back</i>
+          </a>
+        </div>
+        <div class="blog__posts mdl-grid">
+          <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3>博客 V2.0 更新说明 - 从 MDL 模板到完整博客系统</h3>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+              <div class="minilogo" style="background-image: url('../../blog/avatars/cda77ca7046d.png')"></div>
+              <div>
+                <strong>Kernel</strong>
+                <span>2026-06-07</span>
+              </div>
+              <div class="section-spacer"></div>
+              <div>
+                <i class="material-icons" role="presentation">bookmark</i>
+                <span class="visuallyhidden">bookmark</span>
+              </div>
+              <div>
+                <i class="material-icons" role="presentation">share</i>
+                <span class="visuallyhidden">share</span>
+              </div>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text docs-layout">
+              <h4>版本概述</h4>
+<p>经过多个迭代周期的开发，本博客完成了从基础 MDL 模板到完整博客系统的全面重构。本文记录了所有新增功能与修复的问题，并附带关键代码片段和界面截图。</p>
+
+<h4>1. CDN 迁移到本地资源</h4>
+<p>原博客依赖 code.getmdl.io CDN 加载 MDL 框架资源，但该 CDN 已停止服务，导致页面无法正常渲染。我们将所有 MDL 资源本地化到 <code>lib/mdl/</code> 目录，彻底解决了外部依赖不可控的问题。</p>
+
+<div class="code-with-text">HTML: CDN vs 本地引用对比
+<pre class="language-markup"><code class="language-markup">&lt;!-- 旧：CDN 引用（已失效） --&gt;
+&lt;link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css"&gt;
+&lt;script defer src="https://code.getmdl.io/1.3.0/material.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- 新：本地引用（稳定可靠） --&gt;
+&lt;link rel="stylesheet" href="lib/mdl/material-themes-grey-orange.css"&gt;
+&lt;script src="lib/mdl/material.min.js"&gt;&lt;/script&gt;</code></pre>
+</div>
+
+<p>同时将 MDL 默认的 Indigo-Pink 主题替换为 Grey-Orange 主题，视觉上更专业沉稳。</p>
+
+<h4>2. 博客管理后台</h4>
+<p>从零构建了完整的 Flask 后端 + 管理界面，支持文章的增删改查、置顶、封面图片上传、背景图管理等功能。管理后台遵循 Google Material Design 1 规范设计。</p>
+
+<p><img src="../../images/changelog-admin.png" alt="管理后台界面" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<div class="code-with-text">Python: Flask 文章创建 API
+<pre class="language-python"><code class="language-python">@app.route('/api/posts', methods=['POST'])
+def api_create_post():
+    data = load_data()
+    body = request.json
+
+    post_id = body.get('id') or body.get('title', '').lower().strip()
+    post_id = re.sub(r'[^a-z0-9\u4e00-\u9fff]+', '-', post_id).strip('-')
+
+    post = {
+        'id': post_id,
+        'title': body.get('title', 'No Title'),
+        'date': body.get('date', datetime.now().strftime('%Y-%m-%d')),
+        'summary': body.get('summary', ''),
+        'content': body.get('content', ''),
+        'cardFormat': body.get('cardFormat', 'standard'),
+        'coverImage': body.get('coverImage', ''),
+    }
+    data['posts'].append(post)
+    save_data(data)
+    generate_all()
+    return jsonify({'ok': True, 'post': post})</code></pre>
+</div>
+
+<h4>3. 代码高亮系统（Prism + click-to-copy）</h4>
+<p>集成了 Prism.js 代码高亮引擎，支持 17 种编程语言。自定义了 <code>code-with-text</code> 格式：灰色圆角容器 + 语言标签 + 语法高亮 + 点击复制功能。同时支持两种代码块语法：</p>
+
+<ul>
+<li><strong>&#91;code:lang|label&#93;...&#91;/code&#93;</strong> — 旧格式，向后兼容</li>
+<li><strong>```lang ... ```</strong> — Markdown fenced code blocks，新推荐格式</li>
+</ul>
+
+<div class="code-with-text">Python: fenced code block 自定义处理
+<pre class="language-python"><code class="language-python">def markdown_to_html(content):
+    def replace_fenced_code(match):
+        lang = match.group(1) or ''
+        code = match.group(2)
+        code_escaped = (code
+            .replace('&amp;', '&amp;amp;')
+            .replace('&lt;', '&amp;lt;')
+            .replace('&gt;', '&amp;gt;')
+            .replace('"', '&amp;quot;'))
+        prism_lang = lang_map.get(lang.lower(), lang.lower()) if lang else 'markup'
+        label = lang if lang else 'code'
+        return f'&lt;div class="code-with-text"&gt;{label}\n' \
+               f'&lt;pre class="language-{prism_lang}"&gt;' \
+               f'&lt;code class="language-{prism_lang}"&gt;{code_escaped}&lt;/code&gt;&lt;/pre&gt;\n' \
+               f'&lt;/div&gt;'
+
+    fenced_pattern = r'```(\w*)\r?\n([\s\S]*?)\r?\n```'
+    content = re.sub(fenced_pattern, replace_fenced_code, content)
+
+    md = markdown.Markdown(extensions=['tables', 'nl2br'], output_format='html5')
+    return md.convert(content)</code></pre>
+</div>
+
+<p><img src="../../images/changelog-code.png" alt="代码高亮效果" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<h4>4. 标准卡片 vs 引用卡片</h4>
+<p>区分了<strong>标准文章卡片</strong>和<strong>引用卡片</strong>两种格式。引用卡片用于展示名言警句，不会生成详情页，不参与文章导航，仅在首页展示。</p>
+
+<div class="code-with-text">Python: 生成主页时过滤引用卡片
+<pre class="language-python"><code class="language-python"># 只为标准格式文章生成详情页
+nav_posts = [p for p in sorted_posts if p.get('cardFormat', 'standard') != 'quote']
+
+# 引用卡片不生成链接
+if post.get('cardFormat', 'standard') == 'quote':
+    card_class = 'card-quote'
+    # 不添加 &lt;a&gt; 链接
+else:
+    card_class = 'card-article'
+    # 添加文章详情页链接</code></pre>
+</div>
+
+<h4>5. 动态文章导航</h4>
+<p>文章详情页底部增加了"前一篇/后一篇"导航，自动按照发布日期排序。最新文章左侧显示"返回首页"，最旧文章右侧显示"返回首页"。鼠标悬停时 tooltip 显示相邻文章标题和日期。</p>
+
+<div class="code-with-text">Python: 导航逻辑
+<pre class="language-python"><code class="language-python"># all_posts sorted by date descending: [newest, ..., current, ..., oldest]
+if post_index == 0:
+    newer_link = '../../index.html'
+    newer_text = '返回首页'
+    newer_title = '返回博客首页'
+else:
+    newer_post = all_posts[post_index - 1]
+    newer_link = f"{newer_post['id']}.html"
+    newer_text = '前一篇'
+    newer_title = f"{newer_post['title']} ({newer_post['date']})"</code></pre>
+</div>
+
+<h4>6. Markdown 编辑器 + 草稿系统</h4>
+<p>集成了 EasyMDE Markdown 编辑器，支持侧边实时预览、工具栏快捷操作。新增草稿系统，可以保存未完成的文章，稍后继续编辑。</p>
+
+<div class="code-with-text">Python: 草稿 CRUD API
+<pre class="language-python"><code class="language-python">@app.route('/api/drafts', methods=['POST'])
+def api_save_draft():
+    data = load_data()
+    body = request.json
+    draft = {
+        'id': body.get('id', str(uuid.uuid4())[:8]),
+        'title': body.get('title', ''),
+        'content': body.get('content', ''),
+        'savedAt': datetime.now().isoformat()
+    }
+    if 'drafts' not in data:
+        data['drafts'] = []
+    data['drafts'].append(draft)
+    save_data(data)
+    return jsonify({'ok': True, 'draft': draft})</code></pre>
+</div>
+
+<h4>7. 服务端预览（1:1 匹配发布页面）</h4>
+<p>预览功能通过服务端渲染，使用与实际发布页面完全相同的模板和 Markdown 处理流程，确保"所见即所得"。关键修复：预览页面的 URL 为 <code>/api/preview</code>，所有静态资源路径必须使用绝对路径（以 <code>/</code> 开头），否则浏览器会将相对路径错误解析为 <code>/api/lib/mdl/...</code>。</p>
+
+<p><img src="../../images/changelog-preview.png" alt="预览效果" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<div class="code-with-text">HTML: 绝对路径 vs 相对路径
+<pre class="language-markup"><code class="language-markup">&lt;!-- Wrong: relative path resolved as /api/styles.css --&gt;
+&lt;link rel="stylesheet" href="styles.css"&gt;
+
+&lt;!-- Correct: absolute path always resolves correctly --&gt;
+&lt;link rel="stylesheet" href="/styles.css"&gt;</code></pre>
+</div>
+
+<h4>8. CSS 类名重构</h4>
+<p>将 MDL 模板原始的 <code>demo-*</code> 类名和随意命名（如 <code>on-the-road-again</code>、<code>amazing</code>、<code>chroma</code>）统一为语义化名称：</p>
+
+<ul>
+<li><code>demo-blog</code> → <code>blog</code></li>
+<li><code>demo-blog--blogpost</code> → <code>blog--article</code></li>
+<li><code>demo-back</code> → <code>back-btn</code></li>
+<li><code>demo-nav</code> / <code>demo-nav__button</code> → <code>article-nav</code> / <code>article-nav__btn</code></li>
+<li>封面类名 → <code>card-article</code> / <code>card-quote</code> / <code>sidebar-card</code></li>
+</ul>
+
+<p>同时从数据模型中移除了 <code>coverClass</code> 字段，简化为 <code>cardFormat</code>（standard/quote）+ <code>coverImage</code> 两个字段。</p>
+
+<h4>9. 其他修复</h4>
+
+<p><strong>返回按钮白色修复</strong>：MDL 的 <code>mdl-button--colored</code> 会应用 accent 色而非白色，改用 <code>mdl-color--white</code> + <code>mdl-color-text--grey-900</code> 组合实现白底灰字的返回按钮。</p>
+
+<p><strong>无封面卡片背景色</strong>：移除默认封面图片（<code>images/road.jpg</code>），未上传封面的卡片显示 <code>#37474f</code>（blue-grey 800）实色背景，而非 MDL 主题的 <code>mdl-color--primary-dark</code>（灰色，不美观）。</p>
+
+<p><strong>文件上传按钮修复</strong>：将 <code>&lt;button onclick="document.getElementById().click()"&gt;</code> 改为 <code>&lt;label for="fileInput"&gt;</code>，解决跨浏览器兼容性问题，同时修复了 flex 容器中 label 按钮文字不居中的 bug。</p>
+
+<p><strong>编辑提示栏优化</strong>：解决长标题文章导致"取消"按钮换行的问题，使用 <code>text-overflow: ellipsis</code> 截断标题文本，"取消"按钮设置 <code>white-space: nowrap; flex-shrink: 0;</code> 确保始终单行显示。</p>
+
+<div class="code-with-text">CSS: edit-notice layout fix
+<pre class="language-css"><code class="language-css">/* Before: justify-content causes button to wrap */
+.edit-notice {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* After: title truncates, button never shrinks */
+.edit-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.edit-notice span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+}
+.edit-notice .md-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}</code></pre>
+</div>
+
+<h4>10. 博客背景图管理</h4>
+<p>管理后台新增背景图上传/删除功能，自定义背景图存储在 <code>blog/backgrounds/</code> 目录，通过 CSS <code>body::before</code> 伪元素覆盖默认山景图。</p>
+
+<p><img src="../../images/changelog-homepage.png" alt="博客首页（自定义背景图）" style="max-width:100%;border-radius:4px;margin:12px auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></p>
+<h4>总结</h4>
+<p>本次重构涉及以下核心改动：</p>
+
+<ul>
+<li>CDN → 本地资源迁移 + 主题切换</li>
+<li>Flask 管理后端（文章 CRUD、封面上传、背景图管理、草稿系统）</li>
+<li>Prism 代码高亮 + <code>code-with-text</code> 格式 + click-to-copy</li>
+<li>标准/引用卡片分离（引用不生成详情页）</li>
+<li>动态文章导航（前一篇/后一篇 + tooltip）</li>
+<li>EasyMDE Markdown 编辑器 + 服务端 1:1 预览</li>
+<li>CSS 类名全面语义化重构</li>
+<li>多项 UI bug 修复（按钮居中、换行、路径、颜色）</li>
+</ul>
+
+<p>如果你也在用 MDL 搭建博客，希望这些实践能给你一些参考。有问题欢迎留言讨论！</p>
+            </div>
+            <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+              <div class="comment mdl-color-text--grey-700"></div>
+            </div>
+          </div>
+          <nav class="article-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="v2-1-updates.html" class="article-nav__btn" title="博客 V2.1 迭代记录 - 主题系统、暗色模式与 MD1 规范化 (2026-06-11)">
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+              </button>
+              前一篇
+            </a>
+            <div class="section-spacer"></div>
+            <a href="quick-start.html" class="article-nav__btn" title="快速入门 (2026-06-07)">
+              后一篇
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </a>          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer--left-section">
+            <button class="footer-icon-btn" title="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17A4.92 4.92 0 0014.72 4c-2.73 0-4.94 2.21-4.94 4.94 0 .39.04.77.13 1.13C6.64 9.87 3.53 8.17 1.43 5.57c-.43.73-.67 1.58-.67 2.49 0 1.71.87 3.22 2.19 4.1-.81-.03-1.57-.25-2.24-.62v.06c0 2.39 1.7 4.38 3.96 4.83-.42.11-.85.17-1.3.17-.32 0-.63-.03-.93-.09.63 1.96 2.46 3.39 4.63 3.43A9.89 9.89 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14 0-.21 0-.42-.02-.63A9.94 9.94 0 0024 4.56a9.8 9.8 0 01-2.83.77z"/></svg>
+              <span class="visuallyhidden">Twitter</span>
+            </button>
+            <button class="footer-icon-btn" title="Facebook">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.85c0-2.52 1.49-3.93 3.78-3.93 1.09 0 2.04.08 2.31.12v2.62h-1.58c-1.24 0-1.48.59-1.48 1.46v1.87h2.96l-.39 2.89h-2.57v6.99C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>
+              <span class="visuallyhidden">Facebook</span>
+            </button>
+            <button class="footer-icon-btn" title="Google">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span class="visuallyhidden">Google</span>
+            </button>
+          </div>
+          <div class="mdl-mini-footer--right-section">
+            <label class="blog-dark-switch">
+            <span class="blog-dark-switch__label">深色模式</span>
+            <input type="checkbox" id="dark-mode-switch">
+            <span class="blog-dark-switch__track">
+              <span class="blog-dark-switch__thumb"></span>
+              <span class="blog-dark-switch__ripple-container mdl-js-ripple-effect">
+                <span class="mdl-ripple"></span>
+              </span>
+            </span>
+          </label>
+            <button class="footer-icon-btn" title="Share">
+              <i class="material-icons" role="presentation">share</i>
+              <span class="visuallyhidden">share</span>
+            </button>
+          </div>
+        </footer>
+      </main>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="../../lib/mdl/material.min.js"></script>
+    <script src="../../file/javascript/snippets.js"></script>
+    <!-- Prism 代码高亮（含17种语言） -->
+    <script src="../../file/javascript/prism-bundle.min.js"></script>
+  </body>
+</html>
