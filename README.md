@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '2c299775-2321-4f38-93d0-1512c0bcf998'
-  PropagateID: '2c299775-2321-4f38-93d0-1512c0bcf998'
-  ReservedCode1: 'e94e1819-0049-45e6-9d1b-412b8feef71d'
-  ReservedCode2: 'e94e1819-0049-45e6-9d1b-412b8feef71d'
+  ProduceID: '4d7c506e-a1a2-45de-a1fd-5a7b459ceaf7'
+  PropagateID: '4d7c506e-a1a2-45de-a1fd-5a7b459ceaf7'
+  ReservedCode1: '66c8ec6d-7730-497f-ae2b-bea2787182c5'
+  ReservedCode2: '66c8ec6d-7730-497f-ae2b-bea2787182c5'
 ---
 
 # MDL Blog
