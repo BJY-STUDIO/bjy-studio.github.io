@@ -470,7 +470,10 @@
     <div class="md-datepicker-overlay" id="dp-overlay">
         <div class="md-datepicker-dialog">
             <div class="md-datepicker-header">
-                <div class="md-datepicker-monthyear" id="dp-monthyear" onclick="dpToggleYearList()"></div>
+                <div class="md-datepicker-monthyear">
+                    <span class="md-datepicker-year" id="dp-header-year" onclick="dpToggleYearList()"></span>
+                    <span class="md-datepicker-month-name" id="dp-header-month" onclick="dpToggleMonthGrid()"></span>
+                </div>
                 <div class="md-datepicker-nav">
                     <button type="button" class="md-datepicker-nav-btn" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
                     <button type="button" class="md-datepicker-nav-btn" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
@@ -486,6 +489,7 @@
                 <div class="md-datepicker-weekday">六</div>
             </div>
             <div class="md-datepicker-yearlist" id="dp-yearlist"></div>
+            <div class="md-datepicker-monthgrid" id="dp-monthgrid"></div>
             <div id="dp-calendar">
                 <div class="md-datepicker-grid" id="dp-grid"></div>
             </div>
@@ -808,12 +812,14 @@
     function dpToggleYearList() {
         var yearlist = document.getElementById('dp-yearlist');
         var calendar = document.getElementById('dp-calendar');
+        var monthgrid = document.getElementById('dp-monthgrid');
         if (yearlist.classList.contains('show')) {
             yearlist.classList.remove('show');
             calendar.style.display = '';
             dpRenderCalendar();
         } else {
             calendar.style.display = 'none';
+            monthgrid.classList.remove('show');
             yearlist.classList.add('show');
             dpRenderYearList();
             // Scroll selected year into view
@@ -842,9 +848,45 @@
         calendar.style.display = '';
         dpRenderCalendar();
     }
+    // ---- 月份选择网格 ----
+    var DP_MONTHS_SHORT = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    function dpToggleMonthGrid() {
+        var monthgrid = document.getElementById('dp-monthgrid');
+        var calendar = document.getElementById('dp-calendar');
+        var yearlist = document.getElementById('dp-yearlist');
+        if (monthgrid.classList.contains('show')) {
+            monthgrid.classList.remove('show');
+            calendar.style.display = '';
+            dpRenderCalendar();
+        } else {
+            calendar.style.display = 'none';
+            yearlist.classList.remove('show');
+            monthgrid.classList.add('show');
+            dpRenderMonthGrid();
+        }
+    }
+    function dpRenderMonthGrid() {
+        var container = document.getElementById('dp-monthgrid');
+        var html = '';
+        for (var m = 0; m < 12; m++) {
+            var cls = 'md-datepicker-month-item';
+            if (m === dpState.month) cls += ' md-datepicker-month-item--selected';
+            html += '<button type="button" class="' + cls + '" onclick="dpSelectMonth(' + m + ')">' + DP_MONTHS_SHORT[m] + '</button>';
+        }
+        container.innerHTML = html;
+    }
+    function dpSelectMonth(month) {
+        dpState.month = month;
+        var monthgrid = document.getElementById('dp-monthgrid');
+        var calendar = document.getElementById('dp-calendar');
+        monthgrid.classList.remove('show');
+        calendar.style.display = '';
+        dpRenderCalendar();
+    }
     function dpRenderCalendar() {
-        // Update header
-        document.getElementById('dp-monthyear').textContent = dpState.year + '年 ' + DP_MONTHS[dpState.month];
+        // Update header — 分别设置年份和月份
+        document.getElementById('dp-header-year').textContent = dpState.year + '年 ';
+        document.getElementById('dp-header-month').textContent = DP_MONTHS[dpState.month];
         var grid = document.getElementById('dp-grid');
         var firstDay = new Date(dpState.year, dpState.month, 1).getDay(); // 0=Sun
         var daysInMonth = new Date(dpState.year, dpState.month + 1, 0).getDate();
@@ -1195,26 +1237,19 @@
         // 关闭所有 dropdown — 同时恢复父级 overflow 和 z-index
         document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
             d.classList.remove('md-dropdown--open');
-            var menu = d.querySelector('.md-dropdown__menu');
-            if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
             var cardBody = d.closest('.md-card-body');
             if (cardBody) cardBody.style.overflow = '';
+            var card = d.closest('.md-card');
+            if (card) card.style.zIndex = '';
         });
         if (!isOpen) {
             el.classList.add('md-dropdown--open');
-            // 允许 dropdown 超出 card 边界
+            // 允许 dropdown 超出 card-body 的 overflow:hidden
             var cardBody = el.closest('.md-card-body');
             if (cardBody) cardBody.style.overflow = 'visible';
-            // 使用 fixed 定位让菜单脱离 stacking context，防止被相邻卡片遮挡
-            var menu = el.querySelector('.md-dropdown__menu');
-            if (menu) {
-                var trigger = el.querySelector('.md-dropdown__trigger');
-                var triggerRect = trigger.getBoundingClientRect();
-                menu.style.position = 'fixed';
-                menu.style.top = (triggerRect.bottom + 4) + 'px';
-                menu.style.left = triggerRect.left + 'px';
-                menu.style.minWidth = triggerRect.width + 'px';
-            }
+            // 提升父卡片 z-index，防止被相邻卡片遮挡
+            var card = el.closest('.md-card');
+            if (card) card.style.zIndex = '200';
         }
     }
     function selectDropdown(id, value, label) {
@@ -1231,22 +1266,22 @@
         var hiddenId = id.replace('-dropdown', '');
         var hidden = document.getElementById(hiddenId);
         if (hidden) hidden.value = value;
-        // 关闭菜单
+        // 关闭菜单 — 恢复 overflow 和 z-index
         el.classList.remove('md-dropdown--open');
-        var menu = el.querySelector('.md-dropdown__menu');
-        if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
         var cardBody = el.closest('.md-card-body');
         if (cardBody) cardBody.style.overflow = '';
+        var card = el.closest('.md-card');
+        if (card) card.style.zIndex = '';
     }
     // 点击外部关闭 dropdown
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.md-dropdown')) {
             document.querySelectorAll('.md-dropdown--open').forEach(function(d) {
                 d.classList.remove('md-dropdown--open');
-                var menu = d.querySelector('.md-dropdown__menu');
-                if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
                 var cardBody = d.closest('.md-card-body');
                 if (cardBody) cardBody.style.overflow = '';
+                var card = d.closest('.md-card');
+                if (card) card.style.zIndex = '';
             });
         }
     });
@@ -1896,10 +1931,11 @@
             el.classList.toggle('md-dropdown__option--selected', el.getAttribute('data-value') === mode);
         });
         document.getElementById('darkmode-dropdown').classList.remove('md-dropdown--open');
-        var menu = document.querySelector('#darkmode-dropdown .md-dropdown__menu');
-        if (menu) { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; }
-        var cardBody = document.getElementById('darkmode-dropdown').closest('.md-card-body');
+        var dd = document.getElementById('darkmode-dropdown');
+        var cardBody = dd.closest('.md-card-body');
         if (cardBody) cardBody.style.overflow = '';
+        var card = dd.closest('.md-card');
+        if (card) card.style.zIndex = '';
         applyDarkMode(mode);
     }
 

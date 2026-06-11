@@ -1814,6 +1814,66 @@ body {
     padding: 8px 24px;
 }
 
+/* ---- 月份选择网格 ---- */
+/* 4×3 网格布局，白色背景，默认隐藏 */
+.md-datepicker-monthgrid {
+    display: none;
+    background: #fff;
+    padding: 16px;
+}
+.md-datepicker-monthgrid.show {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    animation: dp-year-in .2s ease forwards;
+}
+
+/* 月份选项按钮：36dp 高、14sp、圆角 */
+.md-datepicker-month-item {
+    height: 36px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0,0,0,0.87);
+    transition: background .15s;
+}
+.md-datepicker-month-item:hover {
+    background: rgba(0,0,0,0.08);
+}
+
+/* 选中月份：主色背景、白字 */
+.md-datepicker-month-item--selected {
+    background: var(--md-primary);
+    color: #fff;
+    font-weight: 500;
+}
+.md-datepicker-month-item--selected:hover {
+    background: var(--md-primary-dark);
+}
+
+/* ---- Header 年份/月份点击区域 ---- */
+/* 年份可点击进入年份选择视图 */
+.md-datepicker-year {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+}
+.md-datepicker-year:hover {
+    opacity: 0.85;
+}
+/* 月份可点击进入月份选择视图 */
+.md-datepicker-month-name {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+}
+.md-datepicker-month-name:hover {
+    opacity: 0.85;
+}
+
 /* 日期选择器操作区：flex 右对齐、1dp 顶部分割线 */
 .md-datepicker-actions {
     display: flex;
@@ -2607,6 +2667,38 @@ html[data-mode="dark"] .md-datepicker-year {
 }
 html[data-mode="dark"] .md-datepicker-year--selected {
     color: var(--md-primary);
+}
+
+/* 年份滚动列表暗色：#424242 背景、87% 白文字、选中主色 24sp */
+html[data-mode="dark"] .md-datepicker-yearlist {
+    background: #424242;
+}
+html[data-mode="dark"] .md-datepicker-year-item {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-datepicker-year-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-datepicker-year-item--selected {
+    color: var(--md-primary);
+}
+
+/* 月份网格视图暗色：#424242 背景、87% 白文字、选中主色背景 */
+html[data-mode="dark"] .md-datepicker-monthgrid {
+    background: #424242;
+}
+html[data-mode="dark"] .md-datepicker-month-item {
+    color: rgba(255,255,255,0.87);
+}
+html[data-mode="dark"] .md-datepicker-month-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+html[data-mode="dark"] .md-datepicker-month-item--selected {
+    background: var(--md-primary);
+    color: #fff;
+}
+html[data-mode="dark"] .md-datepicker-month-item--selected:hover {
+    background: var(--md-primary-dark);
 }
 
 /* 置顶按钮：54% 白 / 置顶态 accent 色 */
