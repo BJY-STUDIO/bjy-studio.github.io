@@ -1676,13 +1676,19 @@ body {
     white-space: nowrap;
 }
 
-/* 右侧区域容器：flex 纵向排列、24dp 左右内边距统一内容区域 */
+/* 右侧区域容器：flex 纵向排列、24dp 左右内边距统一内容区域
+   position:relative 给 actions 绝对定位提供锚点
+   padding-bottom 为绝对定位的 actions 预留空间
+   overflow:hidden + min-height:0 约束 flex 收缩 */
 .md-datepicker-body {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
-    padding: 0 24px;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+    padding: 0 24px 52px 24px;
 }
 
 /* 右侧月份导航栏：居中布局，总内容宽度与星期行、日期行一致（7×40px）
@@ -1756,16 +1762,35 @@ body {
     flex-shrink: 0;
 }
 
+/* 日历内容包裹层：flex:1 传递 body→grid 的高度约束
+   #dp-calendar 无自身样式，需设为 flex 子项才能让 grid 正确拉伸/收缩 */
+#dp-calendar {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 /* 日期网格区域：overflow hidden 裁剪月份切换滑动动画、防止水平滚动条
-   body 有 24dp 内边距，40dp hover 圆不会被裁剪 */
+   body 有 24dp 内边距，40dp hover 圆不会被裁剪
+   min-height:0 允许 flex 收缩，6行月份时行高自动压缩
+   flex-direction:column 让行均匀分配可用高度 */
 .md-datepicker-grid {
     padding: 0;
     flex: 1;
+    min-height: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 月份切换滑动动画 — 容器 */
+/* 月份切换滑动动画 — 容器
+   flex:1 + column 传递 grid 的高度约束到行 */
 .md-datepicker-grid-inner {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s ease;
 }
 
@@ -1791,10 +1816,14 @@ body {
     opacity: 0;
 }
 
-/* 日期行：flex 居中对齐，与星期行和导航栏共享 7×40px 网格 */
+/* 日期行：flex 居中对齐，与星期行和导航栏共享 7×40px 网格
+   flex:1 让行在 grid 中均匀分配高度，6行时自动压缩行距 */
 .md-datepicker-row {
     display: flex;
     justify-content: center;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
 }
 
 /* 日期格按钮：MD1 规范 — 40x40dp 固定正方形、圆形、14sp Roboto
@@ -1935,13 +1964,17 @@ body {
     background: var(--md-primary-dark);
 }
 
-/* 底部操作按钮：右对齐、margin-top:auto 固定吸底、无分隔线 */
+/* 底部操作按钮：绝对定位在 body 右下角，不受日历行数影响
+   body 的 padding-bottom:52px 为此预留空间 */
 .md-datepicker-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    padding: 8px 0 8px 0;
-    margin-top: auto;
+    padding: 8px 24px 8px 0;
 }
 .md-datepicker-actions .md-btn {
     min-height: 36px;
@@ -3021,7 +3054,8 @@ html[data-mode="dark"] .md-card-supporting-title {
         font-size: 32px;
         font-weight: 500;
     }
-    /* 移动端 body：日历+年份列表+按钮，overflow:hidden 防止年份列表溢出 */
+    /* 移动端 body：取消 padding-bottom（桌面端为绝对定位 actions 预留空间）
+       移动端 height:auto，actions 用普通流布局自然跟在日历后面 */
     .md-datepicker-body {
         padding: 0 16px;
         flex: 1;
@@ -3060,8 +3094,11 @@ html[data-mode="dark"] .md-card-supporting-title {
         width: auto;
         flex: 1;
     }
+    /* 移动端 actions：静态定位（桌面端 absolute），普通流跟随日历 */
     .md-datepicker-actions {
         padding: 8px 16px;
+        position: static;
+        margin-top: auto;
     }
     .md-timepicker-dialog {
         width: min(310px, calc(100vw - 32px));
