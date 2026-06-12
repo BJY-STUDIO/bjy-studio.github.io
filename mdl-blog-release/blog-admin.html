@@ -916,7 +916,7 @@
         var displayDay = dpState.selectedDate ? dpState.selectedDate : new Date(dpState.year, dpState.month, 1);
         var dayNames = ['周日,','周一,','周二,','周三,','周四,','周五,','周六,'];
         weekdayEl.textContent = dayNames[displayDay.getDay()];
-        dateEl.textContent = DP_MONTHS[displayDay.getMonth()] + ' ' + displayDay.getDate() + '日';
+        dateEl.textContent = (displayDay.getMonth() + 1) + ' ' + displayDay.getDate() + '日';
         // 更新右侧导航：月份年份
         document.getElementById('dp-header-month').textContent = dpState.year + '年 ' + DP_MONTHS[dpState.month];
         var grid = document.getElementById('dp-grid');
