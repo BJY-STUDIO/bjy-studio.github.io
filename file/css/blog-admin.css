@@ -2573,7 +2573,24 @@ html[data-mode="dark"] .md-timepicker-dialog {
     background: #424242;
 }
 
-/* 左侧面板：主题色背景亮暗统一，无需暗色覆盖 */
+/* 左侧面板/移动端头部：MD1 Dark 规范 — 不使用主题色，
+   改用比 dialog 稍浅的中性灰 #525252（dialog 为 #424242），
+   通过灰度差区分层级，避免暗色下高饱和彩色刺眼 */
+html[data-mode="dark"] .md-datepicker-header {
+    background: #525252;
+}
+/* 暗色头部年份：70% 白（同浅色模式的 70% 白逻辑） */
+html[data-mode="dark"] .md-datepicker-year {
+    color: rgba(255,255,255,0.7);
+}
+html[data-mode="dark"] .md-datepicker-year:hover {
+    color: rgba(255,255,255,1);
+}
+/* 暗色头部星期、日期：纯白 */
+html[data-mode="dark"] .md-datepicker-selected-weekday,
+html[data-mode="dark"] .md-datepicker-selected-date {
+    color: #fff;
+}
 
 /* 日期网格区：87% 白 */
 html[data-mode="dark"] .md-datepicker-daynames,
