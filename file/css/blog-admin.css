@@ -1680,29 +1680,42 @@ body {
     padding: 0 24px;
 }
 
-/* 右侧月份导航栏：7列等宽布局，箭头在第1/7列居中，年月在中间列居中
-   与下方星期行和日期列的7列精确对齐 */
+/* 右侧月份导航栏：居中布局，总内容宽度与星期行、日期行一致（7×40px）
+   箭头36dp在40dp列内居中，年月文字在中间5列居中 */
 .md-datepicker-nav {
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 12px 0 4px;
+    gap: 0;
 }
 
-/* 月份/年份文字：占据中间5列、居中、87% 黑、14sp medium */
+/* 导航箭头列：40dp 宽，按钮 36dp 在其中居中 */
+.md-datepicker-nav-btn--left {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.md-datepicker-nav-btn--right {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* 月份/年份文字：中间5列宽度(200px)、居中、87% 黑、14sp medium */
 .md-datepicker-monthyear {
     font-size: 14px;
     font-weight: 500;
     color: rgba(0,0,0,0.87);
     cursor: pointer;
     user-select: none;
-    flex: 5;
+    width: 200px;
     text-align: center;
+    flex-shrink: 0;
 }
 .md-datepicker-monthyear:hover { opacity: 0.7; }
-
-/* 导航箭头按钮：各占1列，与对应日期列精确对齐 */
-.md-datepicker-nav-btn--left { flex: 1; display: flex; justify-content: center; }
-.md-datepicker-nav-btn--right { flex: 1; display: flex; justify-content: center; }
 
 /* 导航按钮：MD1 规范 — 36dp 圆形、54% 黑图标、hover 半透明背景 */
 .md-datepicker-nav-btn {
@@ -1721,18 +1734,21 @@ body {
 .md-datepicker-nav-btn:hover { background: rgba(0,0,0,0.08); }
 .md-datepicker-nav-btn i { font-size: 20px; }
 
-/* 星期标签行：7列 flex 等宽，无额外 padding，与导航栏和日期列精确对齐 */
+/* 星期标签行：flex 居中，与日期行相同的格子尺寸和分布 */
 .md-datepicker-weekdays {
     display: flex;
+    justify-content: center;
     padding: 0 0 4px;
 }
 .md-datepicker-weekday {
-    flex: 1;
+    width: 40px;
+    height: auto;
     text-align: center;
     font-size: 12px;
     font-weight: 500;
     color: rgba(0,0,0,0.38);
     line-height: 28px;
+    flex-shrink: 0;
 }
 
 /* 日期网格区域：无 padding，由行内每格 flex:1 自然等分，与导航栏和星期行精确对齐 */
@@ -1773,26 +1789,23 @@ body {
 .md-datepicker-row {
     display: flex;
 }
-/* 每个日期格子 flex:1 等分列宽，内容居中 */
-.md-datepicker-row > .md-datepicker-day {
-    flex: 1 1 0%;
+/* 日期行：flex 居中对齐，每格居中 */
+.md-datepicker-row {
     display: flex;
-    align-items: center;
     justify-content: center;
 }
 
-/* 日期格按钮：在 flex:1 列内居中、圆形、14sp Roboto
-   尺寸由列宽决定，用 aspect-ratio 保持正方形，max-width 限制最大尺寸 */
+/* 日期格按钮：MD1 规范 — 40x40dp 固定正方形、圆形、14sp Roboto
+   在行内居中，不撑满列宽，避免相邻 hover 圆形相切 */
 .md-datepicker-day {
-    width: 100%;
-    aspect-ratio: 1;
-    max-width: 40px;
+    width: 40px;
+    height: 40px;
     border: none;
     outline: none;
     background: none;
     cursor: pointer;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
@@ -1803,6 +1816,7 @@ body {
     -webkit-appearance: none;
     appearance: none;
     padding: 0;
+    margin: 1px;
 }
 .md-datepicker-day:hover { background: rgba(0,0,0,0.08); }
 
