@@ -1655,6 +1655,11 @@ body {
     color: #fff;
 }
 
+/* 左侧面板星期+日期包装：桌面端 display:contents 透传 flex 子项 */
+.md-datepicker-selected-info {
+    display: contents;
+}
+
 /* 左侧面板星期行：纯白色、与月日同字号同粗，如 "周四," */
 .md-datepicker-selected-weekday {
     color: #fff;
@@ -2984,8 +2989,8 @@ html[data-mode="dark"] .md-card-supporting-title {
     .md-datepicker-dialog {
         width: min(540px, calc(100vw - 32px));
     }
-    /* 移动端日期选择器：竖屏布局 — 隐藏左侧面板，上下堆叠
-       MD1 规范：Portrait picker 无左侧年份面板，标题栏(年+选中日期)在顶部 */
+    /* 移动端日期选择器：竖屏布局 — 无左侧面板
+       MD1 Portrait 规范：第一行年份居中，第二行星期+日期居中同字号 */
     .md-datepicker-dialog {
         flex-direction: column;
         width: min(310px, calc(100vw - 32px));
@@ -2995,28 +3000,39 @@ html[data-mode="dark"] .md-card-supporting-title {
     .md-datepicker-header {
         width: 100%;
         min-width: 100%;
-        padding: 16px 24px 12px;
-        flex-direction: row;
-        align-items: baseline;
-        gap: 8px;
+        padding: 16px 24px 8px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    /* 移动端 wrapper：显示为 block，让星期和日期在同一行 */
+    .md-datepicker-selected-info {
+        display: block;
     }
     .md-datepicker-year {
         margin-bottom: 0;
-        margin-right: 8px;
+        margin-right: 0;
+        font-size: 16px;
     }
     .md-datepicker-selected-weekday {
-        font-size: 12px;
+        font-size: 32px;
         font-weight: 500;
     }
     .md-datepicker-selected-date {
-        font-size: 16px;
+        font-size: 32px;
         font-weight: 500;
     }
+    /* 移动端 body：日历+年份列表+按钮，overflow:hidden 防止年份列表溢出 */
     .md-datepicker-body {
         padding: 0 16px;
         flex: 1;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
+    }
+    .md-datepicker-yearlist {
+        flex: 1;
+        overflow-y: auto;
     }
     .md-datepicker-nav {
         padding: 8px 0 4px;

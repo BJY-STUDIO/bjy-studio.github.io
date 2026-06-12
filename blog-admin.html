@@ -469,11 +469,13 @@
     <!-- MD1 Date Picker Dialog — Landscape layout per MD1 spec -->
     <div class="md-datepicker-overlay" id="dp-overlay">
         <div class="md-datepicker-dialog">
-            <!-- 左侧面板：主题色背景、年份 + 选中日期（星期一行、月日一行） -->
+            <!-- 左侧面板/移动端顶部：主题色背景、年份 + 选中日期 -->
             <div class="md-datepicker-header">
                 <span class="md-datepicker-year" id="dp-header-year" onclick="dpToggleYearList()"></span>
-                <span class="md-datepicker-selected-weekday" id="dp-header-weekday"></span>
-                <span class="md-datepicker-selected-date" id="dp-header-date"></span>
+                <div class="md-datepicker-selected-info">
+                    <span class="md-datepicker-selected-weekday" id="dp-header-weekday"></span>
+                    <span class="md-datepicker-selected-date" id="dp-header-date"></span>
+                </div>
             </div>
             <!-- 右侧区域：月导航 + 日历内容 + 操作按钮 -->
             <div class="md-datepicker-body">
