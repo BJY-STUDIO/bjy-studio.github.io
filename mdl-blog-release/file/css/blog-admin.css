@@ -1654,19 +1654,19 @@ body {
     color: #fff;
 }
 
-/* 左侧面板星期行：纯白色、与月日同色，medium 500，如 "周四," */
+/* 左侧面板星期行：纯白色、与月日同字号同粗，如 "周四," */
 .md-datepicker-selected-weekday {
     color: #fff;
-    font-size: 14px;
+    font-size: 32px;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.2;
 }
 
-/* 左侧面板月日行：白色、34sp light，如 "6月 12日" */
+/* 左侧面板月日行：白色、与星期同字号同粗，如 "6月 12日" */
 .md-datepicker-selected-date {
     color: #fff;
-    font-size: 34px;
-    font-weight: 300;
+    font-size: 32px;
+    font-weight: 500;
     line-height: 1.2;
     white-space: nowrap;
 }
