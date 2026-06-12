@@ -1604,14 +1604,13 @@ body {
     to { background: rgba(0,0,0,0); }
 }
 
-/* 日期选择器面板：横屏布局 — 左右分栏、2dp 圆角、min-height 保证6行日期不溢出
-   不设固定高度，让 grid flex:1 + actions margin-top:auto 自适应 */
+/* 日期选择器面板：横屏布局 — 左右分栏、2dp 圆角、固定 440dp 高度
+   固定高度确保5/6行月份切换时不跳动，年份列表 flex:1 正确滚动 */
 .md-datepicker-dialog {
     background: #fff;
     border-radius: 2px;
     width: 540px;
-    min-height: 380px;
-    max-height: 440px;
+    height: 440px;
     display: flex;
     box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
     font-family: 'Roboto', sans-serif;
@@ -1757,12 +1756,12 @@ body {
     flex-shrink: 0;
 }
 
-/* 日期网格区域：padding 0，让行与星期行、导航栏同宽居中
-   不设 overflow hidden，避免边缘 hover 圆形被裁剪 */
+/* 日期网格区域：overflow hidden 裁剪月份切换滑动动画、防止水平滚动条
+   body 有 24dp 内边距，40dp hover 圆不会被裁剪 */
 .md-datepicker-grid {
     padding: 0;
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 /* 月份切换滑动动画 — 容器 */
