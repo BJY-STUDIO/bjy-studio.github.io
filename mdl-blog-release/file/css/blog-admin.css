@@ -2987,6 +2987,70 @@ html[data-mode="dark"] .md-card-supporting-title {
     .md-datepicker-dialog {
         width: min(540px, calc(100vw - 32px));
     }
+    /* 移动端日期选择器：竖屏布局 — 隐藏左侧面板，上下堆叠
+       MD1 规范：Portrait picker 无左侧年份面板，标题栏(年+选中日期)在顶部 */
+    .md-datepicker-dialog {
+        flex-direction: column;
+        width: min(310px, calc(100vw - 32px));
+        height: auto;
+        min-height: 380px;
+    }
+    .md-datepicker-header {
+        width: 100%;
+        min-width: 100%;
+        padding: 16px 24px 12px;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 8px;
+    }
+    .md-datepicker-year {
+        margin-bottom: 0;
+        margin-right: 8px;
+    }
+    .md-datepicker-selected-weekday {
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .md-datepicker-selected-date {
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .md-datepicker-body {
+        padding: 0 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .md-datepicker-nav {
+        padding: 8px 0 4px;
+    }
+    .md-datepicker-weekdays {
+        padding: 0 0 2px;
+    }
+    .md-datepicker-weekday {
+        width: 36px;
+    }
+    .md-datepicker-grid {
+        flex: 1;
+    }
+    .md-datepicker-day {
+        width: 36px;
+        height: 36px;
+        margin: 0;
+    }
+    .md-datepicker-nav-btn--left {
+        width: 36px;
+    }
+    .md-datepicker-nav-btn--right {
+        width: 36px;
+    }
+    .md-datepicker-monthyear {
+        width: auto;
+        flex: 1;
+    }
+    .md-datepicker-actions {
+        padding: 8px 16px;
+    }
     .md-timepicker-dialog {
         width: min(310px, calc(100vw - 32px));
     }
