@@ -102,7 +102,9 @@ body {
 .app-bar a:hover { background: rgba(255,255,255,0.12); }
 
 /* ==== 3. 主容器 ==== */
-/* 双栏网格：左 3fr 右 5fr、最大 1600px、24dp 外边距和间距 */
+/* 双栏网格：左 3fr 右 5fr、最大 1600px、24dp 外边距和间距
+   min-width:0 消除 grid 子元素的隐式最小宽度（grid 默认 min-width:auto
+   会被内部内容撑开，导致 fr 列无法正常收缩，出现水平滚动条） */
 .main-container {
     max-width: 1600px;
     margin: 24px auto;
@@ -111,11 +113,12 @@ body {
     grid-template-columns: 3fr 5fr;
     gap: 24px;
     align-items: start;
+    overflow: hidden;
 }
+.main-container > * { min-width: 0; }
 /* 窄屏单栏 */
 @media (max-width: 960px) {
     .main-container { grid-template-columns: 1fr; }
-    .main-container > * { min-width: 0; }
 }
 
 /* ==== 4. MD1 Card ==== */
