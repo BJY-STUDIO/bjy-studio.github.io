@@ -3027,18 +3027,16 @@ html[data-mode="dark"] .md-card-supporting-title {
        MD1 Portrait 规范：第一行年份左对齐，第二行星期+日期左对齐同字号
        header align-items 改为 flex-start（左对齐）而非 center
        padding 与 body 一致（0 16px）保证上下左右边界对齐
-       max-height 限制总高度，防止年份列表撑开超出视口 */
+       固定高度 380dp，与日历/年份列表视图共享，防止年份列表撑高 */
     .md-datepicker-dialog {
         flex-direction: column;
         width: min(310px, calc(100vw - 32px));
-        height: auto;
-        min-height: 380px;
-        max-height: calc(100vh - 48px);
+        height: 380px;
     }
     .md-datepicker-header {
         width: 100%;
         min-width: 100%;
-        padding: 16px 16px 8px;
+        padding: 16px 16px 20px;
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
@@ -3093,6 +3091,12 @@ html[data-mode="dark"] .md-card-supporting-title {
         height: 36px;
         margin: 0;
     }
+    /* 移动端 nav 按钮：36×36 正方形保证 hover 圆形不变形 */
+    .md-datepicker-nav-btn {
+        width: 36px;
+        height: 36px;
+    }
+    .md-datepicker-nav-btn i { font-size: 18px; }
     .md-datepicker-nav-btn--left {
         width: 36px;
     }
