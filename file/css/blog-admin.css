@@ -1604,30 +1604,30 @@ body {
     to { background: rgba(0,0,0,0); }
 }
 
-/* 日期选择器面板：横屏布局 — 左右分栏、2dp 圆角、固定 440dp 高度
-   固定高度确保5/6行月份切换时不跳动，年份列表 flex:1 正确滚动 */
+/* 日期选择器面板：横屏布局 — 左右分栏、2dp 圆角
+   MD1 规范尺寸：宽 528dp（中文面板加宽至 540dp），高 360dp
+   由父级 overlay (flex 居中) 定位，dialog 本身不设定位 */
 .md-datepicker-dialog {
     background: #fff;
     border-radius: 2px;
     width: 540px;
-    height: 440px;
+    height: 360px;
     display: flex;
     box-shadow: 0 24px 38px rgba(0,0,0,.22), 0 9px 46px rgba(0,0,0,.12);
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
     animation: dp-dialog-in .25s cubic-bezier(.4,0,.2,1) forwards;
-    transform-origin: center top;
 }
 .md-datepicker-overlay.closing .md-datepicker-dialog {
     animation: dp-dialog-out .15s cubic-bezier(.4,0,.2,1) forwards;
 }
 @keyframes dp-dialog-in {
-    from { opacity: 0; transform: scale(0.85) translateY(12px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
 }
 @keyframes dp-dialog-out {
-    from { opacity: 1; transform: scale(1) translateY(0); }
-    to { opacity: 0; transform: scale(0.85) translateY(12px); }
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.85); }
 }
 
 /* 左侧面板：MD1 规范 — 主题色背景、垂直排列年份 → 星期 → 月日 */
