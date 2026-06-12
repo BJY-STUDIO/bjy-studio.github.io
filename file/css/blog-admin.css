@@ -1630,8 +1630,7 @@ body {
     to { opacity: 0; transform: scale(0.85) translateY(12px); }
 }
 
-/* 左侧面板：MD1 规范 — 主题色背景、垂直排列年份和选中日期
-   中文日期比英文长，面板从 168dp 加宽至 210dp 以容纳 "周X, X月 XX日" 格式 */
+/* 左侧面板：MD1 规范 — 主题色背景、垂直排列年份 → 星期 → 月日 */
 .md-datepicker-header {
     background: var(--md-primary);
     width: 210px;
@@ -1655,8 +1654,15 @@ body {
     color: #fff;
 }
 
-/* 左侧面板选中日期：白色、34sp light、显示 "周X, X月 XX日"
-   中文不断行，溢出时自动缩放字体 */
+/* 左侧面板星期行：白色、14sp light，如 "周四," */
+.md-datepicker-selected-weekday {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.4;
+}
+
+/* 左侧面板月日行：白色、34sp light，如 "6月 12日" */
 .md-datepicker-selected-date {
     color: #fff;
     font-size: 34px;
@@ -1673,29 +1679,29 @@ body {
     min-width: 0;
 }
 
-/* 右侧月份导航栏：flex 左右分布、月份文字 + 前后箭头 */
+/* 右侧月份导航栏：三列布局 — 左箭头 | 居中年月 | 右箭头 */
 .md-datepicker-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 8px 4px 24px;
+    padding: 12px 8px 4px 8px;
 }
 
-/* 月份/年份文字：可点击进入月份选择 — 87% 黑、14sp medium */
+/* 月份/年份文字：可点击进入月份选择 — 居中、87% 黑、14sp medium */
 .md-datepicker-monthyear {
     font-size: 14px;
     font-weight: 500;
     color: rgba(0,0,0,0.87);
     cursor: pointer;
     user-select: none;
+    flex: 1;
+    text-align: center;
 }
 .md-datepicker-monthyear:hover { opacity: 0.7; }
 
-/* 前后导航箭头按钮组 */
-.md-datepicker-nav-arrows {
-    display: flex;
-    gap: 0;
-}
+/* 导航箭头按钮：各自占据一端 */
+.md-datepicker-nav-btn--left { margin-right: auto; }
+.md-datepicker-nav-btn--right { margin-left: auto; }
 
 /* 导航按钮：MD1 规范 — 36dp 圆形、54% 黑图标、hover 半透明背景 */
 .md-datepicker-nav-btn {
@@ -1714,13 +1720,16 @@ body {
 .md-datepicker-nav-btn:hover { background: rgba(0,0,0,0.08); }
 .md-datepicker-nav-btn i { font-size: 20px; }
 
-/* 星期标签行：flex 等宽、12sp medium、38% 黑 */
+/* 星期标签行：与日期网格精确对齐 — 容器同宽，每列居中 */
 .md-datepicker-weekdays {
     display: flex;
-    padding: 0 16px 4px;
+    justify-content: center;
+    padding: 0 8px 4px;
 }
 .md-datepicker-weekday {
-    flex: 1;
+    width: 36px;
+    min-width: 36px;
+    max-width: 36px;
     text-align: center;
     font-size: 12px;
     font-weight: 500;
@@ -1762,10 +1771,14 @@ body {
     opacity: 0;
 }
 
-/* 日期行：flex 居中 */
+/* 日期行：flex 等7列、每列居中对齐，与星期行精确对齐 */
 .md-datepicker-row {
     display: flex;
     justify-content: center;
+}
+/* 行内每个日期格子居中占位，确保与星期列对齐 */
+.md-datepicker-row > .md-datepicker-day {
+    flex: 0 0 auto;
 }
 
 /* 日期格按钮：36x36dp 固定尺寸、圆形、14sp Roboto */
@@ -1814,9 +1827,15 @@ body {
     pointer-events: none;
 }
 
-/* 非当月日期：26% 黑（视觉弱化） */
+/* 非当月日期：已移除，改为空占位 .md-datepicker-day--empty */
 .md-datepicker-day--outside {
     color: rgba(0,0,0,0.26);
+}
+
+/* 非当月空占位：不可见、不可点击 */
+.md-datepicker-day--empty {
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* 年份列表视图：固定高度可滚动、白色背景、默认隐藏 */
@@ -2684,6 +2703,22 @@ html[data-mode="dark"] .md-datepicker-weekday {
 /* 年份滚动列表暗色：#424242 背景、87% 白文字、选中主色 24sp */
 html[data-mode="dark"] .md-datepicker-yearlist {
     background: #424242;
+    /* 深色滚动条：轨道透明、滑块深灰圆角 */
+    scrollbar-color: rgba(255,255,255,0.32) transparent;
+    scrollbar-width: thin;
+}
+html[data-mode="dark"] .md-datepicker-yearlist::-webkit-scrollbar {
+    width: 8px;
+}
+html[data-mode="dark"] .md-datepicker-yearlist::-webkit-scrollbar-track {
+    background: transparent;
+}
+html[data-mode="dark"] .md-datepicker-yearlist::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.32);
+    border-radius: 4px;
+}
+html[data-mode="dark"] .md-datepicker-yearlist::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.50);
 }
 html[data-mode="dark"] .md-datepicker-year-item {
     color: rgba(255,255,255,0.87);

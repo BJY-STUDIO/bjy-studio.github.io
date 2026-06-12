@@ -469,19 +469,19 @@
     <!-- MD1 Date Picker Dialog — Landscape layout per MD1 spec -->
     <div class="md-datepicker-overlay" id="dp-overlay">
         <div class="md-datepicker-dialog">
-            <!-- 左侧面板：主题色背景、年份 + 选中日期 -->
+            <!-- 左侧面板：主题色背景、年份 + 选中日期（星期一行、月日一行） -->
             <div class="md-datepicker-header">
                 <span class="md-datepicker-year" id="dp-header-year" onclick="dpToggleYearList()"></span>
+                <span class="md-datepicker-selected-weekday" id="dp-header-weekday"></span>
                 <span class="md-datepicker-selected-date" id="dp-header-date"></span>
             </div>
             <!-- 右侧区域：月导航 + 日历内容 + 操作按钮 -->
             <div class="md-datepicker-body">
+                <!-- 右侧月份导航：左箭头 + 居中年月 + 右箭头 -->
                 <div class="md-datepicker-nav">
+                    <button type="button" class="md-datepicker-nav-btn md-datepicker-nav-btn--left" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
                     <span class="md-datepicker-monthyear" id="dp-header-month" onclick="dpToggleMonthGrid()"></span>
-                    <div class="md-datepicker-nav-arrows">
-                        <button type="button" class="md-datepicker-nav-btn" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
-                        <button type="button" class="md-datepicker-nav-btn" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
-                    </div>
+                    <button type="button" class="md-datepicker-nav-btn md-datepicker-nav-btn--right" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
                 </div>
                 <div class="md-datepicker-weekdays">
                     <div class="md-datepicker-weekday">日</div>
@@ -910,11 +910,13 @@
     function dpRenderCalendar() {
         // 更新左侧面板：年份
         document.getElementById('dp-header-year').textContent = dpState.year;
-        // 更新左侧面板：选中日期 (如 "周四, 6月 11") 或默认显示当前月
+        // 更新左侧面板：选中日期分两行 — 星期一行（如 "周四,"），月日一行（如 "6月 12日"）
+        var weekdayEl = document.getElementById('dp-header-weekday');
         var dateEl = document.getElementById('dp-header-date');
         var displayDay = dpState.selectedDate ? dpState.selectedDate : new Date(dpState.year, dpState.month, 1);
-        var dayNames = ['周日','周一','周二','周三','周四','周五','周六'];
-        dateEl.textContent = dayNames[displayDay.getDay()] + ', ' + DP_MONTHS[displayDay.getMonth()] + ' ' + displayDay.getDate() + '日';
+        var dayNames = ['周日,','周一,','周二,','周三,','周四,','周五,','周六,'];
+        weekdayEl.textContent = dayNames[displayDay.getDay()];
+        dateEl.textContent = DP_MONTHS[displayDay.getMonth()] + ' ' + displayDay.getDate() + '日';
         // 更新右侧导航：月份年份
         document.getElementById('dp-header-month').textContent = dpState.year + '年 ' + DP_MONTHS[dpState.month];
         var grid = document.getElementById('dp-grid');
@@ -926,11 +928,9 @@
         var selM = dpState.selectedDate ? dpState.selectedDate.getMonth() : null;
         var selD = dpState.selectedDate ? dpState.selectedDate.getDate() : null;
         var html = '';
-        // Previous month padding
-        var prevMonthDays = new Date(dpState.year, dpState.month, 0).getDate();
+        // Previous month padding — 空占位，不显示非当月日期
         for (var i = firstDay - 1; i >= 0; i--) {
-            var d = prevMonthDays - i;
-            html += '<button type="button" class="md-datepicker-day md-datepicker-day--outside" disabled>' + d + '</button>';
+            html += '<span class="md-datepicker-day md-datepicker-day--empty"></span>';
         }
         // Current month days
         for (var d = 1; d <= daysInMonth; d++) {
@@ -943,7 +943,7 @@
         var totalCells = firstDay + daysInMonth;
         var remaining = (7 - totalCells % 7) % 7;
         for (var i = 1; i <= remaining; i++) {
-            html += '<button type="button" class="md-datepicker-day md-datepicker-day--outside" disabled>' + i + '</button>';
+            html += '<span class="md-datepicker-day md-datepicker-day--empty"></span>';
         }
         // Wrap in rows
         var rowHtml = '';
