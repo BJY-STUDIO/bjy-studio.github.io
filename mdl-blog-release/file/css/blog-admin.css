@@ -1728,10 +1728,12 @@ body {
 }
 .md-datepicker-monthyear:hover { opacity: 0.7; }
 
-/* 导航按钮：MD1 规范 — 36dp 圆形、54% 黑图标、hover 半透明背景 */
+/* 导航按钮：MD1 规范 — 40dp 正方形与日历列同宽、圆形、54% 黑图标
+   40dp 宽保证箭头与下方 weekday/日期列精确对齐
+   内部图标 24dp 居中 */
 .md-datepicker-nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: none;
     background: none;
     cursor: pointer;
@@ -3022,20 +3024,24 @@ html[data-mode="dark"] .md-card-supporting-title {
         width: min(540px, calc(100vw - 32px));
     }
     /* 移动端日期选择器：竖屏布局 — 无左侧面板
-       MD1 Portrait 规范：第一行年份居中，第二行星期+日期居中同字号 */
+       MD1 Portrait 规范：第一行年份左对齐，第二行星期+日期左对齐同字号
+       header align-items 改为 flex-start（左对齐）而非 center
+       padding 与 body 一致（0 16px）保证上下左右边界对齐
+       max-height 限制总高度，防止年份列表撑开超出视口 */
     .md-datepicker-dialog {
         flex-direction: column;
         width: min(310px, calc(100vw - 32px));
         height: auto;
         min-height: 380px;
+        max-height: calc(100vh - 48px);
     }
     .md-datepicker-header {
         width: 100%;
         min-width: 100%;
-        padding: 16px 24px 8px;
+        padding: 16px 16px 8px;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
+        text-align: left;
     }
     /* 移动端 wrapper：显示为 block，让星期和日期在同一行 */
     .md-datepicker-selected-info {
@@ -3055,16 +3061,19 @@ html[data-mode="dark"] .md-card-supporting-title {
         font-weight: 500;
     }
     /* 移动端 body：取消 padding-bottom（桌面端为绝对定位 actions 预留空间）
-       移动端 height:auto，actions 用普通流布局自然跟在日历后面 */
+       移动端 height:auto，actions 用普通流布局自然跟在日历后面
+       min-height:0 + overflow:hidden 允许 flex 收缩，防止年份列表撑开 */
     .md-datepicker-body {
         padding: 0 16px;
         flex: 1;
+        min-height: 0;
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
     .md-datepicker-yearlist {
         flex: 1;
+        min-height: 0;
         overflow-y: auto;
     }
     .md-datepicker-nav {
@@ -3090,9 +3099,11 @@ html[data-mode="dark"] .md-card-supporting-title {
     .md-datepicker-nav-btn--right {
         width: 36px;
     }
+    /* 移动端 monthyear：固定宽度 5×36=180px，保证 nav 总宽 36+180+36=252=7×36
+       使箭头与日历列精确对齐 */
     .md-datepicker-monthyear {
-        width: auto;
-        flex: 1;
+        width: 180px;
+        flex: none;
     }
     /* 移动端 actions：静态定位（桌面端 absolute），普通流跟随日历 */
     .md-datepicker-actions {
