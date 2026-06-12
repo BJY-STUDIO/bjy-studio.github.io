@@ -1920,14 +1920,13 @@ body {
     background: var(--md-primary-dark);
 }
 
-/* 日期选择器操作区：flex 右对齐、1dp 顶部分割线 */
-/* 底部操作按钮：右对齐、body 已提供 24dp 左右内边距 */
+/* 底部操作按钮：右对齐、margin-top:auto 固定吸底、无分隔线 */
 .md-datepicker-actions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     padding: 8px 0 8px 0;
-    border-top: 1px solid rgba(0,0,0,0.12);
+    margin-top: auto;
 }
 .md-datepicker-actions .md-btn {
     min-height: 36px;
