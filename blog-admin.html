@@ -466,36 +466,41 @@
         </div>
     </div>
 
-    <!-- MD1 Date Picker Dialog -->
+    <!-- MD1 Date Picker Dialog — Landscape layout per MD1 spec -->
     <div class="md-datepicker-overlay" id="dp-overlay">
         <div class="md-datepicker-dialog">
+            <!-- 左侧面板：主题色背景、年份 + 选中日期 -->
             <div class="md-datepicker-header">
-                <div class="md-datepicker-monthyear">
-                    <span class="md-datepicker-year" id="dp-header-year" onclick="dpToggleYearList()"></span>
-                    <span class="md-datepicker-month-name" id="dp-header-month" onclick="dpToggleMonthGrid()"></span>
-                </div>
+                <span class="md-datepicker-year" id="dp-header-year" onclick="dpToggleYearList()"></span>
+                <span class="md-datepicker-selected-date" id="dp-header-date"></span>
+            </div>
+            <!-- 右侧区域：月导航 + 日历内容 + 操作按钮 -->
+            <div class="md-datepicker-body">
                 <div class="md-datepicker-nav">
-                    <button type="button" class="md-datepicker-nav-btn" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
-                    <button type="button" class="md-datepicker-nav-btn" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
+                    <span class="md-datepicker-monthyear" id="dp-header-month" onclick="dpToggleMonthGrid()"></span>
+                    <div class="md-datepicker-nav-arrows">
+                        <button type="button" class="md-datepicker-nav-btn" onclick="dpPrevMonth()" title="上一月"><i class="material-icons">chevron_left</i></button>
+                        <button type="button" class="md-datepicker-nav-btn" onclick="dpNextMonth()" title="下一月"><i class="material-icons">chevron_right</i></button>
+                    </div>
                 </div>
-            </div>
-            <div class="md-datepicker-weekdays">
-                <div class="md-datepicker-weekday">日</div>
-                <div class="md-datepicker-weekday">一</div>
-                <div class="md-datepicker-weekday">二</div>
-                <div class="md-datepicker-weekday">三</div>
-                <div class="md-datepicker-weekday">四</div>
-                <div class="md-datepicker-weekday">五</div>
-                <div class="md-datepicker-weekday">六</div>
-            </div>
-            <div class="md-datepicker-yearlist" id="dp-yearlist"></div>
-            <div class="md-datepicker-monthgrid" id="dp-monthgrid"></div>
-            <div id="dp-calendar">
-                <div class="md-datepicker-grid" id="dp-grid"></div>
-            </div>
-            <div class="md-datepicker-actions">
-                <button type="button" class="md-btn md-btn-flat md-datepicker-cancel" onclick="dpClose()">取消</button>
-                <button type="button" class="md-btn md-btn-flat md-datepicker-ok" id="dp-ok" onclick="dpConfirm()">确定</button>
+                <div class="md-datepicker-weekdays">
+                    <div class="md-datepicker-weekday">日</div>
+                    <div class="md-datepicker-weekday">一</div>
+                    <div class="md-datepicker-weekday">二</div>
+                    <div class="md-datepicker-weekday">三</div>
+                    <div class="md-datepicker-weekday">四</div>
+                    <div class="md-datepicker-weekday">五</div>
+                    <div class="md-datepicker-weekday">六</div>
+                </div>
+                <div class="md-datepicker-yearlist" id="dp-yearlist"></div>
+                <div class="md-datepicker-monthgrid" id="dp-monthgrid"></div>
+                <div id="dp-calendar">
+                    <div class="md-datepicker-grid" id="dp-grid"></div>
+                </div>
+                <div class="md-datepicker-actions">
+                    <button type="button" class="md-btn md-btn-flat md-datepicker-cancel" onclick="dpClose()">取消</button>
+                    <button type="button" class="md-btn md-btn-flat md-datepicker-ok" id="dp-ok" onclick="dpConfirm()">确定</button>
+                </div>
             </div>
         </div>
     </div>
@@ -903,9 +908,15 @@
         dpRenderCalendar();
     }
     function dpRenderCalendar() {
-        // Update header — 分别设置年份和月份
-        document.getElementById('dp-header-year').textContent = dpState.year + '年 ';
-        document.getElementById('dp-header-month').textContent = DP_MONTHS[dpState.month];
+        // 更新左侧面板：年份
+        document.getElementById('dp-header-year').textContent = dpState.year;
+        // 更新左侧面板：选中日期 (如 "周四, 6月 11") 或默认显示当前月
+        var dateEl = document.getElementById('dp-header-date');
+        var displayDay = dpState.selectedDate ? dpState.selectedDate : new Date(dpState.year, dpState.month, 1);
+        var dayNames = ['周日','周一','周二','周三','周四','周五','周六'];
+        dateEl.textContent = dayNames[displayDay.getDay()] + ', ' + DP_MONTHS[displayDay.getMonth()] + ' ' + displayDay.getDate() + '日';
+        // 更新右侧导航：月份年份
+        document.getElementById('dp-header-month').textContent = dpState.year + '年 ' + DP_MONTHS[dpState.month];
         var grid = document.getElementById('dp-grid');
         var firstDay = new Date(dpState.year, dpState.month, 1).getDay(); // 0=Sun
         var daysInMonth = new Date(dpState.year, dpState.month + 1, 0).getDate();
